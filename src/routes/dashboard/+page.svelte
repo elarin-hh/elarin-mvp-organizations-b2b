@@ -42,8 +42,12 @@
 		// Load stats
 		const statsResponse = await organizationsApi.getStats();
 		if (statsResponse.success && statsResponse.data) {
-			stats = statsResponse.data;
-		}
+			// Adicionar pending_users calculado do array de pendingUsers
+			stats = {
+				...statsResponse.data,
+				pending_users: pendingUsers.length
+			};
+		} 
 
 		isLoading = false;
 	}

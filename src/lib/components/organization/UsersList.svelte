@@ -6,6 +6,8 @@
 	import Trash2 from 'lucide-svelte/icons/trash-2';
 	import Users from 'lucide-svelte/icons/users';
 	import CircleOff from 'lucide-svelte/icons/circle-off';
+	import Dumbbell from 'lucide-svelte/icons/dumbbell';
+	import ExerciseManagement from './ExerciseManagement.svelte';
 
 	interface Props {
 		users: OrganizationUser[];
@@ -17,8 +19,10 @@
 	let isLoading = $state(false);
 	let showDeleteModal = $state(false);
 	let showToggleModal = $state(false);
+	let showExerciseModal = $state(false);
 	let userToDelete = $state<OrganizationUser | null>(null);
 	let userToToggle = $state<OrganizationUser | null>(null);
+	let userToManageExercises = $state<OrganizationUser | null>(null);
 
 	function confirmToggleStatus(user: OrganizationUser) {
 		userToToggle = user;
@@ -72,6 +76,16 @@
 	function cancelDelete() {
 		showDeleteModal = false;
 		userToDelete = null;
+	}
+
+	function openExerciseManagement(user: OrganizationUser) {
+		userToManageExercises = user;
+		showExerciseModal = true;
+	}
+
+	function closeExerciseManagement() {
+		showExerciseModal = false;
+		userToManageExercises = null;
 	}
 </script>
 
@@ -155,6 +169,15 @@
 								</span>
 							</td>
 							<td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+								<button
+									onclick={() => openExerciseManagement(user)}
+									disabled={isLoading}
+									class="glass-button-secondary px-3 py-1.5 text-blue-400 hover:text-blue-300 disabled:opacity-50 inline-flex items-center gap-2"
+									title="Gerenciar Exercícios"
+								>
+									<Dumbbell size={16} />
+									Exercícios
+								</button>
 								<button
 									onclick={() => confirmToggleStatus(user)}
 									disabled={isLoading}
@@ -241,4 +264,13 @@
 			</div>
 		</div>
 	</div>
+{/if}
+
+<!-- Exercise Management Modal -->
+{#if userToManageExercises}
+	<ExerciseManagement
+		user={userToManageExercises}
+		isOpen={showExerciseModal}
+		onClose={closeExerciseManagement}
+	/>
 {/if}

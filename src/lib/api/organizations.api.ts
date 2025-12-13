@@ -35,7 +35,7 @@ export const organizationsApi = {
 	 * POST /organizations/auth/logout
 	 */
 	async logout(): Promise<ApiResponse<{ message: string }>> {
-		return restClient.post<{ message: string }>('/organizations/auth/logout');
+		return restClient.post<{ message: string }>('/organizations/auth/logout', {});
 	},
 
 	/**

@@ -56,9 +56,12 @@ class RestClient {
 			// Always sync token from localStorage before making request
 			this.getToken();
 
-			const headers: Record<string, string> = {
-				'Content-Type': 'application/json'
-			};
+			const headers: Record<string, string> = {};
+
+			// Only add Content-Type if there's a body
+			if (options?.body) {
+				headers['Content-Type'] = 'application/json';
+			}
 
 			// Add authorization header if token is available
 			if (this.accessToken) {
