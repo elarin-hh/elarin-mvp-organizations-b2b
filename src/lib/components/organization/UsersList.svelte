@@ -7,6 +7,8 @@
 	import Users from 'lucide-svelte/icons/users';
 	import CircleOff from 'lucide-svelte/icons/circle-off';
 	import Dumbbell from 'lucide-svelte/icons/dumbbell';
+	import Settings from 'lucide-svelte/icons/settings';
+	import X from 'lucide-svelte/icons/x';
 	import ExerciseManagement from './ExerciseManagement.svelte';
 
 	interface Props {
@@ -20,9 +22,11 @@
 	let showDeleteModal = $state(false);
 	let showToggleModal = $state(false);
 	let showExerciseModal = $state(false);
+	let showSettingsModal = $state(false);
 	let userToDelete = $state<OrganizationUser | null>(null);
 	let userToToggle = $state<OrganizationUser | null>(null);
 	let userToManageExercises = $state<OrganizationUser | null>(null);
+	let userToManage = $state<OrganizationUser | null>(null);
 
 	function confirmToggleStatus(user: OrganizationUser) {
 		userToToggle = user;
@@ -87,6 +91,37 @@
 		showExerciseModal = false;
 		userToManageExercises = null;
 	}
+
+	function openSettingsModal(user: OrganizationUser) {
+		userToManage = user;
+		showSettingsModal = true;
+	}
+
+	function closeSettingsModal() {
+		showSettingsModal = false;
+		userToManage = null;
+	}
+
+	function handleManageExercisesFromSettings() {
+		if (userToManage) {
+			openExerciseManagement(userToManage);
+			closeSettingsModal();
+		}
+	}
+
+	function handleToggleStatusFromSettings() {
+		if (userToManage) {
+			confirmToggleStatus(userToManage);
+			closeSettingsModal();
+		}
+	}
+
+	function handleDeleteFromSettings() {
+		if (userToManage) {
+			confirmDelete(userToManage);
+			closeSettingsModal();
+		}
+	}
 </script>
 
 <div class="glass-card">
@@ -122,7 +157,7 @@
 							Status
 						</th>
 						<th class="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
-							Ações
+							Configurações
 						</th>
 					</tr>
 				</thead>
@@ -168,36 +203,14 @@
 									{user.status === 'ACTIVE' ? 'Ativo' : 'Inativo'}
 								</span>
 							</td>
-							<td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+							<td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
 								<button
-									onclick={() => openExerciseManagement(user)}
+									onclick={() => openSettingsModal(user)}
 									disabled={isLoading}
-									class="glass-button-secondary px-3 py-1.5 text-blue-400 hover:text-blue-300 disabled:opacity-50 inline-flex items-center gap-2"
-									title="Gerenciar Exercícios"
+									class="glass-button-secondary px-4 py-2 text-white disabled:opacity-50 inline-flex items-center gap-2"
+									title="Configurações do usuário"
 								>
-									<Dumbbell size={16} />
-									Exercícios
-								</button>
-								<button
-									onclick={() => confirmToggleStatus(user)}
-									disabled={isLoading}
-									class="glass-button-secondary px-3 py-1.5 text-white disabled:opacity-50 inline-flex items-center gap-2"
-								>
-									{#if user.status === 'ACTIVE'}
-										<CircleOff size={16} />
-										Desativar
-									{:else}
-										<UserCheck size={16} />
-										Ativar
-									{/if}
-								</button>
-								<button
-									onclick={() => confirmDelete(user)}
-									disabled={isLoading}
-									class="glass-button-secondary px-3 py-1.5 text-red-400 hover:text-red-300 disabled:opacity-50 inline-flex items-center gap-2"
-								>
-									<Trash2 size={16} />
-									Remover
+									<Settings size={16} />
 								</button>
 							</td>
 						</tr>
@@ -207,6 +220,99 @@
 		</div>
 	{/if}
 </div>
+
+<!-- Settings Modal -->
+{#if showSettingsModal && userToManage}
+	<div
+		class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"
+		onclick={closeSettingsModal}
+		role="button"
+		tabindex="-1"
+	>
+		<div
+			class="glass-card max-w-md w-full overflow-hidden"
+			onclick={(e) => e.stopPropagation()}
+			role="dialog"
+			tabindex="-1"
+		>
+			<!-- Header -->
+			<div class="px-6 py-5 border-b border-white/10 flex items-center justify-between">
+				<div class="flex items-center gap-3">
+					<Settings class="w-6 h-6 text-blue-400" stroke-width={2} />
+					<div>
+						<h3 class="text-lg font-bold text-white">Configurações do Usuário</h3>
+						<p class="text-sm text-white/70">{userToManage.users.full_name}</p>
+					</div>
+				</div>
+				<button
+					onclick={closeSettingsModal}
+					class="glass-button-secondary p-2 text-white/70 hover:text-white"
+					aria-label="Fechar"
+				>
+					<X size={20} />
+				</button>
+			</div>
+
+			<!-- Options -->
+			<div class="p-4 space-y-2">
+				<!-- Manage Exercises -->
+				<button
+					onclick={handleManageExercisesFromSettings}
+					disabled={isLoading}
+					class="w-full glass-card p-4 text-left hover:bg-white/10 transition-colors disabled:opacity-50 flex items-center gap-3"
+				>
+					<div class="w-10 h-10 rounded-lg bg-blue-600/20 flex items-center justify-center">
+						<Dumbbell class="w-5 h-5 text-blue-400" stroke-width={2} />
+					</div>
+					<div class="flex-1">
+						<h4 class="text-white font-medium">Gerenciar Exercícios</h4>
+						<p class="text-xs text-white/50">Atrelar ou remover exercícios do usuário</p>
+					</div>
+				</button>
+
+				<!-- Toggle Status -->
+				<button
+					onclick={handleToggleStatusFromSettings}
+					disabled={isLoading}
+					class="w-full glass-card p-4 text-left hover:bg-white/10 transition-colors disabled:opacity-50 flex items-center gap-3"
+				>
+					<div class="w-10 h-10 rounded-lg bg-yellow-600/20 flex items-center justify-center">
+						{#if userToManage.status === 'ACTIVE'}
+							<CircleOff class="w-5 h-5 text-yellow-400" stroke-width={2} />
+						{:else}
+							<UserCheck class="w-5 h-5 text-green-400" stroke-width={2} />
+						{/if}
+					</div>
+					<div class="flex-1">
+						<h4 class="text-white font-medium">
+							{userToManage.status === 'ACTIVE' ? 'Desativar Usuário' : 'Ativar Usuário'}
+						</h4>
+						<p class="text-xs text-white/50">
+							{userToManage.status === 'ACTIVE'
+								? 'Impedir acesso do usuário ao sistema'
+								: 'Permitir acesso do usuário ao sistema'}
+						</p>
+					</div>
+				</button>
+
+				<!-- Remove User -->
+				<button
+					onclick={handleDeleteFromSettings}
+					disabled={isLoading}
+					class="w-full glass-card p-4 text-left hover:bg-white/10 transition-colors disabled:opacity-50 flex items-center gap-3"
+				>
+					<div class="w-10 h-10 rounded-lg bg-red-600/20 flex items-center justify-center">
+						<Trash2 class="w-5 h-5 text-red-400" stroke-width={2} />
+					</div>
+					<div class="flex-1">
+						<h4 class="text-white font-medium">Remover Usuário</h4>
+						<p class="text-xs text-white/50">Remover usuário da organização permanentemente</p>
+					</div>
+				</button>
+			</div>
+		</div>
+	</div>
+{/if}
 
 <!-- Toggle Status Confirmation Modal -->
 {#if showToggleModal && userToToggle}

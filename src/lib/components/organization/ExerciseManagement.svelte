@@ -259,7 +259,6 @@
 									</div>
 									<div class="flex-1 min-w-0">
 										<h4 class="text-white font-medium truncate">{template.name}</h4>
-										<p class="text-xs text-white/50 truncate">{template.type}</p>
 										{#if template.description}
 											<p class="text-xs text-white/40 mt-1 line-clamp-2">
 												{template.description}
