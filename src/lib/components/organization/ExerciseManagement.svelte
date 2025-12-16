@@ -182,7 +182,6 @@
 											</div>
 											<div>
 												<h4 class="text-white font-medium">{exercise.name}</h4>
-												<p class="text-xs text-white/50">{exercise.type}</p>
 											</div>
 										</div>
 										<button

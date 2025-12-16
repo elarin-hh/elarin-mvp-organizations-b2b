@@ -5,33 +5,56 @@
 	import { organizationsApi } from '$lib/api/organizations.api';
 	import { AppHeader, Loading } from '$lib/components/common';
 	import StatsCard from '$lib/components/organization/StatsCard.svelte';
-	import UsersList from '$lib/components/organization/UsersList.svelte';
-	import PendingUsersList from '$lib/components/organization/PendingUsersList.svelte';
 	import type { OrganizationUser, OrganizationStats } from '$lib/types/organization';
 	import Users from 'lucide-svelte/icons/users';
 	import UserCheck from 'lucide-svelte/icons/user-check';
-	import UserX from 'lucide-svelte/icons/user-x';
-	import Clock from 'lucide-svelte/icons/clock';
+	import Megaphone from 'lucide-svelte/icons/megaphone';
+	import Calendar from 'lucide-svelte/icons/calendar';
+	import X from 'lucide-svelte/icons/x';
 
 	const organization = $derived($currentOrganization);
 
-	let activeTab = $state<'active' | 'pending'>('active');
-	let users = $state<OrganizationUser[]>([]);
 	let pendingUsers = $state<OrganizationUser[]>([]);
 	let stats = $state<OrganizationStats>({ total_users: 0, active_users: 0, inactive_users: 0, pending_users: 0 });
 	let isLoading = $state(true);
 	let isScrolled = $state(false);
 	let showAvatarMenu = $state(false);
+	let showNotifications = $state(false);
+
+	// Novidades
+	let novidades = $state([
+		{
+			id: 1,
+			title: 'Bem-vindo ao painel Elarin!',
+			description: 'Gerencie seus usuários, exercícios e acompanhe o progresso da sua organização em um só lugar.',
+			icon: 'megaphone',
+			color: 'primary',
+			date: new Date().toISOString()
+		},
+		{
+			id: 2,
+			title: 'Gestão de usuários aprimorada',
+			description: 'Acesse o menu lateral para visualizar e gerenciar todos os usuários da sua organização.',
+			icon: 'users',
+			color: 'blue',
+			date: new Date().toISOString()
+		},
+		{
+			id: 3,
+			title: 'Notificações em tempo real',
+			description: 'Receba notificações instantâneas quando novos usuários solicitarem acesso à sua organização.',
+			icon: 'check',
+			color: 'green',
+			date: new Date().toISOString()
+		}
+	]);
+
+	function removeNovidade(id: number) {
+		novidades = novidades.filter(n => n.id !== id);
+	}
 
 	async function loadData() {
 		isLoading = true;
-
-		// Load all users
-		const usersResponse = await organizationsApi.getUsers();
-		if (usersResponse.success && usersResponse.data) {
-			// Filter only ACTIVE and INACTIVE users
-			users = usersResponse.data.filter(u => u.status === 'ACTIVE' || u.status === 'INACTIVE');
-		}
 
 		// Load pending users
 		const pendingResponse = await organizationsApi.getPendingUsers();
@@ -42,12 +65,11 @@
 		// Load stats
 		const statsResponse = await organizationsApi.getStats();
 		if (statsResponse.success && statsResponse.data) {
-			// Adicionar pending_users calculado do array de pendingUsers
 			stats = {
 				...statsResponse.data,
 				pending_users: pendingUsers.length
 			};
-		} 
+		}
 
 		isLoading = false;
 	}
@@ -61,10 +83,17 @@
 		showAvatarMenu = !showAvatarMenu;
 	}
 
+	function handleToggleNotifications() {
+		showNotifications = !showNotifications;
+	}
+
 	function handleClickOutside(e: MouseEvent) {
 		const target = e.target as HTMLElement;
 		if (!target.closest('.avatar-menu-container')) {
 			showAvatarMenu = false;
+		}
+		if (!target.closest('.notifications-container')) {
+			showNotifications = false;
 		}
 	}
 
@@ -112,7 +141,11 @@
 	<AppHeader
 		bind:isScrolled
 		bind:showAvatarMenu
+		bind:showNotifications
+		pendingUsers={pendingUsers}
 		onToggleAvatarMenu={handleToggleAvatarMenu}
+		onToggleNotifications={handleToggleNotifications}
+		onUpdatePendingUsers={loadData}
 		onSettings={handleSettings}
 		onLogout={handleLogout}
 		onClickOutside={handleClickOutside}
@@ -122,8 +155,8 @@
 	<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 pt-24">
 		{#if organization}
 			<div class="mb-8">
-				<h2 class="text-3xl font-bold text-white mb-2">{organization.name}</h2>
-				<p class="text-white/70">Painel de gerenciamento de usuários</p>
+				<h2 class="text-3xl font-bold text-white mb-2">Olá, {organization.name}!</h2>
+				<p class="text-white/70">Painel de gerenciamento</p>
 			</div>
 		{/if}
 
@@ -131,7 +164,7 @@
 			<Loading message="Carregando dados..." />
 		{:else}
 			<!-- Stats Cards -->
-			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
 				<StatsCard
 					title="Total de Usuários"
 					value={stats.total_users}
@@ -149,64 +182,80 @@
 						<UserCheck class="w-10 h-10 text-green-400" stroke-width={1.5} />
 					{/snippet}
 				</StatsCard>
-				<StatsCard
-					title="Usuários Inativos"
-					value={stats.inactive_users}
-					variant="muted"
-				>
-					{#snippet icon()}
-						<UserX class="w-10 h-10 text-gray-400" stroke-width={1.5} />
-					{/snippet}
-				</StatsCard>
-				<StatsCard
-					title="Pendentes"
-					value={stats.pending_users}
-				>
-					{#snippet icon()}
-						<Clock class="w-10 h-10 text-yellow-400" stroke-width={1.5} />
-					{/snippet}
-				</StatsCard>
 			</div>
 
-			<!-- Tabs -->
-			<div class="mb-8">
-				<div class="glass-card p-1.5 inline-flex gap-1 rounded-xl">
-					<button
-						onclick={() => activeTab = 'active'}
-						class="px-6 py-3 rounded-lg font-semibold transition-all duration-200 flex items-center gap-2 {
-							activeTab === 'active'
-								? 'bg-primary-600 text-white shadow-lg shadow-primary-600/30'
-								: 'text-white/60 hover:text-white hover:bg-white/5'
-						}"
-					>
-						<Users size={18} />
-						Usuários Ativos/Inativos
-					</button>
-					<button
-						onclick={() => activeTab = 'pending'}
-						class="px-6 py-3 rounded-lg font-semibold transition-all duration-200 flex items-center gap-2 relative {
-							activeTab === 'pending'
-								? 'bg-primary-600 text-white shadow-lg shadow-primary-600/30'
-								: 'text-white/60 hover:text-white hover:bg-white/5'
-						}"
-					>
-						<Clock size={18} />
-						Pendentes de Aprovação
-						{#if stats.pending_users > 0}
-							<span class="ml-1 px-2 py-0.5 bg-yellow-500 text-black rounded-full text-xs font-bold tabular-nums">
-								{stats.pending_users}
-							</span>
-						{/if}
-					</button>
+			<!-- Novidades Section -->
+			<div class="glass-card">
+				<div class="px-6 py-5 border-b border-white/10">
+					<div class="flex items-center gap-3">
+						<Megaphone class="w-6 h-6 text-primary-400" stroke-width={2} />
+						<h2 class="text-xl font-bold text-white">Novidades</h2>
+					</div>
 				</div>
-			</div>
 
-			<!-- Tab Content -->
-			{#if activeTab === 'active'}
-				<UsersList {users} onUpdate={loadData} />
-			{:else}
-				<PendingUsersList users={pendingUsers} onUpdate={loadData} />
-			{/if}
+				{#if novidades.length === 0}
+					<div class="p-16 text-center">
+						<Megaphone class="w-12 h-12 text-white/40 mx-auto mb-3" stroke-width={1.5} />
+						<p class="text-white/70">Nenhuma novidade no momento</p>
+					</div>
+				{:else}
+					<div class="p-6 space-y-4">
+						{#each novidades as novidade (novidade.id)}
+							<div class="glass-card p-5 hover:bg-white/10 transition-colors relative group">
+								<button
+									onclick={() => removeNovidade(novidade.id)}
+									class="absolute top-3 right-3 p-1.5 rounded-lg bg-white/5 hover:bg-red-500/20 text-white/50 hover:text-red-400 transition-all opacity-0 group-hover:opacity-100"
+									aria-label="Remover novidade"
+								>
+									<X class="w-4 h-4" />
+								</button>
+
+								<div class="flex items-start gap-4">
+									<div class="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 {
+										novidade.color === 'primary' ? 'bg-primary-600/20' :
+										novidade.color === 'blue' ? 'bg-blue-600/20' :
+										novidade.color === 'green' ? 'bg-green-600/20' :
+										'bg-primary-600/20'
+									}">
+										{#if novidade.icon === 'megaphone'}
+											<Megaphone class="w-6 h-6 {
+												novidade.color === 'primary' ? 'text-primary-400' :
+												novidade.color === 'blue' ? 'text-blue-400' :
+												novidade.color === 'green' ? 'text-green-400' :
+												'text-primary-400'
+											}" stroke-width={2} />
+										{:else if novidade.icon === 'users'}
+											<Users class="w-6 h-6 {
+												novidade.color === 'primary' ? 'text-primary-400' :
+												novidade.color === 'blue' ? 'text-blue-400' :
+												novidade.color === 'green' ? 'text-green-400' :
+												'text-primary-400'
+											}" stroke-width={2} />
+										{:else if novidade.icon === 'check'}
+											<UserCheck class="w-6 h-6 {
+												novidade.color === 'primary' ? 'text-primary-400' :
+												novidade.color === 'blue' ? 'text-blue-400' :
+												novidade.color === 'green' ? 'text-green-400' :
+												'text-primary-400'
+											}" stroke-width={2} />
+										{/if}
+									</div>
+									<div class="flex-1 pr-8">
+										<h3 class="text-white font-semibold text-lg mb-1">{novidade.title}</h3>
+										<p class="text-white/70 text-sm mb-2">
+											{novidade.description}
+										</p>
+										<div class="flex items-center gap-2 text-xs text-white/50">
+											<Calendar class="w-4 h-4" />
+											<span>{new Date(novidade.date).toLocaleDateString('pt-BR')}</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						{/each}
+					</div>
+				{/if}
+			</div>
 		{/if}
 	</main>
 </div>

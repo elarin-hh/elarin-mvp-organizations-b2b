@@ -8,6 +8,7 @@
 	import CircleOff from 'lucide-svelte/icons/circle-off';
 	import Dumbbell from 'lucide-svelte/icons/dumbbell';
 	import Settings from 'lucide-svelte/icons/settings';
+	import Search from 'lucide-svelte/icons/search';
 	import X from 'lucide-svelte/icons/x';
 	import ExerciseManagement from './ExerciseManagement.svelte';
 
@@ -18,6 +19,7 @@
 
 	let { users, onUpdate }: Props = $props();
 
+	let searchTerm = $state('');
 	let isLoading = $state(false);
 	let showDeleteModal = $state(false);
 	let showToggleModal = $state(false);
@@ -28,6 +30,18 @@
 	let userToManageExercises = $state<OrganizationUser | null>(null);
 	let userToManage = $state<OrganizationUser | null>(null);
 
+	// Filter users based on search term
+	const filteredUsers = $derived(
+		users.filter(user => {
+			if (!searchTerm) return true;
+			const search = searchTerm.toLowerCase();
+			return (
+				user.users.full_name.toLowerCase().includes(search) ||
+				user.users.email.toLowerCase().includes(search)
+			);
+		})
+	);
+
 	function confirmToggleStatus(user: OrganizationUser) {
 		userToToggle = user;
 		showToggleModal = true;
@@ -37,14 +51,20 @@
 		if (!userToToggle) return;
 
 		isLoading = true;
-		const response = await organizationsApi.toggleUserStatus(userToToggle.user_id);
 
-		if (response.success) {
-			showToggleModal = false;
-			userToToggle = null;
-			await onUpdate?.();
-		} else {
-			alert(response.error || 'Erro ao alterar status do usuário');
+		try {
+			const response = await organizationsApi.toggleUserStatus(userToToggle.user_id);
+
+			if (response.success) {
+				// Close modal and reload data to ensure UI reflects the correct state
+				showToggleModal = false;
+				userToToggle = null;
+				await onUpdate?.();
+			} else {
+				alert(response.error?.message || response.error || 'Erro ao alterar status do usuário');
+			}
+		} catch (error) {
+			alert('Erro ao alterar status do usuário');
 		}
 
 		isLoading = false;
@@ -126,9 +146,24 @@
 
 <div class="glass-card">
 	<div class="px-6 py-5 border-b border-white/10">
-		<div class="flex items-center gap-3">
-			<Users class="w-6 h-6 text-blue-400" stroke-width={2} />
-			<h2 class="text-xl font-bold text-white">Usuários Vinculados</h2>
+		<div class="flex items-center justify-between mb-4">
+			<div class="flex items-center gap-3">
+				<Users class="w-6 h-6 text-blue-400" stroke-width={2} />
+				<h2 class="text-xl font-bold text-white">Usuários</h2>
+			</div>
+		</div>
+
+		<!-- Search Input -->
+		<div class="relative">
+			<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+				<Search class="w-5 h-5 text-white/40" />
+			</div>
+			<input
+				type="text"
+				bind:value={searchTerm}
+				placeholder="Buscar por nome ou email..."
+				class="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+			/>
 		</div>
 	</div>
 
@@ -138,6 +173,14 @@
 				<Users class="w-8 h-8 text-white/40" stroke-width={1.5} />
 			</div>
 			<p class="text-white/70 text-lg">Nenhum usuário vinculado à organização</p>
+		</div>
+	{:else if filteredUsers.length === 0}
+		<div class="px-6 py-16 text-center">
+			<div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/5 mb-4">
+				<Search class="w-8 h-8 text-white/40" stroke-width={1.5} />
+			</div>
+			<p class="text-white/70 text-lg">Nenhum usuário encontrado</p>
+			<p class="text-white/50 text-sm mt-1">Tente buscar com outros termos</p>
 		</div>
 	{:else}
 		<div class="overflow-x-auto">
@@ -162,7 +205,7 @@
 					</tr>
 				</thead>
 				<tbody class="divide-y divide-white/10">
-					{#each users as user}
+					{#each filteredUsers as user}
 						<tr class="hover:bg-white/5 transition-colors">
 							<td class="px-6 py-4 whitespace-nowrap">
 								<div class="flex items-center">
@@ -230,7 +273,7 @@
 		tabindex="-1"
 	>
 		<div
-			class="glass-card max-w-md w-full overflow-hidden"
+			class="glass-card max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col"
 			onclick={(e) => e.stopPropagation()}
 			role="dialog"
 			tabindex="-1"
@@ -239,10 +282,7 @@
 			<div class="px-6 py-5 border-b border-white/10 flex items-center justify-between">
 				<div class="flex items-center gap-3">
 					<Settings class="w-6 h-6 text-blue-400" stroke-width={2} />
-					<div>
-						<h3 class="text-lg font-bold text-white">Configurações do Usuário</h3>
-						<p class="text-sm text-white/70">{userToManage.users.full_name}</p>
-					</div>
+					<h3 class="text-lg font-bold text-white">Configurações do Usuário</h3>
 				</div>
 				<button
 					onclick={closeSettingsModal}
@@ -253,62 +293,144 @@
 				</button>
 			</div>
 
-			<!-- Options -->
-			<div class="p-4 space-y-2">
-				<!-- Manage Exercises -->
-				<button
-					onclick={handleManageExercisesFromSettings}
-					disabled={isLoading}
-					class="w-full glass-card p-4 text-left hover:bg-white/10 transition-colors disabled:opacity-50 flex items-center gap-3"
-				>
-					<div class="w-10 h-10 rounded-lg bg-blue-600/20 flex items-center justify-center">
-						<Dumbbell class="w-5 h-5 text-blue-400" stroke-width={2} />
-					</div>
-					<div class="flex-1">
-						<h4 class="text-white font-medium">Gerenciar Exercícios</h4>
-						<p class="text-xs text-white/50">Atrelar ou remover exercícios do usuário</p>
-					</div>
-				</button>
+			<!-- Content -->
+			<div class="flex-1 overflow-y-auto p-6">
+				<!-- User Profile Section -->
+				<div class="glass-card p-6 mb-6">
+					<div class="flex items-start gap-6">
+						<!-- Avatar -->
+						<div class="flex-shrink-0">
+							{#if userToManage.users.avatar_url}
+								<img
+									src={userToManage.users.avatar_url}
+									alt={userToManage.users.full_name}
+									class="w-24 h-24 rounded-full border-2 border-primary-500"
+								/>
+							{:else}
+								<div class="w-24 h-24 rounded-full bg-primary-600 flex items-center justify-center border-2 border-primary-500">
+									<span class="text-white text-3xl font-bold">
+										{userToManage.users.full_name.charAt(0).toUpperCase()}
+									</span>
+								</div>
+							{/if}
+						</div>
 
-				<!-- Toggle Status -->
-				<button
-					onclick={handleToggleStatusFromSettings}
-					disabled={isLoading}
-					class="w-full glass-card p-4 text-left hover:bg-white/10 transition-colors disabled:opacity-50 flex items-center gap-3"
-				>
-					<div class="w-10 h-10 rounded-lg bg-yellow-600/20 flex items-center justify-center">
-						{#if userToManage.status === 'ACTIVE'}
-							<CircleOff class="w-5 h-5 text-yellow-400" stroke-width={2} />
-						{:else}
-							<UserCheck class="w-5 h-5 text-green-400" stroke-width={2} />
-						{/if}
-					</div>
-					<div class="flex-1">
-						<h4 class="text-white font-medium">
-							{userToManage.status === 'ACTIVE' ? 'Desativar Usuário' : 'Ativar Usuário'}
-						</h4>
-						<p class="text-xs text-white/50">
-							{userToManage.status === 'ACTIVE'
-								? 'Impedir acesso do usuário ao sistema'
-								: 'Permitir acesso do usuário ao sistema'}
-						</p>
-					</div>
-				</button>
+						<!-- User Info -->
+						<div class="flex-1 space-y-4">
+							<div>
+								<h4 class="text-2xl font-bold text-white mb-1">{userToManage.users.full_name}</h4>
+								<p class="text-white/70">{userToManage.users.email}</p>
+							</div>
 
-				<!-- Remove User -->
-				<button
-					onclick={handleDeleteFromSettings}
-					disabled={isLoading}
-					class="w-full glass-card p-4 text-left hover:bg-white/10 transition-colors disabled:opacity-50 flex items-center gap-3"
-				>
-					<div class="w-10 h-10 rounded-lg bg-red-600/20 flex items-center justify-center">
-						<Trash2 class="w-5 h-5 text-red-400" stroke-width={2} />
+							<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+								<!-- Role -->
+								<div>
+									<p class="text-xs text-white/50 uppercase tracking-wider mb-1">Função</p>
+									<p class="text-white font-medium">{userToManage.role}</p>
+								</div>
+
+								<!-- Status -->
+								<div>
+									<p class="text-xs text-white/50 uppercase tracking-wider mb-1">Status</p>
+									<span
+										class="inline-flex px-3 py-1 text-xs font-semibold rounded-full {
+											userToManage.status === 'ACTIVE'
+												? 'bg-green-400/10 text-green-400'
+												: 'bg-gray-400/10 text-gray-400'
+										}"
+									>
+										{userToManage.status === 'ACTIVE' ? 'Ativo' : 'Inativo'}
+									</span>
+								</div>
+
+								<!-- Vinculado em -->
+								<div>
+									<p class="text-xs text-white/50 uppercase tracking-wider mb-1">Vinculado em</p>
+									<p class="text-white/70">
+										{new Date(userToManage.created_at).toLocaleDateString('pt-BR', {
+											day: '2-digit',
+											month: 'long',
+											year: 'numeric'
+										})}
+									</p>
+								</div>
+
+								<!-- Cadastrado em -->
+								<div>
+									<p class="text-xs text-white/50 uppercase tracking-wider mb-1">Cadastrado em</p>
+									<p class="text-white/70">
+										{new Date(userToManage.users.created_at).toLocaleDateString('pt-BR', {
+											day: '2-digit',
+											month: 'long',
+											year: 'numeric'
+										})}
+									</p>
+								</div>
+							</div>
+						</div>
 					</div>
-					<div class="flex-1">
-						<h4 class="text-white font-medium">Remover Usuário</h4>
-						<p class="text-xs text-white/50">Remover usuário da organização permanentemente</p>
+				</div>
+
+				<!-- Actions Section -->
+				<div>
+					<h4 class="text-lg font-semibold text-white mb-4">Ações</h4>
+					<div class="grid grid-cols-1 gap-3">
+						<!-- Manage Exercises -->
+						<button
+							onclick={handleManageExercisesFromSettings}
+							disabled={isLoading}
+							class="glass-card p-4 text-left hover:bg-white/10 transition-colors disabled:opacity-50 flex items-center gap-3"
+						>
+							<div class="w-12 h-12 rounded-lg bg-blue-600/20 flex items-center justify-center">
+								<Dumbbell class="w-6 h-6 text-blue-400" stroke-width={2} />
+							</div>
+							<div class="flex-1">
+								<h4 class="text-white font-medium">Gerenciar Exercícios</h4>
+								<p class="text-xs text-white/50">Atrelar ou remover exercícios do usuário</p>
+							</div>
+						</button>
+
+						<!-- Toggle Status -->
+						<button
+							onclick={handleToggleStatusFromSettings}
+							disabled={isLoading}
+							class="glass-card p-4 text-left hover:bg-white/10 transition-colors disabled:opacity-50 flex items-center gap-3"
+						>
+							<div class="w-12 h-12 rounded-lg bg-yellow-600/20 flex items-center justify-center">
+								{#if userToManage.status === 'ACTIVE'}
+									<CircleOff class="w-6 h-6 text-yellow-400" stroke-width={2} />
+								{:else}
+									<UserCheck class="w-6 h-6 text-green-400" stroke-width={2} />
+								{/if}
+							</div>
+							<div class="flex-1">
+								<h4 class="text-white font-medium">
+									{userToManage.status === 'ACTIVE' ? 'Desativar Usuário' : 'Ativar Usuário'}
+								</h4>
+								<p class="text-xs text-white/50">
+									{userToManage.status === 'ACTIVE'
+										? 'Impedir acesso do usuário ao sistema'
+										: 'Permitir acesso do usuário ao sistema'}
+								</p>
+							</div>
+						</button>
+
+						<!-- Remove User -->
+						<button
+							onclick={handleDeleteFromSettings}
+							disabled={isLoading}
+							class="glass-card p-4 text-left hover:bg-white/10 transition-colors disabled:opacity-50 flex items-center gap-3"
+						>
+							<div class="w-12 h-12 rounded-lg bg-red-600/20 flex items-center justify-center">
+								<Trash2 class="w-6 h-6 text-red-400" stroke-width={2} />
+							</div>
+							<div class="flex-1">
+								<h4 class="text-white font-medium">Remover Usuário</h4>
+								<p class="text-xs text-white/50">Remover usuário da organização permanentemente</p>
+							</div>
+						</button>
 					</div>
-				</button>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -316,7 +438,7 @@
 
 <!-- Toggle Status Confirmation Modal -->
 {#if showToggleModal && userToToggle}
-	<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+	<div class="fixed inset-0 bg-black/70 flex items-center justify-center z-[60]">
 		<div class="glass-card max-w-md w-full mx-4 p-6">
 			<h3 class="text-lg font-bold text-white mb-4">
 				{userToToggle.status === 'ACTIVE' ? 'Confirmar Desativação' : 'Confirmar Ativação'}
@@ -346,7 +468,7 @@
 
 <!-- Delete Confirmation Modal -->
 {#if showDeleteModal && userToDelete}
-	<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+	<div class="fixed inset-0 bg-black/70 flex items-center justify-center z-[60]">
 		<div class="glass-card max-w-md w-full mx-4 p-6">
 			<h3 class="text-lg font-bold text-white mb-4">Confirmar Remoção</h3>
 			<p class="text-white/70 mb-6">

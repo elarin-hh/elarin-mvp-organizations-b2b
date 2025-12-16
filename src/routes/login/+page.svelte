@@ -41,7 +41,7 @@
 			alt="Elarin"
 			class="h-20 mx-auto mb-4"
 		/>
-		<p class="text-white/70 text-lg">Painel Administrativo B2B</p>
+		<p class="text-white/70 text-lg">Painel Administrativo</p>
 	</div>
 
 	<form onsubmit={(e) => { e.preventDefault(); handleLogin(); }} class="w-full max-w-md space-y-4">

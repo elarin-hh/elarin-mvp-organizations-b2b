@@ -59,7 +59,7 @@ export const organizationsApi = {
 	 * PATCH /organizations/users/:userId/toggle
 	 */
 	async toggleUserStatus(userId: number): Promise<ApiResponse<OrganizationUser>> {
-		return restClient.patch<OrganizationUser>(`/organizations/users/${userId}/toggle`);
+		return restClient.patch<OrganizationUser>(`/organizations/users/${userId}/toggle`, {});
 	},
 
 	/**

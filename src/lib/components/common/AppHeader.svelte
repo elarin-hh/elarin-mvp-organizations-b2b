@@ -1,11 +1,22 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import Menu from 'lucide-svelte/icons/menu';
+  import Users from 'lucide-svelte/icons/users';
+  import Bell from 'lucide-svelte/icons/bell';
+  import Home from 'lucide-svelte/icons/home';
+  import X from 'lucide-svelte/icons/x';
+  import NotificationsPanel from './NotificationsPanel.svelte';
+  import type { OrganizationUser } from '$lib/types/organization';
 
   interface Props {
     isScrolled?: boolean;
     showAvatarMenu?: boolean;
+    showNotifications?: boolean;
     hasDropdownMenu?: boolean;
+    pendingUsers?: OrganizationUser[];
     onToggleAvatarMenu?: () => void;
+    onToggleNotifications?: () => void;
+    onUpdatePendingUsers?: () => Promise<void>;
     onSettings?: () => void;
     onLogout?: () => void;
     onClickOutside?: (e: MouseEvent) => void;
@@ -14,15 +25,36 @@
   let {
     isScrolled = $bindable(false),
     showAvatarMenu = $bindable(false),
+    showNotifications = $bindable(false),
     hasDropdownMenu = true,
+    pendingUsers = [],
     onToggleAvatarMenu = () => {},
+    onToggleNotifications = () => {},
+    onUpdatePendingUsers = async () => {},
     onSettings = () => {},
     onLogout = () => {},
     onClickOutside = () => {}
   }: Props = $props();
 
+  const pendingCount = $derived(pendingUsers?.length || 0);
+
+  let showHamburgerMenu = $state(false);
+
   function handleLogoClick() {
     goto('/dashboard');
+  }
+
+  function toggleHamburgerMenu() {
+    showHamburgerMenu = !showHamburgerMenu;
+  }
+
+  function closeHamburgerMenu() {
+    showHamburgerMenu = false;
+  }
+
+  function navigateToUsers() {
+    goto('/usuarios');
+    closeHamburgerMenu();
   }
 </script>
 
@@ -32,15 +64,60 @@
   <div class="header-container px-3 sm:px-4" class:scrolled={isScrolled}>
     <div class="header-glass mx-auto py-2" class:scrolled={isScrolled}>
       <div class="flex items-center justify-between px-4">
-        <button type="button" class="flex items-center logo-button" onclick={handleLogoClick}>
-          <h1 class="text-2xl font-bold text-white">Elarin B2B</h1>
-        </button>
+        <div class="flex items-center gap-4">
+          <button
+            type="button"
+            class="glass-button-round w-10 h-10 flex items-center justify-center"
+            onclick={toggleHamburgerMenu}
+            aria-label="Menu de navegação"
+          >
+            <Menu class="w-5 h-5 text-white" />
+          </button>
+
+          <button
+            type="button"
+            class="glass-button-round w-10 h-10 flex items-center justify-center"
+            onclick={handleLogoClick}
+            aria-label="Ir para o dashboard"
+          >
+            <Home class="w-5 h-5 text-white" />
+          </button>
+
+          <button type="button" class="flex items-center logo-button" onclick={handleLogoClick}>
+            <img src="/logo-elarin.png" alt="Elarin" class="h-12 sm:h-16" />
+          </button>
+        </div>
 
         <div class="flex items-center gap-2 sm:gap-4">
           <div
             class="glass-button w-18 h-6 sm:w-20 sm:h-8 flex items-center justify-center rounded-full"
           >
             <span class="text-white text-xs font-semibold whitespace-nowrap">PARTNER</span>
+          </div>
+
+          <!-- Notifications Bell -->
+          <div class="notifications-container relative">
+            <button
+              type="button"
+              class="glass-button-round w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center"
+              aria-label="Notificações"
+              onclick={onToggleNotifications}
+            >
+              <Bell class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            </button>
+
+            {#if pendingCount > 0}
+              <span class="absolute -top-1 -right-1 bg-yellow-500 text-black text-xs font-bold rounded-full min-w-5 h-5 px-1.5 flex items-center justify-center pointer-events-none z-10">
+                {pendingCount}
+              </span>
+            {/if}
+
+            <NotificationsPanel
+              users={pendingUsers}
+              isOpen={showNotifications}
+              onClose={onToggleNotifications}
+              onUpdate={onUpdatePendingUsers}
+            />
           </div>
 
           <div class="avatar-menu-container">
@@ -98,6 +175,51 @@
       </div>
     </div>
   </div>
+
+  <!-- Hamburger Menu Dropdown -->
+  {#if showHamburgerMenu}
+    <div
+      class="fixed inset-0 bg-black/50 z-[9999]"
+      onclick={closeHamburgerMenu}
+      role="button"
+      tabindex="-1"
+    >
+      <div
+        class="hamburger-sidebar"
+        onclick={(e) => e.stopPropagation()}
+        role="dialog"
+        tabindex="-1"
+      >
+        <div class="p-6 border-b border-white/10 flex items-center justify-between">
+          <h2 class="text-xl font-bold text-white">Menu</h2>
+          <button
+            type="button"
+            onclick={closeHamburgerMenu}
+            class="glass-button-round w-10 h-10 flex items-center justify-center"
+            aria-label="Fechar menu"
+          >
+            <X class="w-5 h-5 text-white" />
+          </button>
+        </div>
+
+        <div class="p-4 space-y-2">
+          <button
+            type="button"
+            onclick={navigateToUsers}
+            class="w-full glass-card p-4 text-left hover:bg-white/10 transition-colors flex items-center gap-3"
+          >
+            <div class="w-10 h-10 rounded-lg bg-blue-600/20 flex items-center justify-center">
+              <Users class="w-5 h-5 text-blue-400" />
+            </div>
+            <div>
+              <h3 class="text-white font-medium">Usuários</h3>
+              <p class="text-xs text-white/50">Gerenciar todos os usuários</p>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  {/if}
 </header>
 
 <style>
@@ -135,10 +257,13 @@
   .header-glass {
     transition: all 0.3s ease;
     width: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(var(--blur-md));
+    -webkit-backdrop-filter: blur(var(--blur-md));
   }
 
   .header-glass.scrolled {
-    background: var(--color-glass-dark);
+    background: rgba(0, 0, 0, 0.9);
     backdrop-filter: blur(var(--blur-md));
     -webkit-backdrop-filter: blur(var(--blur-md));
     border-radius: 16px;
@@ -222,6 +347,30 @@
   @media (max-width: 640px) {
     .logo-button h1 {
       font-size: 1.25rem;
+    }
+  }
+
+  .hamburger-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 320px;
+    max-width: 85vw;
+    background: var(--color-glass-dark-strong);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-right: 1px solid var(--color-border-light);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    animation: slideInLeft 0.3s ease-out;
+  }
+
+  @keyframes slideInLeft {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(0);
     }
   }
 </style>
