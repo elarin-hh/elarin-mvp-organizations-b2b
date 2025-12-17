@@ -26,8 +26,25 @@
 	// Novidades (agora dinâmicas)
 	let novidades = $state<Notification[]>([]);
 
-	function removeNovidade(id: number) {
+	async function removeNovidade(id: number) {
+		// Optimistic UI update
+		const previousNovidades = novidades;
 		novidades = novidades.filter(n => n.id !== id);
+
+		try {
+			// Persist to backend
+			const response = await notificationsApi.markAsRead(id);
+
+			if (!response.success) {
+				// Rollback on error
+				novidades = previousNovidades;
+				console.error('Failed to mark notification as read');
+			}
+		} catch (error) {
+			// Rollback on error
+			novidades = previousNovidades;
+			console.error('Error marking notification as read:', error);
+		}
 	}
 
 	async function loadData() {

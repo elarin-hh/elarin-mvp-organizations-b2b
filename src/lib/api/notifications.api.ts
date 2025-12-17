@@ -45,5 +45,13 @@ export const notificationsApi = {
 	 */
 	async toggleNotificationStatus(notificationId: number): Promise<ApiResponse<Notification>> {
 		return restClient.patch<Notification>(`/organizations/notifications/${notificationId}/toggle`);
+	},
+
+	/**
+	 * Mark notification as read for current organization
+	 * PATCH /organizations/notifications/:id/read
+	 */
+	async markAsRead(notificationId: number): Promise<ApiResponse<{ message: string }>> {
+		return restClient.patch<{ message: string }>(`/organizations/notifications/${notificationId}/read`);
 	}
 };
