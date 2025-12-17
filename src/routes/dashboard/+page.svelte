@@ -3,9 +3,11 @@
 	import { goto } from '$app/navigation';
 	import { currentOrganization, organizationAuthActions } from '$lib/stores/organization-auth.store';
 	import { organizationsApi } from '$lib/api/organizations.api';
+	import { notificationsApi } from '$lib/api/notifications.api';
 	import { AppHeader, Loading } from '$lib/components/common';
 	import StatsCard from '$lib/components/organization/StatsCard.svelte';
 	import type { OrganizationUser, OrganizationStats } from '$lib/types/organization';
+	import type { Notification } from '$lib/types/notification';
 	import Users from 'lucide-svelte/icons/users';
 	import UserCheck from 'lucide-svelte/icons/user-check';
 	import Megaphone from 'lucide-svelte/icons/megaphone';
@@ -21,33 +23,8 @@
 	let showAvatarMenu = $state(false);
 	let showNotifications = $state(false);
 
-	// Novidades
-	let novidades = $state([
-		{
-			id: 1,
-			title: 'Bem-vindo ao painel Elarin!',
-			description: 'Gerencie seus usuários, exercícios e acompanhe o progresso da sua organização em um só lugar.',
-			icon: 'megaphone',
-			color: 'primary',
-			date: new Date().toISOString()
-		},
-		{
-			id: 2,
-			title: 'Gestão de usuários aprimorada',
-			description: 'Acesse o menu lateral para visualizar e gerenciar todos os usuários da sua organização.',
-			icon: 'users',
-			color: 'blue',
-			date: new Date().toISOString()
-		},
-		{
-			id: 3,
-			title: 'Notificações em tempo real',
-			description: 'Receba notificações instantâneas quando novos usuários solicitarem acesso à sua organização.',
-			icon: 'check',
-			color: 'green',
-			date: new Date().toISOString()
-		}
-	]);
+	// Novidades (agora dinâmicas)
+	let novidades = $state<Notification[]>([]);
 
 	function removeNovidade(id: number) {
 		novidades = novidades.filter(n => n.id !== id);
@@ -69,6 +46,12 @@
 				...statsResponse.data,
 				pending_users: pendingUsers.length
 			};
+		}
+
+		// Load notifications
+		const notificationsResponse = await notificationsApi.getNotifications();
+		if (notificationsResponse.success && notificationsResponse.data) {
+			novidades = notificationsResponse.data;
 		}
 
 		isLoading = false;
@@ -247,7 +230,7 @@
 										</p>
 										<div class="flex items-center gap-2 text-xs text-white/50">
 											<Calendar class="w-4 h-4" />
-											<span>{new Date(novidade.date).toLocaleDateString('pt-BR')}</span>
+											<span>{new Date(novidade.created_at).toLocaleDateString('pt-BR')}</span>
 										</div>
 									</div>
 								</div>
