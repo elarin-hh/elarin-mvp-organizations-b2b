@@ -35,7 +35,7 @@ export const organizationsApi = {
 	 * POST /organizations/auth/logout
 	 */
 	async logout(): Promise<ApiResponse<{ message: string }>> {
-		return restClient.post<{ message: string }>('/organizations/auth/logout', {});
+		return restClient.post<{ message: string }>('/organizations/auth/logout', null);
 	},
 
 	/**
@@ -72,10 +72,10 @@ export const organizationsApi = {
 
 	/**
 	 * Get organization statistics
-	 * GET /organizations/stats
+	 * GET /organizations/users/stats
 	 */
 	async getStats(): Promise<ApiResponse<OrganizationStats>> {
-		return restClient.get<OrganizationStats>('/organizations/stats');
+		return restClient.get<OrganizationStats>('/organizations/users/stats');
 	},
 
 	/**
