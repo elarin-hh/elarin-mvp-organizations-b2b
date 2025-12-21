@@ -100,5 +100,51 @@ export const organizationsApi = {
 	 */
 	async rejectUser(userId: number): Promise<ApiResponse<{ message: string }>> {
 		return restClient.delete<{ message: string }>(`/organizations/users/${userId}/reject`);
+	},
+
+	// ==================== Exercise Management ====================
+
+	/**
+	 * Get all available exercise templates
+	 * GET /organizations/exercise-templates
+	 */
+	async getExerciseTemplates(): Promise<ApiResponse<any[]>> {
+		return restClient.get<any[]>('/organizations/exercise-templates');
+	},
+
+	/**
+	 * Get exercises assigned to a specific user
+	 * GET /organizations/users/:userId/exercises
+	 */
+	async getUserExercises(userId: number): Promise<ApiResponse<any[]>> {
+		return restClient.get<any[]>(`/organizations/users/${userId}/exercises`);
+	},
+
+	/**
+	 * Assign an exercise to a user
+	 * POST /organizations/users/:userId/exercises
+	 */
+	async assignExercise(userId: number, templateId: number): Promise<ApiResponse<any>> {
+		return restClient.post<any>(`/organizations/users/${userId}/exercises`, { template_id: templateId });
+	},
+
+	/**
+	 * Remove an exercise from a user
+	 * DELETE /organizations/users/:userId/exercises/:exerciseId
+	 */
+	async removeExercise(userId: number, exerciseId: number): Promise<ApiResponse<{ message: string }>> {
+		return restClient.delete<{ message: string }>(`/organizations/users/${userId}/exercises/${exerciseId}`);
+	},
+
+	async getMember(userId: number): Promise<ApiResponse<any>> {
+		return restClient.get<any>(`/organizations/users/${userId}`);
+	},
+
+	async getExerciseConfig(userId: number, exerciseId: number): Promise<ApiResponse<any>> {
+		return restClient.get<any>(`/organizations/users/${userId}/exercises/${exerciseId}/config`);
+	},
+
+	async updateExerciseConfig(userId: number, exerciseId: number, config: Record<string, any>): Promise<ApiResponse<any>> {
+		return restClient.patch<any>(`/organizations/users/${userId}/exercises/${exerciseId}/config`, { config });
 	}
 };
