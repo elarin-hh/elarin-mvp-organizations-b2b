@@ -8,13 +8,15 @@
 @layer base {
   body {
     font-family: 'Nunito Sans', sans-serif;
+    background-color: var(--color-bg-dark);
+    color: var(--color-text-primary);
   }
 
   /* Global input styles */
   input,
   textarea,
   select {
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
   }
 }
 
@@ -23,7 +25,6 @@
     background: var(--color-glass-dark);
     backdrop-filter: blur(var(--blur-md));
     -webkit-backdrop-filter: blur(var(--blur-md));
-    border: 1px solid var(--color-border-light);
     border-radius: var(--radius-lg);
   }
 
@@ -31,7 +32,6 @@
     background: var(--color-glass-dark);
     backdrop-filter: blur(var(--blur-md));
     -webkit-backdrop-filter: blur(var(--blur-md));
-    border: 1px solid var(--color-border-light);
     border-radius: var(--radius-sm);
     transition: var(--transition-base);
   }
@@ -44,7 +44,6 @@
     background: var(--color-glass-dark);
     backdrop-filter: blur(var(--blur-md));
     -webkit-backdrop-filter: blur(var(--blur-md));
-    border: 1px solid var(--color-border-light);
     border-radius: var(--radius-sm);
     transition: var(--transition-base);
   }
@@ -57,7 +56,7 @@
     background: var(--color-glass-light);
     backdrop-filter: blur(var(--blur-lg));
     -webkit-backdrop-filter: blur(var(--blur-lg));
-    border-radius: 18px;
+    border-radius: var(--radius-xl);
     position: relative;
     overflow: hidden;
   }

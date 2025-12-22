@@ -16,7 +16,6 @@
         X,
     } from "lucide-svelte";
     import type { PageData } from "./$types";
-    import AppHeader from "$lib/components/common/AppHeader.svelte";
     import ExerciseConfigEditor from "$lib/components/organization/ExerciseConfigEditor.svelte";
     import ManageExercisesModal from "$lib/components/organization/ManageExercisesModal.svelte";
     import { organizationsApi } from "$lib/api/organizations.api";
@@ -163,10 +162,8 @@
     }
 </script>
 
-<div class="min-h-screen bg-black pb-20">
-    <AppHeader />
-
-    <main class="container mx-auto px-4 pt-24 max-w-6xl">
+<div class="min-h-screen pb-20">
+    <main class="container mx-auto px-4 pt-20 max-w-6xl">
         <!-- Back & Header -->
         <div class="mb-8">
             <button

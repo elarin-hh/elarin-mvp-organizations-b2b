@@ -1,6 +1,6 @@
 <script lang="ts">
-	import '../app.css';
-	import { ScrollArea } from '$lib/components/common';
+	import "../app.css";
+	import { ScrollArea } from "$lib/components/common";
 
 	let { children } = $props();
 </script>
