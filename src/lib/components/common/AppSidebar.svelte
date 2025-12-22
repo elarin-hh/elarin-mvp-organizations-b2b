@@ -128,16 +128,13 @@
         padding: 1rem;
         display: flex;
         align-items: center;
+        padding-left: 1.25rem;
     }
 
-    .sidebar.collapsed .sidebar-top {
-        justify-content: center;
-        padding: 1rem 0;
-    }
 
     .icon-btn {
-        width: 36px;
-        height: 36px;
+        width: 40px;
+        height: 40px;
         border-radius: var(--radius-md);
         background: transparent;
         border: none;
@@ -180,7 +177,7 @@
         gap: 0.5rem;
         height: 40px;
         padding: 0 0.25rem;
-        margin: 0 0.5rem;
+        margin: 0 1rem;
         color: rgba(255, 255, 255, 0.6);
         background: transparent;
         border: none;
@@ -195,9 +192,9 @@
     }
 
     .sidebar.collapsed .nav-item {
-        justify-content: center;
-        padding: 0;
-        gap: 0;
+        justify-content: flex-start;
+        padding: 0 0.25rem;
+        gap: 0.5rem;
     }
 
     .nav-icon {
