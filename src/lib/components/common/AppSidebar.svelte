@@ -158,14 +158,14 @@
 
     .sidebar-nav {
         flex: 1;
-        padding: 0.5rem 0;
+        padding: 0.5rem 1rem;
         display: flex;
         flex-direction: column;
         gap: 4px;
     }
 
     .sidebar-bottom {
-        padding: 0.5rem 0 1rem 0;
+        padding: 0.5rem 1rem 1rem 1rem;
         display: flex;
         flex-direction: column;
         gap: 4px;
@@ -177,7 +177,9 @@
         gap: 0.5rem;
         height: 40px;
         padding: 0 0.25rem;
-        margin: 0 1rem;
+        margin: 0;
+        width: 100%;
+        box-sizing: border-box;
         color: rgba(255, 255, 255, 0.6);
         background: transparent;
         border: none;
@@ -226,41 +228,13 @@
         flex: 0 0 0;
     }
 
-    .nav-item:hover {
+    .nav-item:hover,
+    .nav-item:focus-visible {
         background: rgba(255, 255, 255, 0.05);
         color: rgba(255, 255, 255, 0.9);
-        border-radius: var(--radius-md);
-    }
-
-    .nav-item:focus-visible {
-        border-radius: var(--radius-md);
-    }
-
-    .sidebar.collapsed .nav-item:hover,
-    .sidebar.collapsed .nav-item:focus-visible {
-        background: transparent;
-    }
-
-    .sidebar.collapsed .nav-item:hover .nav-icon,
-    .sidebar.collapsed .nav-item:focus-visible .nav-icon {
-        background: rgba(255, 255, 255, 0.05);
     }
 
     .nav-item.active {
-        background: color-mix(
-            in srgb,
-            #fff 10%,
-            transparent
-        );
-        color: var(--color-primary-500);
-        border-radius: var(--radius-md);
-    }
-
-    .sidebar.collapsed .nav-item.active {
-        background: transparent;
-    }
-
-    .sidebar.collapsed .nav-item.active .nav-icon {
         background: color-mix(
             in srgb,
             #fff 10%,
@@ -274,11 +248,6 @@
     }
 
     .nav-item.logout:hover {
-        background: rgba(239, 68, 68, 0.1);
-        color: rgba(239, 68, 68, 1);
-    }
-
-    .sidebar.collapsed .nav-item.logout:hover .nav-icon {
         background: rgba(239, 68, 68, 0.1);
         color: rgba(239, 68, 68, 1);
     }
