@@ -183,7 +183,7 @@
                         />
                     {:else}
                         <div
-                            class="w-16 h-16 rounded-full bg-primary-500/15 flex items-center justify-center text-primary-500"
+                            class="w-16 h-16 rounded-full bg-primary-500 flex items-center justify-center text-white"
                         >
                             <span class="text-2xl font-bold"
                                 >{user.users?.full_name
@@ -455,7 +455,7 @@
     .exercise-card.active {
         background: color-mix(
             in srgb,
-            var(--color-primary-500) 12%,
+            var(--color-primary-200) 15%,
             var(--color-bg-dark-secondary)
         );
     }
@@ -464,12 +464,8 @@
         width: 48px;
         height: 48px;
         border-radius: var(--radius-standard);
-        background: color-mix(
-            in srgb,
-            var(--color-primary-500) 18%,
-            transparent
-        );
-        color: var(--color-primary-500);
+        background: var(--color-primary-500);
+        color: #fff;
         font-weight: 700;
         font-size: 1.125rem;
         display: inline-flex;
