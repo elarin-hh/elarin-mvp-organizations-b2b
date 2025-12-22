@@ -126,7 +126,7 @@
 			<!-- Header -->
 			<div class="px-6 py-5 border-b border-white/10 flex items-center justify-between">
 				<div class="flex items-center gap-3">
-					<Dumbbell class="w-6 h-6 text-blue-400" stroke-width={2} />
+					<Dumbbell class="w-6 h-6 text-primary-500" stroke-width={2} />
 					<div>
 						<h2 class="text-xl font-bold text-white">Gerenciar Exercícios</h2>
 						<p class="text-sm text-white/70">{user.users.full_name}</p>
@@ -176,9 +176,10 @@
 									<div class="glass-card p-4 flex items-center justify-between">
 										<div class="flex items-center gap-3">
 											<div
-												class="w-10 h-10 rounded-lg bg-primary-600/20 flex items-center justify-center"
+												class="w-10 h-10 bg-primary-500/20 flex items-center justify-center"
+												style="border-radius: var(--radius-standard);"
 											>
-												<Dumbbell class="w-5 h-5 text-primary-400" stroke-width={2} />
+												<Dumbbell class="w-5 h-5 text-primary-500" stroke-width={2} />
 											</div>
 											<div>
 												<h4 class="text-white font-medium">{exercise.name}</h4>
@@ -200,8 +201,8 @@
 
 					<!-- Available Templates Info -->
 					{#if availableTemplates.length === 0}
-						<div class="glass-card p-4 bg-blue-500/10 border border-blue-500/20">
-							<p class="text-blue-300 text-sm">
+						<div class="glass-card p-4 bg-primary-500/10 border border-primary-500/20">
+							<p class="text-primary-500 text-sm">
 								Todos os exercícios disponíveis já foram atribuídos a este usuário.
 							</p>
 						</div>
@@ -252,9 +253,10 @@
 									class="glass-card p-4 text-left hover:bg-white/10 transition-colors disabled:opacity-50 flex items-center gap-3"
 								>
 									<div
-										class="w-12 h-12 rounded-lg bg-primary-600/20 flex items-center justify-center flex-shrink-0"
+										class="w-12 h-12 bg-primary-500/20 flex items-center justify-center flex-shrink-0"
+										style="border-radius: var(--radius-standard);"
 									>
-										<Dumbbell class="w-6 h-6 text-primary-400" stroke-width={2} />
+										<Dumbbell class="w-6 h-6 text-primary-500" stroke-width={2} />
 									</div>
 									<div class="flex-1 min-w-0">
 										<h4 class="text-white font-medium truncate">{template.name}</h4>
@@ -264,7 +266,7 @@
 											</p>
 										{/if}
 									</div>
-									<Plus class="w-5 h-5 text-primary-400 flex-shrink-0" stroke-width={2} />
+									<Plus class="w-5 h-5 text-primary-500 flex-shrink-0" stroke-width={2} />
 								</button>
 							{/each}
 						</div>

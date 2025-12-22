@@ -65,7 +65,7 @@
 	}
 </script>
 
-<div class="glass-card">
+<div class="">
 	<div class="py-5">
 		<div class="flex items-center justify-between mb-4">
 			<div class="flex items-center">
@@ -85,7 +85,7 @@
 				bind:value={searchTerm}
 				placeholder="Buscar por nome ou email..."
 				class="w-full pl-10 pr-4 py-2 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500"
-				style="border-radius: var(--radius-full); background: var(--color-bg-dark-secondary);"
+				style="border-radius: var(--radius-standard); background: var(--color-bg-dark-secondary);"
 			/>
 		</div>
 	</div>
@@ -116,7 +116,7 @@
 	{:else}
 		<div
 			class="overflow-hidden overflow-x-auto"
-			style="border-radius: var(--radius-xl); background: var(--color-bg-dark-secondary);"
+			style="border-radius: var(--radius-standard); background: var(--color-bg-dark-secondary);"
 		>
 			<table class="w-full border-collapse">
 				<thead class="">
@@ -164,7 +164,7 @@
 										/>
 									{:else}
 										<div
-											class="h-10 w-10 rounded-full bg-primary-600 flex items-center justify-center"
+											class="h-10 w-10 rounded-full bg-primary-500 flex items-center justify-center"
 										>
 											<span
 												class="text-white font-medium"
@@ -277,10 +277,10 @@
 	}
 
 	.status-badge--active {
-		color: var(--color-success-cotton);
+		color: var(--color-primary-500);
 		background-color: color-mix(
 			in srgb,
-			var(--color-success-cotton) 16%,
+			var(--color-primary-500) 16%,
 			transparent
 		);
 	}

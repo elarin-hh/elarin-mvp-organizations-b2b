@@ -68,7 +68,7 @@
         </h3>
         <button
             on:click={resetDefaults}
-            class="text-xs text-primary-400 hover:text-white flex items-center gap-1 transition-colors bg-white/5 hover:bg-white/10 px-2 py-1 rounded"
+            class="text-xs text-primary-500 hover:text-white flex items-center gap-1 transition-colors bg-white/5 hover:bg-white/10 px-2 py-1 rounded"
             title="Restaurar padrões"
         >
             <RefreshCw size={12} /> Restaurar Padrões
@@ -77,7 +77,8 @@
 
     {#if error}
         <div
-            class="mb-4 p-4 bg-red-400/10 border border-red-400/20 text-red-400 rounded-lg flex items-center gap-2"
+            class="mb-4 p-4 bg-red-400/10 text-red-400 flex items-center gap-2"
+            style="border-radius: var(--radius-standard);"
             transition:slide
         >
             <AlertCircle size={20} />
@@ -87,7 +88,8 @@
 
     {#if success}
         <div
-            class="mb-4 p-4 bg-green-400/10 border border-green-400/20 text-green-400 rounded-lg flex items-center gap-2"
+            class="mb-4 p-4 bg-primary-500/10 text-primary-500 flex items-center gap-2"
+            style="border-radius: var(--radius-standard);"
             transition:slide
         >
             <Save size={20} />
@@ -100,7 +102,7 @@
         {#if template.default_config?.heuristicConfig}
             <section>
                 <h4
-                    class="text-xs uppercase tracking-wider text-white/50 font-semibold mb-4 border-b border-white/10 pb-2"
+                    class="text-xs uppercase tracking-wider text-white/50 font-semibold mb-4 pb-2"
                 >
                     Parâmetros Biomecânicos
                 </h4>
@@ -118,7 +120,8 @@
                                     bind:value={
                                         editedConfig.heuristicConfig[key]
                                     }
-                                    class="w-full px-4 py-2.5 bg-black/20 border border-white/10 rounded-lg focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50 text-white placeholder-white/30 transition-all font-mono"
+                                    class="w-full px-4 py-2.5 text-white placeholder-white/30 transition-all font-mono focus:ring-2 focus:ring-primary-500/50"
+                                    style="background: var(--color-bg-dark-secondary); border-radius: var(--radius-standard);"
                                 />
                                 <div
                                     class="absolute right-3 top-3 text-xs text-white/30 pointer-events-none"
@@ -136,14 +139,15 @@
         {#if editedConfig.metrics && editedConfig.metrics.length > 0}
             <section>
                 <h4
-                    class="text-xs uppercase tracking-wider text-white/50 font-semibold mb-4 border-b border-white/10 pb-2"
+                    class="text-xs uppercase tracking-wider text-white/50 font-semibold mb-4 pb-2"
                 >
                     Metas e Métricas
                 </h4>
                 <div class="space-y-4">
                     {#each editedConfig.metrics as metric}
                         <div
-                            class="bg-white/5 p-4 rounded-lg flex items-center justify-between border border-white/5 hover:border-white/10 transition-colors"
+                            class="p-4 flex items-center justify-between transition-colors hover:bg-white/5"
+                            style="background: var(--color-bg-dark-secondary); border-radius: var(--radius-standard);"
                         >
                             <div>
                                 <span class="font-medium text-white"
@@ -157,7 +161,8 @@
                                 <input
                                     type="number"
                                     bind:value={metric.target}
-                                    class="w-full px-3 py-1.5 bg-black/20 border border-white/10 rounded md:text-right font-mono text-white focus:ring-primary-500/50 focus:border-primary-500/50"
+                                    class="w-full px-3 py-1.5 md:text-right font-mono text-white focus:ring-2 focus:ring-primary-500/50"
+                                    style="background: var(--color-bg-dark-secondary); border-radius: var(--radius-standard);"
                                 />
                             </div>
                         </div>
@@ -179,17 +184,19 @@
                     >
                 </h4>
                 <pre
-                    class="bg-black/30 p-4 rounded-lg text-xs overflow-x-auto border border-white/5 text-white/60 font-mono">
+                    class="p-4 text-xs overflow-x-auto text-white/60 font-mono"
+                    style="background: var(--color-bg-dark-secondary); border-radius: var(--radius-standard);">
 {JSON.stringify(template.fixed_config, null, 2)}
 				</pre>
             </section>
         {/if}
 
-        <div class="pt-6 border-t border-white/10 flex justify-end">
+        <div class="pt-6 flex justify-end">
             <button
                 on:click={handleSubmit}
                 disabled={isLoading}
-                class="bg-primary-600 hover:bg-primary-500 text-white px-6 py-2.5 rounded-lg shadow-lg shadow-primary-900/20 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed font-bold"
+                class="bg-primary-500 hover:bg-primary-500 text-white px-6 py-2.5 shadow-lg shadow-primary-500/20 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed font-bold"
+                style="border-radius: var(--radius-standard);"
             >
                 {#if isLoading}
                     <div

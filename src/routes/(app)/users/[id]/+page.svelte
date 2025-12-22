@@ -1,19 +1,16 @@
 <script lang="ts">
     import { page } from "$app/stores";
     import { goto } from "$app/navigation";
-    import { fade, slide } from "svelte/transition";
+    import { slide } from "svelte/transition";
     import {
         ArrowLeft,
-        User,
         Activity,
         Calendar,
         Ruler,
         Weight,
         Trash2,
         Shield,
-        Settings,
         Dumbbell,
-        X,
     } from "lucide-svelte";
     import type { PageData } from "./$types";
     import ExerciseConfigEditor from "$lib/components/organization/ExerciseConfigEditor.svelte";
@@ -168,27 +165,27 @@
         <div class="mb-8">
             <button
                 on:click={() => goto("/users")}
-                class="flex items-center text-white/50 hover:text-white mb-4 transition-colors"
+                class="flex items-center text-white/50 mb-4 transition-colors"
             >
                 <ArrowLeft size={20} class="mr-2" />
-                Voltar para Usuários
+                Voltar
             </button>
 
             <div
-                class="glass-card p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
+                class="user-card p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
             >
-                <div class="flex items-center gap-6">
+                <div class="flex items-center gap-4">
                     {#if user.users?.avatar_url}
                         <img
                             src={user.users.avatar_url}
                             alt={user.users.full_name}
-                            class="w-20 h-20 rounded-full object-cover border-2 border-primary-500 shadow-lg shadow-primary-500/20"
+                            class="w-16 h-16 rounded-full object-cover"
                         />
                     {:else}
                         <div
-                            class="w-20 h-20 rounded-full bg-primary-600/20 flex items-center justify-center text-primary-400 border-2 border-primary-500/50 shadow-lg shadow-primary-500/10"
+                            class="w-16 h-16 rounded-full bg-primary-500/15 flex items-center justify-center text-primary-500"
                         >
-                            <span class="text-3xl font-bold"
+                            <span class="text-2xl font-bold"
                                 >{user.users?.full_name
                                     ?.charAt(0)
                                     .toUpperCase()}</span
@@ -197,7 +194,7 @@
                     {/if}
                     <div>
                         <h1
-                            class="text-3xl font-bold text-white tracking-tight"
+                            class="text-2xl font-bold text-white tracking-tight"
                         >
                             {user.users?.full_name || "Usuário sem nome"}
                         </h1>
@@ -209,12 +206,12 @@
                             ></span>
                             <span
                                 class="flex items-center gap-1.5 {user.is_active
-                                    ? 'text-green-400'
+                                    ? 'text-primary-500'
                                     : 'text-red-400'}"
                             >
                                 <span
                                     class="w-2 h-2 rounded-full {user.is_active
-                                        ? 'bg-green-400'
+                                        ? 'bg-primary-500'
                                         : 'bg-red-400'}"
                                 ></span>
                                 {user.is_active ? "Ativo" : "Inativo"}
@@ -226,7 +223,12 @@
                 <div class="flex gap-3">
                     <button
                         on:click={handleToggleStatus}
-                        class="glass-button-secondary px-4 py-2 text-white/80 hover:text-white flex items-center gap-2 text-sm font-medium"
+                        class="user-action-btn px-4 py-2 flex items-center gap-2 text-sm font-medium"
+                        style={`border-radius: var(--radius-md); ${
+                            user.is_active
+                                ? "color: rgba(255, 255, 255, 0.8);"
+                                : "color: var(--color-primary-500);"
+                        }`}
                         title={user.is_active
                             ? "Desativar usuário"
                             : "Ativar usuário"}
@@ -239,7 +241,8 @@
                     </button>
                     <button
                         on:click={handleRemoveUser}
-                        class="glass-button-secondary px-4 py-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 flex items-center gap-2 text-sm font-medium"
+                        class="user-action-btn px-4 py-2 text-red-400 hover:text-red-300 flex items-center gap-2 text-sm font-medium"
+                        style="border-radius: var(--radius-md);"
                     >
                         <Trash2 size={16} /> Remover
                     </button>
@@ -247,19 +250,18 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Sidebar: Profile Stats -->
-            <div class="lg:col-span-1 space-y-6">
-                <div class="glass-card p-6">
+            <div class="lg:col-span-1 space-y-4">
+                <div class="user-card p-5">
                     <h3
-                        class="text-lg font-bold text-white mb-6 flex items-center gap-2"
+                        class="text-sm font-semibold uppercase text-white/70 tracking-wide mb-5"
                     >
-                        <Activity class="w-5 h-5 text-primary-400" />
                         Perfil Biométrico
                     </h3>
                     <div class="space-y-4">
                         <div
-                            class="flex justify-between items-center py-3 border-b border-white/5"
+                            class="flex justify-between items-center py-3"
                         >
                             <div class="flex items-center gap-3 text-white/50">
                                 <Calendar size={18} />
@@ -270,7 +272,7 @@
                             >
                         </div>
                         <div
-                            class="flex justify-between items-center py-3 border-b border-white/5"
+                            class="flex justify-between items-center py-3"
                         >
                             <div class="flex items-center gap-3 text-white/50">
                                 <Ruler size={18} />
@@ -281,7 +283,7 @@
                             >
                         </div>
                         <div
-                            class="flex justify-between items-center py-3 border-b border-white/5"
+                            class="flex justify-between items-center py-3"
                         >
                             <div class="flex items-center gap-3 text-white/50">
                                 <Weight size={18} />
@@ -297,7 +299,8 @@
                                 <span>Função</span>
                             </div>
                             <span
-                                class="bg-primary-500/20 text-primary-300 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border border-primary-500/20"
+                                class="bg-primary-500/15 text-primary-500 px-3 py-1 text-xs font-bold uppercase tracking-wide"
+                                style="border-radius: var(--radius-md);"
                             >
                                 {user.role}
                             </span>
@@ -307,17 +310,17 @@
             </div>
 
             <!-- Main Content: Exercises -->
-            <div class="lg:col-span-2 space-y-6">
+            <div class="lg:col-span-2 space-y-4">
                 <div class="flex justify-between items-center">
                     <h3
                         class="text-xl font-bold text-white flex items-center gap-3"
                     >
-                        <Dumbbell class="w-6 h-6 text-primary-400" />
                         Planos de Exercício
                     </h3>
                     <button
                         on:click={() => (showAssignModal = true)}
-                        class="glass-button px-4 py-2 text-sm font-bold flex items-center gap-2 hover:bg-white/10"
+                        class="user-action-btn px-4 py-2 text-sm font-medium flex items-center gap-2 text-primary-500"
+                        style="border-radius: var(--radius-md);"
                     >
                         + Adicionar Exercício
                     </button>
@@ -325,18 +328,18 @@
 
                 <div class="space-y-4">
                     {#if exercises.length === 0}
-                        <div class="glass-card p-16 text-center">
+                        <div class="user-card p-10 text-center">
                             <div
-                                class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/5 mb-4 text-white/20"
+                                class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white/5 mb-4 text-white/30"
                             >
-                                <Activity size={32} />
+                                <Activity size={24} />
                             </div>
                             <p class="text-white/50 text-lg">
                                 Nenhum exercício atribuído para este usuário.
                             </p>
                             <button
                                 on:click={() => (showAssignModal = true)}
-                                class="mt-4 text-primary-400 hover:text-primary-300 font-medium text-sm"
+                                class="mt-4 text-primary-500 font-medium text-sm"
                             >
                                 Clique para adicionar o primeiro exercício
                             </button>
@@ -344,30 +347,28 @@
                     {:else}
                         {#each exercises as exercise}
                             <div
-                                class="glass-card overflow-hidden transition-all duration-300 {selectedExerciseId ===
-                                exercise.id
-                                    ? 'ring-2 ring-primary-500/50 bg-white/10'
-                                    : 'hover:bg-white/5'}"
+                                class="user-card exercise-card overflow-hidden"
+                                class:active={selectedExerciseId === exercise.id}
                             >
                                 <div
-                                    class="p-5 flex items-center justify-between cursor-pointer group"
+                                    class="p-4 flex items-center justify-between cursor-pointer"
                                     on:click={() =>
                                         handleSelectExercise(exercise)}
                                 >
-                                    <div class="flex items-center gap-5">
+                                    <div class="flex items-center gap-4">
                                         <div
-                                            class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-500/20 to-purple-500/20 flex items-center justify-center text-white font-bold text-lg border border-white/10 group-hover:scale-110 transition-transform duration-300"
+                                            class="exercise-initial"
                                         >
                                             {exercise.name.charAt(0)}
                                         </div>
                                         <div>
                                             <h4
-                                                class="font-bold text-white group-hover:text-primary-300 transition-colors text-lg"
+                                                class="font-semibold text-white text-base"
                                             >
                                                 {exercise.name}
                                             </h4>
                                             <p
-                                                class="text-xs text-white/40 mt-1"
+                                                class="text-xs text-white/50 mt-1"
                                             >
                                                 Atribuído em {new Date(
                                                     exercise.created_at,
@@ -377,10 +378,10 @@
                                     </div>
                                     <div class="flex items-center gap-3">
                                         <span
-                                            class="text-xs font-medium px-3 py-1 rounded-full {selectedExerciseId ===
+                                            class="exercise-pill {selectedExerciseId ===
                                             exercise.id
-                                                ? 'bg-white/20 text-white'
-                                                : 'bg-transparent text-white/30 border border-white/10 group-hover:border-white/30'} transition-all"
+                                                ? 'exercise-pill--active'
+                                                : 'exercise-pill--idle'}"
                                         >
                                             {selectedExerciseId === exercise.id
                                                 ? "Editando"
@@ -391,7 +392,8 @@
                                                 handleRemoveExercise(
                                                     exercise.id,
                                                 )}
-                                            class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-red-500/20 text-white/30 hover:text-red-400 transition-colors"
+                                            class="w-8 h-8 flex items-center justify-center hover:bg-red-500/10 text-white/40 hover:text-red-400 transition-colors"
+                                            style="border-radius: var(--radius-md);"
                                             title="Remover exercício"
                                         >
                                             <Trash2 size={16} />
@@ -401,7 +403,7 @@
 
                                 {#if selectedExerciseId === exercise.id}
                                     <div
-                                        class="border-t border-white/10 p-6 bg-black/20"
+                                        class="config-panel p-5"
                                         transition:slide
                                     >
                                         {#if isLoadingConfig}
@@ -451,3 +453,79 @@
         />
     {/if}
 </div>
+
+<style>
+    .user-card {
+        border-radius: var(--radius-standard);
+        background: var(--color-bg-dark-secondary);
+    }
+
+    .exercise-card {
+        transition: background-color var(--transition-base);
+    }
+
+    .exercise-card.active {
+        background: color-mix(
+            in srgb,
+            var(--color-primary-500) 12%,
+            var(--color-bg-dark-secondary)
+        );
+    }
+
+    .exercise-initial {
+        width: 48px;
+        height: 48px;
+        border-radius: var(--radius-standard);
+        background: color-mix(
+            in srgb,
+            var(--color-primary-500) 18%,
+            transparent
+        );
+        color: var(--color-primary-500);
+        font-weight: 700;
+        font-size: 1.125rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .exercise-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        border-radius: var(--radius-md);
+    }
+
+    .exercise-pill--active {
+        color: var(--color-primary-500);
+        background: color-mix(
+            in srgb,
+            var(--color-primary-500) 14%,
+            transparent
+        );
+    }
+
+    .exercise-pill--idle {
+        color: rgba(255, 255, 255, 0.5);
+        background: rgba(255, 255, 255, 0.06);
+    }
+
+    .config-panel {
+        background: var(--color-bg-dark-secondary);
+    }
+
+    .user-action-btn {
+        background: transparent;
+        border: none;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        transition: color var(--transition-base),
+            background-color var(--transition-base);
+    }
+
+    .user-action-btn:hover {
+        background: transparent;
+    }
+</style>

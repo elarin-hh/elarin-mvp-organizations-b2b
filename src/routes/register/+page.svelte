@@ -155,7 +155,7 @@
 		{#if error || formError}
 			<div
 				class="bg-red-500/10 text-red-200 px-4 py-3 text-sm text-center"
-				style="border-radius: var(--radius-xl);"
+				style="border-radius: var(--radius-standard);"
 			>
 				{error || formError}
 			</div>
@@ -171,7 +171,7 @@
 						required
 						placeholder="Nome da Organização"
 						class="w-full px-6 py-3 bg-white/5 text-white placeholder-white/50 focus:outline-none focus:bg-white/10 transition-colors"
-						style="border-radius: var(--radius-xl);"
+						style="border-radius: var(--radius-standard);"
 					/>
 
 					<input
@@ -180,7 +180,7 @@
 						required
 						placeholder="CNPJ / Tax ID"
 						class="w-full px-6 py-3 bg-white/5 text-white placeholder-white/50 focus:outline-none focus:bg-white/10 transition-colors"
-						style="border-radius: var(--radius-xl);"
+						style="border-radius: var(--radius-standard);"
 					/>
 				</div>
 
@@ -190,7 +190,7 @@
 					required
 					placeholder="Nome do Responsável"
 					class="w-full px-6 py-3 bg-white/5 text-white placeholder-white/50 focus:outline-none focus:bg-white/10 transition-colors"
-					style="border-radius: var(--radius-xl);"
+					style="border-radius: var(--radius-standard);"
 				/>
 
 				<input
@@ -199,7 +199,7 @@
 					required
 					placeholder="E-mail"
 					class="w-full px-6 py-3 bg-white/5 text-white placeholder-white/50 focus:outline-none focus:bg-white/10 transition-colors"
-					style="border-radius: var(--radius-xl);"
+					style="border-radius: var(--radius-standard);"
 				/>
 
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -209,7 +209,7 @@
 						required
 						placeholder="Senha"
 						class="w-full px-6 py-3 bg-white/5 text-white placeholder-white/50 focus:outline-none focus:bg-white/10 transition-colors"
-						style="border-radius: var(--radius-xl);"
+						style="border-radius: var(--radius-standard);"
 					/>
 
 					<input
@@ -218,7 +218,7 @@
 						required
 						placeholder="Confirmar Senha"
 						class="w-full px-6 py-3 bg-white/5 text-white placeholder-white/50 focus:outline-none focus:bg-white/10 transition-colors"
-						style="border-radius: var(--radius-xl);"
+						style="border-radius: var(--radius-standard);"
 					/>
 				</div>
 
@@ -228,7 +228,7 @@
 					required
 					placeholder="Telefone"
 					class="w-full px-6 py-3 bg-white/5 text-white placeholder-white/50 focus:outline-none focus:bg-white/10 transition-colors"
-					style="border-radius: var(--radius-xl);"
+					style="border-radius: var(--radius-standard);"
 				/>
 
 				<input
@@ -237,7 +237,7 @@
 					required
 					placeholder="Endereço Completo"
 					class="w-full px-6 py-3 bg-white/5 text-white placeholder-white/50 focus:outline-none focus:bg-white/10 transition-colors"
-					style="border-radius: var(--radius-xl);"
+					style="border-radius: var(--radius-standard);"
 				/>
 
 				<button
@@ -311,7 +311,7 @@
 		background: var(--color-glass-light);
 		backdrop-filter: blur(30px);
 		-webkit-backdrop-filter: blur(30px);
-		border-radius: var(--radius-xl);
+		border-radius: var(--radius-standard);
 		position: relative;
 		overflow: hidden;
 	}

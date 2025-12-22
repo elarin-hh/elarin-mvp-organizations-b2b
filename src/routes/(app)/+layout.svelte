@@ -7,7 +7,7 @@
 
 <div
     class="app-shell"
-    style="--sidebar-width: {$sidebarCollapsed ? '64px' : '240px'}"
+    style="--sidebar-width: {$sidebarCollapsed ? '64px' : '260px'}"
 >
     <AppSidebar />
 
@@ -36,7 +36,7 @@
         width: calc(100% - var(--sidebar-width));
         display: flex;
         align-items: center;
-        padding: 0 1.5rem;
+        padding: 0 0.5rem;
         background: var(--color-bg-dark);
         z-index: 900;
         transition: left 0.2s ease, width 0.2s ease;

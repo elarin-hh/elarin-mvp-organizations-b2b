@@ -42,7 +42,7 @@
 		{#if error}
 			<div
 				class="bg-red-500/10 text-red-200 px-4 py-3 text-sm text-center"
-				style="border-radius: var(--radius-xl);"
+				style="border-radius: var(--radius-standard);"
 			>
 				{error}
 			</div>
@@ -54,7 +54,7 @@
 			required
 			placeholder="E-mail da organização"
 			class="w-full px-6 py-3 bg-white/5 text-white placeholder-white/50 focus:outline-none focus:bg-white/10 transition-colors"
-			style="border-radius: var(--radius-xl);"
+			style="border-radius: var(--radius-standard);"
 		/>
 
 		<input
@@ -63,7 +63,7 @@
 			required
 			placeholder="Senha"
 			class="w-full px-6 py-3 bg-white/5 text-white placeholder-white/50 focus:outline-none focus:bg-white/10 transition-colors"
-			style="border-radius: var(--radius-xl);"
+			style="border-radius: var(--radius-standard);"
 		/>
 
 		<button
@@ -97,7 +97,7 @@
 		background: var(--color-glass-light);
 		backdrop-filter: blur(30px);
 		-webkit-backdrop-filter: blur(30px);
-		border-radius: var(--radius-xl);
+		border-radius: var(--radius-standard);
 		position: relative;
 		overflow: hidden;
 	}

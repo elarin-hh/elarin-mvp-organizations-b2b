@@ -7,16 +7,16 @@
    /* ========================================
      PRIMARY COLORS (Lime Green - Marca Elarin)
      ======================================== */
-   --color-primary-50: #f7fce8;
-   --color-primary-100: #edf8c8;
-   --color-primary-200: #ddf293;
-   --color-primary-300: #c7e75e;
-   --color-primary-400: #afd635;
-   --color-primary-500: #8eb428;
-   --color-primary-600: #7a9922;
-   --color-primary-700: #6d9120;
-   --color-primary-800: #5a771a;
-   --color-primary-900: #4a6116;
+   --color-primary-50: #f1f9e7;
+   --color-primary-100: #e3f4cf;
+   --color-primary-200: #c7e8a0;
+   --color-primary-300: #bae388;
+   --color-primary-400: #a5da64;
+   --color-primary-500: #74c611;
+   --color-primary-600: #68b20f;
+   --color-primary-700: #5d9e0e;
+   --color-primary-800: #518b0c;
+   --color-primary-900: #406d09;
 
    /* ========================================
      SEMANTIC COLORS
@@ -73,11 +73,16 @@
      GLASS MORPHISM
      ======================================== */
 
+   --glass-bg: rgba(0, 0, 0, 0.4);
+   --glass-border: rgba(255, 255, 255, 0.18);
+   --glass-backdrop: blur(15px) saturate(75%);
+   --glass-shadow: 0 16px 50px rgba(0, 0, 0, 0.35);
+
    /* Dark Glass */
-   --color-glass-dark: rgba(18, 18, 18, 0.55);
+   --color-glass-dark: var(--glass-bg);
    --color-glass-dark-strong: rgba(18, 18, 18, 0.75);
    --color-glass-dark-weak: rgba(18, 18, 18, 0.35);
-   --color-glass-dark-hover: rgba(18, 18, 18, 0.65);
+   --color-glass-dark-hover: rgba(18, 18, 18, 0.75);
 
    /* Light Glass */
    --color-glass-light: rgba(255, 255, 255, 0.1);
@@ -111,13 +116,6 @@
    --color-logout: #ef4444;
 
    /* ========================================
-     SKELETON/POSE COLORS
-     ======================================== */
-   --color-skeleton-correct: var(--color-success-light);
-   --color-skeleton-incorrect: var(--color-error);
-   --color-skeleton-neutral: #00bfff;
-
-   /* ========================================
      SHADOW & EFFECTS
      ======================================== */
    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -145,10 +143,11 @@
      BORDER RADIUS
      ======================================== */
    --radius-xs: 2px;
-   --radius-sm: 12px;
-   --radius-md: 16px;
-   --radius-lg: 20px;
-   --radius-xl: 24px;
+   --radius-sm: 8px;
+   --radius-md: 12px;
+   --radius-standard: 20px;
+   --radius-lg: 24px;
+   --radius-xl: 32px;
    --radius-2xl: 28px;
    --radius-full: 9999px;
 

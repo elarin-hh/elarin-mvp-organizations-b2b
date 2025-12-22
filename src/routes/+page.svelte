@@ -15,5 +15,5 @@
 </script>
 
 <div class="min-h-screen bg-black flex items-center justify-center">
-	<div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+	<div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
 </div>

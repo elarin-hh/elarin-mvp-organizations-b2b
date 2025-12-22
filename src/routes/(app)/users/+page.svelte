@@ -65,17 +65,6 @@
 <div class="min-h-full">
 	<!-- Main Content -->
 	<main class="w-full min-h-full px-6 pb-8 pt-8">
-		{#if organization}
-			<div class="mb-8">
-				<h2 class="text-3xl font-bold text-white mb-2">
-					Gestão de Usuários
-				</h2>
-				<p class="text-white/70">
-					Gerenciar todos os usuários da organização
-				</p>
-			</div>
-		{/if}
-
 		{#if isLoading}
 			<Loading message="Carregando usuários..." />
 		{:else}
@@ -83,7 +72,11 @@
 			<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
 				<StatsCard title="Total de Usuários" value={stats.total_users}>
 					{#snippet icon()}
-						<Users class="w-6 h-6 text-blue-400" stroke-width={2} />
+						<Users
+							class="w-6 h-6"
+							stroke-width={2}
+							style="color: var(--color-primary-500);"
+						/>
 					{/snippet}
 				</StatsCard>
 				<StatsCard
@@ -93,8 +86,9 @@
 				>
 					{#snippet icon()}
 						<UserCheck
-							class="w-6 h-6 text-green-400"
+							class="w-6 h-6"
 							stroke-width={2}
+							style="color: var(--color-primary-500);"
 						/>
 					{/snippet}
 				</StatsCard>
@@ -104,7 +98,11 @@
 					variant="muted"
 				>
 					{#snippet icon()}
-						<UserX class="w-6 h-6 text-gray-400" stroke-width={2} />
+						<UserX
+							class="w-6 h-6"
+							stroke-width={2}
+							style="color: var(--color-gray-300);"
+						/>
 					{/snippet}
 				</StatsCard>
 			</div>

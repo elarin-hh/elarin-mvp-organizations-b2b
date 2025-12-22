@@ -90,6 +90,6 @@
     background: rgba(18, 18, 18, 0.95);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-standard);
   }
 </style>

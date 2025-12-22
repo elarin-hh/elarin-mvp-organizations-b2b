@@ -21,6 +21,9 @@
   };
 </script>
 
-<div class="bg-white rounded-lg shadow-md {paddingClasses[padding]} {className}">
+<div
+  class="bg-white shadow-md {paddingClasses[padding]} {className}"
+  style="border-radius: var(--radius-standard);"
+>
   {@render children?.()}
 </div>

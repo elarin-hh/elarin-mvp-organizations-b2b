@@ -58,10 +58,10 @@
             onclick={() => navigateTo("/dashboard")}
             title="Dashboard"
         >
-            <Home class="w-5 h-5" />
-            {#if !$sidebarCollapsed}
-                <span>Dashboard</span>
-            {/if}
+            <span class="nav-icon">
+                <Home class="w-5 h-5" />
+            </span>
+            <span class="nav-label">Dashboard</span>
         </button>
 
         <button
@@ -71,10 +71,10 @@
             onclick={() => navigateTo("/users")}
             title="Usuários"
         >
-            <Users class="w-5 h-5" />
-            {#if !$sidebarCollapsed}
-                <span>Usuários</span>
-            {/if}
+            <span class="nav-icon">
+                <Users class="w-5 h-5" />
+            </span>
+            <span class="nav-label">Usuários</span>
         </button>
     </nav>
 
@@ -86,10 +86,10 @@
             onclick={handleSettings}
             title="Configurações"
         >
-            <Settings class="w-5 h-5" />
-            {#if !$sidebarCollapsed}
-                <span>Configurações</span>
-            {/if}
+            <span class="nav-icon">
+                <Settings class="w-5 h-5" />
+            </span>
+            <span class="nav-label">Configurações</span>
         </button>
 
         <button
@@ -98,10 +98,10 @@
             onclick={handleLogout}
             title="Sair"
         >
-            <LogOut class="w-5 h-5" />
-            {#if !$sidebarCollapsed}
-                <span>Sair</span>
-            {/if}
+            <span class="nav-icon">
+                <LogOut class="w-5 h-5" />
+            </span>
+            <span class="nav-label">Sair</span>
         </button>
     </div>
 </aside>
@@ -112,7 +112,7 @@
         left: 0;
         top: 0;
         bottom: 0;
-        width: var(--sidebar-width, 240px);
+        width: var(--sidebar-width, 260px);
         background: var(--color-bg-dark-secondary);
         display: flex;
         flex-direction: column;
@@ -133,7 +133,7 @@
     .icon-btn {
         width: 36px;
         height: 36px;
-        border-radius: var(--radius-sm);
+        border-radius: var(--radius-md);
         background: transparent;
         border: none;
         display: flex;
@@ -147,11 +147,11 @@
     .icon-btn:hover {
         background: rgba(255, 255, 255, 0.05);
         color: rgba(255, 255, 255, 0.9);
-        border-radius: var(--radius-full);
+        border-radius: var(--radius-md);
     }
 
     .icon-btn:focus-visible {
-        border-radius: var(--radius-full);
+        border-radius: var(--radius-md);
     }
 
     .sidebar-nav {
@@ -172,40 +172,99 @@
     .nav-item {
         display: flex;
         align-items: center;
-        gap: 0.75rem;
-        padding: 0.625rem 1rem;
+        gap: 0.5rem;
+        height: 40px;
+        padding: 0 0.25rem;
         margin: 0 0.5rem;
         color: rgba(255, 255, 255, 0.6);
         background: transparent;
         border: none;
-        border-radius: var(--radius-sm);
+        border-radius: var(--radius-md);
         cursor: pointer;
         font-size: 0.875rem;
         font-weight: 400;
-        transition: all 0.15s ease;
+        transition: background-color 0.15s ease, color 0.15s ease;
         text-align: left;
         white-space: nowrap;
+        overflow: hidden;
     }
 
     .sidebar.collapsed .nav-item {
         justify-content: center;
-        padding: 0.625rem;
+        padding: 0;
+        gap: 0;
+    }
+
+    .nav-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        flex: 0 0 40px;
+        border-radius: var(--radius-md);
+        transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    .nav-label {
+        display: inline-block;
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        transition: opacity 0.15s ease;
+    }
+
+    .sidebar.collapsed .nav-label {
+        opacity: 0;
+        pointer-events: none;
+        width: 0;
+        max-width: 0;
+        flex: 0 0 0;
     }
 
     .nav-item:hover {
         background: rgba(255, 255, 255, 0.05);
         color: rgba(255, 255, 255, 0.9);
-        border-radius: var(--radius-full);
+        border-radius: var(--radius-md);
     }
 
     .nav-item:focus-visible {
-        border-radius: var(--radius-full);
+        border-radius: var(--radius-md);
+    }
+
+    .sidebar.collapsed .nav-item:hover,
+    .sidebar.collapsed .nav-item:focus-visible {
+        background: transparent;
+    }
+
+    .sidebar.collapsed .nav-item:hover .nav-icon,
+    .sidebar.collapsed .nav-item:focus-visible .nav-icon {
+        background: rgba(255, 255, 255, 0.05);
     }
 
     .nav-item.active {
-        background: rgba(142, 180, 40, 0.15);
-        color: var(--color-primary-400);
-        border-radius: var(--radius-full);
+        background: color-mix(
+            in srgb,
+            var(--color-primary-500) 100%,
+            transparent
+        );
+        color: #ffffff;
+        border-radius: var(--radius-md);
+    }
+
+    .sidebar.collapsed .nav-item.active {
+        background: transparent;
+    }
+
+    .sidebar.collapsed .nav-item.active .nav-icon {
+        background: color-mix(
+            in srgb,
+            var(--color-primary-500) 100%,
+            transparent
+        );
+        color: #fff;
     }
 
     .nav-item.logout {
@@ -213,6 +272,11 @@
     }
 
     .nav-item.logout:hover {
+        background: rgba(239, 68, 68, 0.1);
+        color: rgba(239, 68, 68, 1);
+    }
+
+    .sidebar.collapsed .nav-item.logout:hover .nav-icon {
         background: rgba(239, 68, 68, 0.1);
         color: rgba(239, 68, 68, 1);
     }

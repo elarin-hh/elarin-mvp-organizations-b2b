@@ -48,12 +48,12 @@
 	onclick={onSelect}
 	class="plan-card w-full p-6 text-left transition-all"
 	class:selected
-	style="border-radius: 18px; border-width: 2px;"
+	style="border-radius: var(--radius-standard); border-width: 2px;"
 >
 	<div class="flex justify-between items-start mb-4">
 		<div>
 			<h3 class="text-xl font-bold text-white mb-1">{plan.name}</h3>
-			<p class="text-2xl font-bold" class:text-primary-400={selected} class:text-white={!selected}>
+			<p class="text-2xl font-bold" class:text-primary-500={selected} class:text-white={!selected}>
 				{priceFormatted()}
 			</p>
 			{#if plan.price_cents > 0}
@@ -62,7 +62,7 @@
 		</div>
 		<div class="select-indicator" class:selected>
 			{#if selected}
-				<svg class="w-6 h-6 text-primary-400" fill="currentColor" viewBox="0 0 20 20">
+				<svg class="w-6 h-6 text-primary-500" fill="currentColor" viewBox="0 0 20 20">
 					<path
 						fill-rule="evenodd"
 						d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -82,7 +82,7 @@
 	<div class="space-y-2">
 		{#each features() as feature}
 			<div class="flex items-start gap-2">
-				<svg class="w-5 h-5 text-primary-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+				<svg class="w-5 h-5 text-primary-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
 					<path
 						fill-rule="evenodd"
 						d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -110,8 +110,8 @@
 	}
 
 	.plan-card.selected {
-		border-color: rgb(56, 189, 248);
-		background: rgba(56, 189, 248, 0.1);
+		border-color: var(--color-primary-500);
+		background: color-mix(in srgb, var(--color-primary-500) 12%, transparent);
 	}
 
 	.select-indicator {
@@ -125,7 +125,7 @@
 	}
 
 	.select-indicator.selected {
-		border-color: rgb(56, 189, 248);
-		background: rgba(56, 189, 248, 0.2);
+		border-color: var(--color-primary-500);
+		background: color-mix(in srgb, var(--color-primary-500) 20%, transparent);
 	}
 </style>

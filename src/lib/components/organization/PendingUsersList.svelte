@@ -76,7 +76,7 @@
 <div class="glass-card">
 	<div class="px-6 py-5 border-b border-white/10">
 		<div class="flex items-center gap-3">
-			<Clock class="w-6 h-6 text-yellow-400" stroke-width={2} />
+			<Clock class="w-6 h-6 text-primary-500" stroke-width={2} />
 			<div>
 				<h2 class="text-xl font-bold text-white">Usuários Pendentes de Aprovação</h2>
 				<p class="text-sm text-white/50 mt-0.5">Usuários aguardando aprovação para acessar a organização</p>
@@ -87,7 +87,7 @@
 	{#if users.length === 0}
 		<div class="px-6 py-16 text-center">
 			<div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/5 mb-4">
-				<Check class="w-8 h-8 text-green-400" stroke-width={2} />
+				<Check class="w-8 h-8 text-primary-500" stroke-width={2} />
 			</div>
 			<p class="text-white/70 text-lg font-medium mb-1">Tudo em dia!</p>
 			<p class="text-white/50 text-sm">Nenhum usuário pendente de aprovação</p>
@@ -123,7 +123,7 @@
 											class="h-10 w-10 rounded-full"
 										/>
 									{:else}
-										<div class="h-10 w-10 rounded-full bg-yellow-600 flex items-center justify-center">
+										<div class="h-10 w-10 rounded-full bg-primary-500 flex items-center justify-center">
 											<span class="text-white font-medium">
 												{user.users.full_name.charAt(0).toUpperCase()}
 											</span>
@@ -146,7 +146,7 @@
 								<button
 									onclick={() => confirmApprove(user)}
 									disabled={isLoading}
-									class="glass-button-secondary px-3 py-1.5 text-green-400 hover:text-green-300 disabled:opacity-50 inline-flex items-center gap-2"
+									class="glass-button-secondary px-3 py-1.5 text-primary-500 hover:text-primary-500 disabled:opacity-50 inline-flex items-center gap-2"
 								>
 									<Check size={16} />
 									Aprovar
@@ -189,7 +189,7 @@
 				<button
 					onclick={handleApprove}
 					disabled={isLoading}
-					class="glass-button-secondary px-4 py-2 text-green-400 hover:text-green-300 disabled:opacity-50"
+					class="glass-button-secondary px-4 py-2 text-primary-500 hover:text-primary-500 disabled:opacity-50"
 				>
 					{isLoading ? 'Aprovando...' : 'Aprovar'}
 				</button>
