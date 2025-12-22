@@ -68,7 +68,7 @@
 		font-weight: 600;
 		letter-spacing: 0.04em;
 		text-transform: uppercase;
-		border-radius: var(--radius-md);
+		border-radius: var(--radius-sm);
 		color: var(--color-text-secondary);
 		background: var(--color-glass-light-weak);
 		border: 1px solid var(--color-border-light);

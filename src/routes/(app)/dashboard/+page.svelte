@@ -15,29 +15,28 @@
 			tag: "MediaPipe",
 		},
 		{
-			title: "Landmarks em 2D e 3D",
+			title: "MoveNet acelera a estimativa de pose em tempo real",
 			summary:
-				"O task entrega landmarks do corpo em coordenadas de imagem e em coordenadas 3D do mundo, útil para análises de movimento.",
-			sourceLabel: "MediaPipe Pose Landmarker",
-			sourceUrl:
-				"https://developers.google.com/mediapipe/solutions/vision/pose_landmarker",
-			tag: "Visão",
+				"O modelo MoveNet do TensorFlow foca em baixa latência e boa precisão, facilitando aplicações de análise de movimento e feedback imediato.",
+			sourceLabel: "TensorFlow Blog — MoveNet",
+			sourceUrl: "https://blog.tensorflow.org/2021/05/movenet.html",
+			tag: "TensorFlow",
 		},
 		{
-			title: "Biomecânica como base científica",
+			title: "DeepLabCut para rastreamento sem marcadores",
 			summary:
-				"Biomecânica estuda estrutura, função e movimento dos aspectos mecânicos dos sistemas biológicos, usando métodos da mecânica.",
-			sourceLabel: "Wikipedia — Biomechanics",
-			sourceUrl: "https://en.wikipedia.org/wiki/Biomechanics",
+				"Publicação apresenta uma ferramenta open-source que estima pose e rastreia partes do corpo sem marcadores, útil em biomecânica e reabilitação.",
+			sourceLabel: "Nature Neuroscience — DeepLabCut",
+			sourceUrl: "https://www.nature.com/articles/s41593-018-0209-y",
+			tag: "Pesquisa",
+		},
+		{
+			title: "OpenSim Moco para otimizar movimentos",
+			summary:
+				"A extensão do OpenSim mostra como modelar e otimizar movimentos musculoesqueléticos para estimar forças internas.",
+			sourceLabel: "OpenSim Moco",
+			sourceUrl: "https://opensim-org.github.io/opensim-moco-site/",
 			tag: "Biomecânica",
-		},
-		{
-			title: "Cinemática foca no movimento",
-			summary:
-				"A cinemática descreve o movimento de corpos sem considerar as forças que o causam.",
-			sourceLabel: "Wikipedia — Kinematics",
-			sourceUrl: "https://en.wikipedia.org/wiki/Kinematics",
-			tag: "Cinemática",
 		},
 	];
 

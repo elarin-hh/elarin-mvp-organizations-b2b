@@ -10,7 +10,7 @@
 </script>
 
 <div
-	class="p-6 transition-all duration-200 group"
+	class="p-6"
 	style="background-color: var(--color-bg-dark-secondary); border-radius: var(--radius-standard);"
 >
 	<div class="flex items-center justify-between">
@@ -20,7 +20,7 @@
 		</div>
 		{#if icon}
 			<div
-				class="ml-4 p-3 bg-white/5 group-hover:bg-white/10 transition-colors"
+				class="ml-4 p-3 bg-white/5"
 				style="border-radius: var(--radius-standard);"
 			>
 				{@render icon()}

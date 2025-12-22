@@ -293,18 +293,6 @@
                                 >{user.users?.weight_kg || "--"} kg</span
                             >
                         </div>
-                        <div class="flex justify-between items-center py-3">
-                            <div class="flex items-center gap-3 text-white/50">
-                                <Shield size={18} />
-                                <span>Função</span>
-                            </div>
-                            <span
-                                class="bg-primary-500/15 text-primary-500 px-3 py-1 text-xs font-bold uppercase tracking-wide"
-                                style="border-radius: var(--radius-md);"
-                            >
-                                {user.role}
-                            </span>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -495,7 +483,7 @@
         padding: 0.25rem 0.5rem;
         font-size: 0.75rem;
         font-weight: 600;
-        border-radius: var(--radius-md);
+        border-radius: var(--radius-sm);
     }
 
     .exercise-pill--active {

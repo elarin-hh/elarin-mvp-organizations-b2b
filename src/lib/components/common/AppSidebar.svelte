@@ -112,7 +112,7 @@
         left: 0;
         top: 0;
         bottom: 0;
-        width: var(--sidebar-width, 260px);
+        width: var(--sidebar-width, 300px);
         background: var(--color-bg-dark-secondary);
         display: flex;
         flex-direction: column;
@@ -121,7 +121,7 @@
     }
 
     .sidebar.collapsed {
-        width: var(--sidebar-width, 64px);
+        width: var(--sidebar-width, 80px);
     }
 
     .sidebar-top {
@@ -247,10 +247,10 @@
     .nav-item.active {
         background: color-mix(
             in srgb,
-            var(--color-primary-500) 100%,
+            #fff 10%,
             transparent
         );
-        color: #ffffff;
+        color: var(--color-primary-500);
         border-radius: var(--radius-md);
     }
 
@@ -261,10 +261,10 @@
     .sidebar.collapsed .nav-item.active .nav-icon {
         background: color-mix(
             in srgb,
-            var(--color-primary-500) 100%,
+            #fff 10%,
             transparent
         );
-        color: #fff;
+        color: var(--color-primary-500);
     }
 
     .nav-item.logout {

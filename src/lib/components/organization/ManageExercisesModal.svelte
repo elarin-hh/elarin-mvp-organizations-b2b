@@ -296,8 +296,6 @@
 
     .search-input:focus {
         outline: none;
-        box-shadow: 0 0 0 2px
-            color-mix(in srgb, var(--color-primary-500) 35%, transparent);
     }
 
     .modal-body {

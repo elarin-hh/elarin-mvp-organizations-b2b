@@ -6,6 +6,8 @@
 	import Users from "lucide-svelte/icons/users";
 	import Settings from "lucide-svelte/icons/settings";
 	import Search from "lucide-svelte/icons/search";
+	import CircleOff from "lucide-svelte/icons/circle-off";
+	import UserCheck from "lucide-svelte/icons/user-check";
 
 	interface Props {
 		users: OrganizationUser[];
@@ -16,6 +18,7 @@
 
 	let searchTerm = $state("");
 	let isLoading = $state(false);
+	let isTogglingStatus = $state<number | null>(null);
 	let showDeleteModal = $state(false);
 	let userToDelete = $state<OrganizationUser | null>(null);
 
@@ -63,6 +66,26 @@
 		showDeleteModal = false;
 		userToDelete = null;
 	}
+
+	async function handleToggleStatus(user: OrganizationUser) {
+		if (
+			!confirm(
+				`Tem certeza que deseja ${user.status === "ACTIVE" ? "desativar" : "ativar"} este usuário?`,
+			)
+		)
+			return;
+
+		isTogglingStatus = user.user_id;
+		const response = await organizationsApi.toggleUserStatus(user.user_id);
+
+		if (response.success) {
+			await onUpdate?.();
+		} else {
+			alert(response.error || "Erro ao alterar status");
+		}
+
+		isTogglingStatus = null;
+	}
 </script>
 
 <div class="">
@@ -84,7 +107,7 @@
 				type="text"
 				bind:value={searchTerm}
 				placeholder="Buscar por nome ou email..."
-				class="w-full pl-10 pr-4 py-2 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500"
+				class="w-full pl-10 pr-4 py-2 text-white placeholder-white/40 focus:outline-none"
 				style="border-radius: var(--radius-standard); background: var(--color-bg-dark-secondary);"
 			/>
 		</div>
@@ -142,7 +165,7 @@
 							Status
 						</th>
 						<th
-							class="px-4 py-3 text-left text-xs font-semibold text-white/60"
+							class="px-4 py-3 text-center text-xs font-semibold text-white/60"
 						>
 							Ações
 						</th>
@@ -206,7 +229,7 @@
 								</span>
 							</td>
 							<td
-								class="px-4 py-3 whitespace-nowrap text-sm font-medium"
+								class="px-4 py-3 whitespace-nowrap text-sm font-medium text-center"
 								onclick={(e) => e.stopPropagation()}
 							>
 								<button
@@ -215,6 +238,20 @@
 									title="Ver detalhes"
 								>
 									<Settings size={14} />
+								</button>
+								<button
+									onclick={() => handleToggleStatus(user)}
+									disabled={isTogglingStatus === user.user_id}
+									class="glass-button-secondary px-3 py-1.5 text-white/70 hover:text-white disabled:opacity-50 inline-flex items-center mr-2"
+									title={user.status === "ACTIVE"
+										? "Desativar usuário"
+										: "Ativar usuário"}
+								>
+									{#if user.status === "ACTIVE"}
+										<CircleOff size={14} />
+									{:else}
+										<UserCheck size={14} />
+									{/if}
 								</button>
 								<button
 									onclick={() => confirmDelete(user)}
@@ -273,7 +310,7 @@
 		font-size: 0.75rem;
 		line-height: 1.25rem;
 		font-weight: 600;
-		border-radius: calc(var(--radius-sm) / 2);
+		border-radius: var(--radius-sm);
 	}
 
 	.status-badge--active {
