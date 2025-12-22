@@ -130,6 +130,11 @@
         align-items: center;
     }
 
+    .sidebar.collapsed .sidebar-top {
+        justify-content: center;
+        padding: 1rem 0;
+    }
+
     .icon-btn {
         width: 36px;
         height: 36px;
