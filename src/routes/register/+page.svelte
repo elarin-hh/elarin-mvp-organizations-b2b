@@ -299,11 +299,11 @@
 		</button>
 	</div>
 
-	<div class="mt-8 text-center">
+<!-- 	<div class="mt-8 text-center">
 		<p class="text-white/50 text-sm">
 			Política de Privacidade e Termos de Uso
 		</p>
-	</div>
+	</div> -->
 </div>
 
 <style>

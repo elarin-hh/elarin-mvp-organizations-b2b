@@ -32,7 +32,7 @@
 	);
 
 	function openUserDetails(user: OrganizationUser) {
-		goto(`/usuarios/${user.user_id}`);
+		goto(`/users/${user.user_id}`);
 	}
 
 	function confirmDelete(user: OrganizationUser) {
@@ -66,10 +66,9 @@
 </script>
 
 <div class="glass-card">
-	<div class="px-6 py-5 border-b border-white/10">
+	<div class="py-5">
 		<div class="flex items-center justify-between mb-4">
-			<div class="flex items-center gap-3">
-				<Users class="w-6 h-6 text-blue-400" stroke-width={2} />
+			<div class="flex items-center">
 				<h2 class="text-xl font-bold text-white">Usuários</h2>
 			</div>
 		</div>
@@ -85,7 +84,8 @@
 				type="text"
 				bind:value={searchTerm}
 				placeholder="Buscar por nome ou email..."
-				class="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+				class="w-full pl-10 pr-4 py-2 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500"
+				style="border-radius: var(--radius-full); background: var(--color-bg-dark-secondary);"
 			/>
 		</div>
 	</div>
@@ -114,44 +114,47 @@
 			</p>
 		</div>
 	{:else}
-		<div class="overflow-x-auto">
-			<table class="w-full">
-				<thead class="bg-white/5">
+		<div
+			class="overflow-hidden overflow-x-auto"
+			style="border-radius: var(--radius-xl); background: var(--color-bg-dark-secondary);"
+		>
+			<table class="w-full border-collapse">
+				<thead class="">
 					<tr>
 						<th
-							class="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider"
+							class="px-4 py-3 text-left text-xs font-semibold text-white/60"
 						>
 							Usuário
 						</th>
 						<th
-							class="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider"
+							class="px-4 py-3 text-left text-xs font-semibold text-white/60"
 						>
 							Email
 						</th>
 						<th
-							class="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider"
+							class="px-4 py-3 text-left text-xs font-semibold text-white/60"
 						>
 							Função
 						</th>
 						<th
-							class="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider"
+							class="px-4 py-3 text-left text-xs font-semibold text-white/60"
 						>
 							Status
 						</th>
 						<th
-							class="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider"
+							class="px-4 py-3 text-left text-xs font-semibold text-white/60"
 						>
 							Ações
 						</th>
 					</tr>
 				</thead>
-				<tbody class="divide-y divide-white/10">
+				<tbody>
 					{#each filteredUsers as user}
 						<tr
 							class="hover:bg-white/5 transition-colors cursor-pointer"
 							onclick={() => openUserDetails(user)}
 						>
-							<td class="px-6 py-4 whitespace-nowrap">
+							<td class="px-4 py-3 whitespace-nowrap">
 								<div class="flex items-center">
 									{#if user.users.avatar_url}
 										<img
@@ -182,21 +185,20 @@
 								</div>
 							</td>
 							<td
-								class="px-6 py-4 whitespace-nowrap text-sm text-white/70"
+								class="px-4 py-3 whitespace-nowrap text-sm text-white/70"
 							>
 								{user.users.email}
 							</td>
 							<td
-								class="px-6 py-4 whitespace-nowrap text-sm text-white/70"
+								class="px-4 py-3 whitespace-nowrap text-sm text-white/70"
 							>
 								{user.role}
 							</td>
-							<td class="px-6 py-4 whitespace-nowrap">
+							<td class="px-4 py-3 whitespace-nowrap">
 								<span
-									class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {user.status ===
-									'ACTIVE'
-										? 'bg-green-400/10 text-green-400'
-										: 'bg-gray-400/10 text-gray-400'}"
+									class="status-badge {user.status === 'ACTIVE'
+										? 'status-badge--active'
+										: 'status-badge--inactive'}"
 								>
 									{user.status === "ACTIVE"
 										? "Ativo"
@@ -204,15 +206,15 @@
 								</span>
 							</td>
 							<td
-								class="px-6 py-4 whitespace-nowrap text-sm font-medium"
+								class="px-4 py-3 whitespace-nowrap text-sm font-medium"
 								onclick={(e) => e.stopPropagation()}
 							>
 								<button
 									onclick={() => openUserDetails(user)}
-									class="glass-button-secondary px-3 py-1.5 text-white inline-flex items-center gap-2 mr-2"
+									class="glass-button-secondary px-3 py-1.5 text-white inline-flex items-center mr-2"
 									title="Ver detalhes"
 								>
-									<Settings size={14} /> Detalhes
+									<Settings size={14} />
 								</button>
 								<button
 									onclick={() => confirmDelete(user)}
@@ -227,8 +229,8 @@
 					{/each}
 				</tbody>
 			</table>
-		</div>
-	{/if}
+	</div>
+{/if}
 </div>
 
 <!-- Delete Confirmation Modal -->
@@ -262,3 +264,33 @@
 		</div>
 	</div>
 {/if}
+
+<style>
+	.status-badge {
+		display: inline-flex;
+		align-items: center;
+		padding: 0.125rem 0.5rem;
+		font-size: 0.75rem;
+		line-height: 1.25rem;
+		font-weight: 600;
+		border-radius: calc(var(--radius-sm) / 2);
+	}
+
+	.status-badge--active {
+		color: var(--color-success-cotton);
+		background-color: color-mix(
+			in srgb,
+			var(--color-success-cotton) 16%,
+			transparent
+		);
+	}
+
+	.status-badge--inactive {
+		color: var(--color-gray-400);
+		background-color: color-mix(
+			in srgb,
+			var(--color-gray-400) 12%,
+			transparent
+		);
+	}
+</style>

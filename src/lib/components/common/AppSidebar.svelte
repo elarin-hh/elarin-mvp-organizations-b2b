@@ -67,8 +67,8 @@
         <button
             type="button"
             class="nav-item"
-            class:active={currentPath.startsWith("/usuarios")}
-            onclick={() => navigateTo("/usuarios")}
+            class:active={currentPath.startsWith("/users")}
+            onclick={() => navigateTo("/users")}
             title="Usuários"
         >
             <Users class="w-5 h-5" />
@@ -112,7 +112,7 @@
         left: 0;
         top: 0;
         bottom: 0;
-        width: 240px;
+        width: var(--sidebar-width, 240px);
         background: var(--color-bg-dark-secondary);
         display: flex;
         flex-direction: column;
@@ -121,7 +121,7 @@
     }
 
     .sidebar.collapsed {
-        width: 64px;
+        width: var(--sidebar-width, 64px);
     }
 
     .sidebar-top {
@@ -147,6 +147,11 @@
     .icon-btn:hover {
         background: rgba(255, 255, 255, 0.05);
         color: rgba(255, 255, 255, 0.9);
+        border-radius: var(--radius-full);
+    }
+
+    .icon-btn:focus-visible {
+        border-radius: var(--radius-full);
     }
 
     .sidebar-nav {
@@ -190,11 +195,17 @@
     .nav-item:hover {
         background: rgba(255, 255, 255, 0.05);
         color: rgba(255, 255, 255, 0.9);
+        border-radius: var(--radius-full);
+    }
+
+    .nav-item:focus-visible {
+        border-radius: var(--radius-full);
     }
 
     .nav-item.active {
         background: rgba(142, 180, 40, 0.15);
         color: var(--color-primary-400);
+        border-radius: var(--radius-full);
     }
 
     .nav-item.logout {

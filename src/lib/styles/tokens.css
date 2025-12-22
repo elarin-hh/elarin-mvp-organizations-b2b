@@ -26,6 +26,7 @@
    --color-success: #00ff88;
    --color-success-hover: #33ff99;
    --color-success-light: #66ffaa;
+   --color-success-cotton: #a8f4a2;
    --color-success-dark: #00cc6d;
 
    /* Error (Red) */
@@ -51,7 +52,7 @@
      ======================================== */
 
    /* Dark Backgrounds */
-   --color-bg-dark: #141414;
+   --color-bg-dark: #121212;
    --color-bg-dark-secondary: #1E1F20;
    --color-bg-dark-tertiary: #1a1a2e;
    --color-bg-dark-quaternary: #2f2f2f;
@@ -143,6 +144,7 @@
    /* ========================================
      BORDER RADIUS
      ======================================== */
+   --radius-xs: 2px;
    --radius-sm: 12px;
    --radius-md: 16px;
    --radius-lg: 20px;

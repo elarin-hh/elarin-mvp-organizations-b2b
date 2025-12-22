@@ -62,9 +62,9 @@
 	});
 </script>
 
-<div class="min-h-screen">
+<div class="min-h-full">
 	<!-- Main Content -->
-	<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 pt-20">
+	<main class="w-full min-h-full px-6 pb-8 pt-8">
 		{#if organization}
 			<div class="mb-8">
 				<h2 class="text-3xl font-bold text-white mb-2">

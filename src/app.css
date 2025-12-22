@@ -6,6 +6,12 @@
 @tailwind utilities;
 
 @layer base {
+  html,
+  body {
+    width: 100%;
+    min-height: 100%;
+  }
+
   body {
     font-family: 'Nunito Sans', sans-serif;
     background-color: var(--color-bg-dark);

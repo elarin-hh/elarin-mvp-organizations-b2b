@@ -147,7 +147,7 @@
         try {
             const res = await organizationsApi.removeUser(user.user_id);
             if (res.success) {
-                goto("/usuarios");
+                goto("/users");
             } else {
                 alert("Erro ao remover usuário");
             }
@@ -162,12 +162,12 @@
     }
 </script>
 
-<div class="min-h-screen pb-20">
-    <main class="container mx-auto px-4 pt-20 max-w-6xl">
+<div class="min-h-full pb-8">
+    <main class="w-full min-h-full px-6 pt-8">
         <!-- Back & Header -->
         <div class="mb-8">
             <button
-                on:click={() => goto("/usuarios")}
+                on:click={() => goto("/users")}
                 class="flex items-center text-white/50 hover:text-white mb-4 transition-colors"
             >
                 <ArrowLeft size={20} class="mr-2" />
