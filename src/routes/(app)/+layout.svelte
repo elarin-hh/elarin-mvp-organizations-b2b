@@ -10,7 +10,7 @@
 <!-- Logo Header -->
 <div
     class="logo-header"
-    style="margin-left: {$sidebarCollapsed ? '64px' : '240px'}"
+    style="margin-left: {$sidebarCollapsed ? '44px' : '220px'}"
 >
     <img src="/logo-elarin.png" alt="Elarin" class="logo" />
 </div>
@@ -18,7 +18,7 @@
 <!-- Main Content -->
 <div
     class="main-content"
-    style="margin-left: {$sidebarCollapsed ? '64px' : '240px'}"
+    style="margin-left: {$sidebarCollapsed ? '84px' : '260px'}"
 >
     {@render children?.()}
 </div>
@@ -39,7 +39,7 @@
     }
 
     .logo {
-        height: 40px;
+        height: 48px;
     }
 
     .main-content {
