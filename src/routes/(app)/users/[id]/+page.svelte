@@ -639,17 +639,22 @@
     }
 
     .plan-assignment-card {
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        border: none;
     }
 
     .assignment-chip {
-        padding: 0.2rem 0.6rem;
-        border-radius: 999px;
-        background: rgba(34, 197, 94, 0.15);
-        color: rgb(34, 197, 94);
-        font-size: 0.7rem;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.125rem 0.5rem;
+        font-size: 0.75rem;
+        line-height: 1.25rem;
+        font-weight: 600;
+        border-radius: var(--radius-sm);
+        text-transform: none;
+        letter-spacing: 0;
+        color: var(--color-status-active);
+        background-color: var(--color-status-active-bg);
     }
 
     .assignment-controls {
@@ -671,11 +676,24 @@
     }
 
     .plan-select select {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.12);
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-color: var(--color-bg-dark);
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='white' opacity='0.5' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.85rem center;
+        background-size: 12px 12px;
+        border: none;
         border-radius: var(--radius-standard);
-        padding: 0.5rem 0.75rem;
+        padding: 0.5rem 2.2rem 0.5rem 0.75rem;
         color: #fff;
+        outline: none;
+    }
+
+    .plan-select select option {
+        background: var(--color-bg-dark);
+        color: var(--color-text-primary);
     }
 
     .plan-error {
@@ -684,4 +702,3 @@
         margin-top: 0.5rem;
     }
 </style>
-

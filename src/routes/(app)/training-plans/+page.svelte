@@ -70,7 +70,7 @@
 					Crie e gerencie planos para seus usuarios.
 				</p>
 			</div>
-			<Button onclick={() => (showCreateModal = true)}>
+			<Button class="btn-radius-md" onclick={() => (showCreateModal = true)}>
 				{#snippet children()}Criar plano{/snippet}
 			</Button>
 		</div>
@@ -86,7 +86,9 @@
 		{:else}
 			<div class="plan-grid">
 				{#each plans as plan}
-					<div class="plan-card {plan.is_active ? '' : 'inactive'}">
+					<div
+						class="plan-card hover:bg-white/5 transition-colors {plan.is_active ? '' : 'inactive'}"
+					>
 						<div class="plan-header">
 							<h3 class="plan-title">{plan.name}</h3>
 							<span class="status-chip {plan.is_active ? 'active' : 'inactive'}">
@@ -107,19 +109,23 @@
 							</div>
 						</div>
 						<div class="plan-actions">
-							<Button
-								variant="outline"
+							<button
+								type="button"
+								class="plan-action-btn hover:text-white"
+								style="color: var(--color-primary-500); border-radius: var(--radius-md);"
 								onclick={() => goto(`/training-plans/${plan.id}`)}
 							>
-								{#snippet children()}Detalhes{/snippet}
-							</Button>
-							<Button
-								variant="secondary"
+								Detalhes
+							</button>
+							<button
+								type="button"
+								class="plan-action-btn text-white/80 hover:text-red-300"
+								style="border-radius: var(--radius-md);"
 								disabled={!plan.is_active}
 								onclick={() => handleDeactivate(plan)}
 							>
-								{#snippet children()}Desativar{/snippet}
-							</Button>
+								Desativar
+							</button>
 						</div>
 					</div>
 				{/each}
@@ -160,7 +166,7 @@
 			<Button variant="secondary" onclick={() => (showCreateModal = false)}>
 				{#snippet children()}Cancelar{/snippet}
 			</Button>
-			<Button disabled={isSubmitting} onclick={handleCreatePlan}>
+			<Button class="btn-radius-md" disabled={isSubmitting} onclick={handleCreatePlan}>
 				{#snippet children()}
 					{isSubmitting ? "Salvando..." : "Criar"}
 				{/snippet}
@@ -172,7 +178,7 @@
 <style>
 	.plan-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 		gap: 1.5rem;
 	}
 
@@ -180,15 +186,13 @@
 		background: var(--color-bg-dark-secondary);
 		border-radius: var(--radius-standard);
 		padding: 1.25rem;
-		border: 1px solid rgba(255, 255, 255, 0.08);
 		display: flex;
 		flex-direction: column;
-		gap: 0.75rem;
+		gap: 0.85rem;
 	}
 
 	.plan-card.inactive {
-		opacity: 0.7;
-		border-style: dashed;
+		opacity: 0.65;
 	}
 
 	.plan-header {
@@ -199,58 +203,97 @@
 	}
 
 	.plan-title {
-		font-size: 1.1rem;
+		font-size: 1.05rem;
 		font-weight: 600;
 		color: #fff;
 		margin: 0;
 	}
 
 	.plan-description {
-		font-size: 0.9rem;
-		color: rgba(255, 255, 255, 0.6);
+		font-size: 0.88rem;
+		color: rgba(255, 255, 255, 0.65);
 		margin: 0;
 	}
 
 	.plan-meta {
-		display: flex;
-		gap: 1.5rem;
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 1.25rem;
 	}
 
 	.meta-value {
 		display: block;
-		font-size: 1.2rem;
+		font-size: 1.15rem;
 		font-weight: 600;
-		color: var(--color-primary-500);
+		color: var(--color-text-primary);
 	}
 
 	.meta-label {
 		font-size: 0.7rem;
 		text-transform: uppercase;
 		letter-spacing: 0.08em;
-		color: rgba(255, 255, 255, 0.4);
+		color: rgba(255, 255, 255, 0.5);
 	}
 
 	.status-chip {
-		font-size: 0.7rem;
-		padding: 0.2rem 0.6rem;
-		border-radius: 999px;
-		text-transform: uppercase;
-		letter-spacing: 0.08em;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0.125rem 0.5rem;
+		font-size: 0.75rem;
+		line-height: 1.25rem;
+		font-weight: 600;
+		border-radius: var(--radius-sm);
+		text-transform: none;
+		letter-spacing: 0;
+		text-align: center;
 	}
 
 	.status-chip.active {
-		background: rgba(34, 197, 94, 0.15);
-		color: rgb(34, 197, 94);
+		color: var(--color-primary-500);
+		background-color: color-mix(
+			in srgb,
+			var(--color-primary-500) 16%,
+			transparent
+		);
 	}
 
 	.status-chip.inactive {
-		background: rgba(239, 68, 68, 0.15);
-		color: rgb(239, 68, 68);
+		color: var(--color-gray-400);
+		background-color: color-mix(
+			in srgb,
+			var(--color-gray-400) 12%,
+			transparent
+		);
 	}
 
 	.plan-actions {
 		display: flex;
+		flex-wrap: wrap;
 		gap: 0.75rem;
+	}
+
+	.plan-action-btn {
+		background: transparent;
+		border: none;
+		padding: 0.5rem 0.75rem;
+		font-size: 0.875rem;
+		font-weight: 500;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		cursor: pointer;
+		transition: color var(--transition-base),
+			background-color var(--transition-base);
+	}
+
+	.plan-action-btn:hover {
+		background: transparent;
+	}
+
+	.plan-action-btn:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
 	}
 
 	.empty-card {
@@ -258,12 +301,11 @@
 		border-radius: var(--radius-standard);
 		padding: 2rem;
 		text-align: center;
-		border: 1px dashed rgba(255, 255, 255, 0.1);
 	}
 
 	.error-banner {
-		background: rgba(239, 68, 68, 0.15);
-		color: rgba(239, 68, 68, 0.9);
+		background: rgba(239, 68, 68, 0.12);
+		color: rgba(239, 68, 68, 0.95);
 		padding: 0.75rem 1rem;
 		border-radius: var(--radius-standard);
 		margin-bottom: 1rem;
@@ -290,5 +332,9 @@
 	.form-error {
 		color: rgb(239, 68, 68);
 		font-size: 0.8rem;
+	}
+
+	:global(.btn-radius-md) {
+		border-radius: var(--radius-md) !important;
 	}
 </style>

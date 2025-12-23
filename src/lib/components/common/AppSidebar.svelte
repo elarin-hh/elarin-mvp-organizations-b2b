@@ -250,7 +250,7 @@
     .nav-item.active {
         background: color-mix(
             in srgb,
-            #fff 10%,
+            #fff 5%,
             transparent
         );
         color: var(--color-primary-500);

@@ -47,6 +47,28 @@
    --color-info-dark: #0090cc;
    --color-info-light: #66d4ff;
 
+   /* Status colors */
+   --color-status-active: var(--color-primary-500);
+   --color-status-active-bg: color-mix(
+      in srgb,
+      var(--color-primary-500) 16%,
+      transparent
+   );
+   --color-status-inactive: var(--color-gray-400);
+   --color-status-inactive-bg: color-mix(
+      in srgb,
+      var(--color-gray-400) 12%,
+      transparent
+   );
+
+   /* ========================================
+     CUSTOM PALETTE
+     ======================================== */
+   --color-custom-green-light: #e7fbde;
+   --color-custom-green-dark: #50c878;
+   --color-custom-red-light: #f9d7da;
+   --color-custom-red-dark: #e52b50;
+
    /* ========================================
      NEUTRAL COLORS (Grays & Blacks)
      ======================================== */

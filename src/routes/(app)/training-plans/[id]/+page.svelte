@@ -174,10 +174,19 @@
 					</p>
 				</div>
 				<div class="flex gap-2">
-					<Button variant="outline" onclick={() => (showAddModal = true)}>
+					<Button
+						variant="primary"
+						class="btn-radius-md"
+						onclick={() => (showAddModal = true)}
+					>
 						{#snippet children()}Adicionar item{/snippet}
 					</Button>
-					<Button variant="secondary" onclick={handleDeactivate} disabled={!plan.is_active}>
+					<Button
+						variant="secondary"
+						class="btn-radius-md"
+						onclick={handleDeactivate}
+						disabled={!plan.is_active}
+					>
 						{#snippet children()}Desativar{/snippet}
 					</Button>
 				</div>
@@ -194,7 +203,7 @@
 				</label>
 			</div>
 			<div class="flex items-center gap-3 mt-4">
-				<Button onclick={handleSavePlan} disabled={isSavingPlan}>
+				<Button class="btn-radius-md" onclick={handleSavePlan} disabled={isSavingPlan}>
 					{#snippet children()}
 						{isSavingPlan ? "Salvando..." : "Salvar"}
 					{/snippet}
@@ -227,7 +236,11 @@
 									Template: {item.exercise_template?.type || item.exercise_type}
 								</p>
 							</div>
-							<Button variant="outline" onclick={() => handleUpdateItem(item)}>
+							<Button
+								variant="primary"
+								class="btn-radius-md"
+								onclick={() => handleUpdateItem(item)}
+							>
 								{#snippet children()}Salvar{/snippet}
 							</Button>
 						</div>
@@ -312,7 +325,8 @@
 								/>
 							</label>
 							<button
-								class="remove-btn"
+								class="remove-btn text-sm plan-action-btn text-red-400 hover:text-red-300"
+								style="border-radius: var(--radius-md);"
 								onclick={() => handleRemoveItem(item)}
 							>
 								<Trash2 size={16} /> Remover
@@ -419,10 +433,14 @@
 			<p class="form-error">{formError}</p>
 		{/if}
 		<div class="flex gap-3 justify-end">
-			<Button variant="secondary" onclick={() => (showAddModal = false)}>
+			<Button
+				variant="secondary"
+				class="btn-radius-md"
+				onclick={() => (showAddModal = false)}
+			>
 				{#snippet children()}Cancelar{/snippet}
 			</Button>
-			<Button disabled={isAddingItem} onclick={handleAddItem}>
+			<Button class="btn-radius-md" disabled={isAddingItem} onclick={handleAddItem}>
 				{#snippet children()}
 					{isAddingItem ? "Adicionando..." : "Adicionar"}
 				{/snippet}
@@ -435,7 +453,6 @@
 	.plan-card {
 		background: var(--color-bg-dark-secondary);
 		border-radius: var(--radius-standard);
-		border: 1px solid rgba(255, 255, 255, 0.08);
 	}
 
 	.items-header {
@@ -448,7 +465,6 @@
 	.plan-item-card {
 		background: var(--color-bg-dark-secondary);
 		border-radius: var(--radius-standard);
-		border: 1px solid rgba(255, 255, 255, 0.08);
 		padding: 1rem;
 	}
 
@@ -494,19 +510,23 @@
 		border-radius: var(--radius-standard);
 		padding: 2rem;
 		text-align: center;
-		border: 1px dashed rgba(255, 255, 255, 0.1);
 	}
 
 	.remove-btn {
 		display: inline-flex;
 		align-items: center;
+		justify-content: center;
+		justify-self: end;
+		text-align: center;
 		gap: 0.35rem;
 		padding: 0.45rem 0.7rem;
-		border-radius: var(--radius-standard);
-		background: rgba(239, 68, 68, 0.08);
-		color: rgb(239, 68, 68);
+		border-radius: var(--radius-md);
 		border: none;
 		cursor: pointer;
 		height: fit-content;
+	}
+
+	:global(.btn-radius-md) {
+		border-radius: var(--radius-md) !important;
 	}
 </style>
