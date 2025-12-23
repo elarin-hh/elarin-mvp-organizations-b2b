@@ -16,6 +16,7 @@
 	import Users from "lucide-svelte/icons/users";
 	import UserCheck from "lucide-svelte/icons/user-check";
 	import UserX from "lucide-svelte/icons/user-x";
+	import UserPlus from "lucide-svelte/icons/user-plus";
 
 	const organization = $derived($currentOrganization);
 
@@ -31,12 +32,12 @@
 	async function loadData() {
 		isLoading = true;
 
-		// Load all users (ACTIVE and INACTIVE)
+		// Load all users (ACTIVE, INACTIVE and PENDING)
 		const usersResponse = await organizationsApi.getUsers();
 		if (usersResponse.success && usersResponse.data) {
-			// Filter ACTIVE and INACTIVE users
+			// Filter ACTIVE, INACTIVE and PENDING users
 			users = usersResponse.data.filter(
-				(u) => u.status === "ACTIVE" || u.status === "INACTIVE",
+				(u) => u.status === "ACTIVE" || u.status === "INACTIVE" || u.status === "PENDING",
 			);
 		}
 
@@ -105,6 +106,19 @@
 						/>
 					{/snippet}
 				</StatsCard>
+			</div>
+
+			<!-- Header with Add Button -->
+			<div class="flex items-center justify-between mb-6">
+				<h2 class="text-2xl font-bold text-white">Gerenciar Usuários</h2>
+				<button
+					onclick={() => goto("/users/new")}
+					class="px-4 py-2 bg-primary-500 text-white font-medium hover:bg-primary-600 transition-all flex items-center gap-2"
+					style="border-radius: var(--radius-md);"
+				>
+					<UserPlus size={18} />
+					Cadastrar Usuário
+				</button>
 			</div>
 
 			<!-- Users List -->

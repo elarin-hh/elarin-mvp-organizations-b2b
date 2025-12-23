@@ -1,4 +1,6 @@
 import { restClient } from './rest.client';
+import { get } from 'svelte/store';
+import { currentOrganization } from '$lib/stores/organization-auth.store';
 import type {
 	Organization,
 	OrganizationSession,
@@ -223,5 +225,38 @@ export const organizationsApi = {
 		return restClient.delete<{ message: string }>(
 			`/organizations/users/${userId}/training-plan`
 		);
+	},
+
+	// ==================== User Creation ====================
+
+	/**
+	 * Create a new user and link to organization
+	 * POST /auth/register-with-organization
+	 */
+	async createUser(data: {
+		email: string;
+		password: string;
+		full_name: string;
+		birth_date: string;
+		locale?: string;
+		marketing_consent?: boolean;
+		height_cm?: number;
+		weight_kg?: number;
+	}): Promise<ApiResponse<any>> {
+		const organization = get(currentOrganization);
+		if (!organization) {
+			return {
+				success: false,
+				error: {
+					message: 'Organização não encontrada. Faça login novamente.',
+					code: 'NO_ORGANIZATION'
+				}
+			};
+		}
+
+		return restClient.post<any>('/auth/register-with-organization', {
+			...data,
+			organization_id: organization.id
+		});
 	}
 };
