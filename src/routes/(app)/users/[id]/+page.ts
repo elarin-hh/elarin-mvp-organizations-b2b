@@ -10,10 +10,12 @@ export const load: PageLoad = async ({ params }) => {
     }
 
     try {
-        const [userResponse, exercisesResponse, templatesResponse] = await Promise.all([
+        const [userResponse, exercisesResponse, templatesResponse, plansResponse, assignmentResponse] = await Promise.all([
             organizationsApi.getMember(userId),
             organizationsApi.getUserExercises(userId),
-            organizationsApi.getExerciseTemplates()
+            organizationsApi.getExerciseTemplates(),
+            organizationsApi.getTrainingPlans(),
+            organizationsApi.getUserTrainingPlan(userId)
         ]);
 
         if (!userResponse.success || !userResponse.data) {
@@ -23,7 +25,9 @@ export const load: PageLoad = async ({ params }) => {
         return {
             user: userResponse.data,
             exercises: exercisesResponse.success ? exercisesResponse.data : [],
-            templates: templatesResponse.success ? templatesResponse.data : []
+            templates: templatesResponse.success ? templatesResponse.data : [],
+            trainingPlans: plansResponse.success ? plansResponse.data : [],
+            assignedTrainingPlan: assignmentResponse.success ? assignmentResponse.data : null
         };
     } catch (e) {
         console.error('Error loading user details:', e);

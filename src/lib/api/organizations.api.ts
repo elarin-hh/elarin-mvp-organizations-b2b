@@ -7,6 +7,12 @@ import type {
 	RegisterOrganizationData,
 	LoginOrganizationData
 } from '$lib/types/organization';
+import type {
+	TrainingPlan,
+	TrainingPlanAssignment,
+	TrainingPlanDetails,
+	TrainingPlanItem
+} from '$lib/types/training-plan';
 import type { ApiResponse } from '$lib/types/api';
 
 /**
@@ -146,5 +152,76 @@ export const organizationsApi = {
 
 	async updateExerciseConfig(userId: number, exerciseId: number, config: Record<string, any>): Promise<ApiResponse<any>> {
 		return restClient.patch<any>(`/organizations/users/${userId}/exercises/${exerciseId}/config`, { config });
+	},
+
+	// ==================== Training Plans ====================
+
+	async getTrainingPlans(): Promise<ApiResponse<TrainingPlan[]>> {
+		return restClient.get<TrainingPlan[]>('/organizations/training-plans');
+	},
+
+	async getTrainingPlan(planId: number): Promise<ApiResponse<TrainingPlanDetails>> {
+		return restClient.get<TrainingPlanDetails>(`/organizations/training-plans/${planId}`);
+	},
+
+	async createTrainingPlan(payload: { name: string; description?: string | null }): Promise<ApiResponse<TrainingPlan>> {
+		return restClient.post<TrainingPlan>('/organizations/training-plans', payload);
+	},
+
+	async updateTrainingPlan(planId: number, payload: { name?: string; description?: string | null; is_active?: boolean }): Promise<ApiResponse<TrainingPlan>> {
+		return restClient.patch<TrainingPlan>(`/organizations/training-plans/${planId}`, payload);
+	},
+
+	async deleteTrainingPlan(planId: number): Promise<ApiResponse<{ message: string }>> {
+		return restClient.delete<{ message: string }>(`/organizations/training-plans/${planId}`);
+	},
+
+	async addTrainingPlanItem(planId: number, payload: {
+		template_id: number;
+		position?: number;
+		target_reps?: number;
+		target_sets?: number;
+		target_duration_sec?: number;
+		rest_seconds?: number;
+	}): Promise<ApiResponse<TrainingPlanItem>> {
+		return restClient.post<TrainingPlanItem>(`/organizations/training-plans/${planId}/items`, payload);
+	},
+
+	async updateTrainingPlanItem(planId: number, itemId: number, payload: {
+		position?: number;
+		target_reps?: number;
+		target_sets?: number;
+		target_duration_sec?: number;
+		rest_seconds?: number;
+	}): Promise<ApiResponse<TrainingPlanItem>> {
+		return restClient.patch<TrainingPlanItem>(
+			`/organizations/training-plans/${planId}/items/${itemId}`,
+			payload
+		);
+	},
+
+	async removeTrainingPlanItem(planId: number, itemId: number): Promise<ApiResponse<{ message: string }>> {
+		return restClient.delete<{ message: string }>(
+			`/organizations/training-plans/${planId}/items/${itemId}`
+		);
+	},
+
+	async getUserTrainingPlan(userId: number): Promise<ApiResponse<TrainingPlanAssignment | null>> {
+		return restClient.get<TrainingPlanAssignment | null>(
+			`/organizations/users/${userId}/training-plan`
+		);
+	},
+
+	async assignTrainingPlanToUser(userId: number, planId: number): Promise<ApiResponse<TrainingPlanAssignment>> {
+		return restClient.post<TrainingPlanAssignment>(
+			`/organizations/users/${userId}/training-plan`,
+			{ plan_id: planId }
+		);
+	},
+
+	async removeTrainingPlanFromUser(userId: number): Promise<ApiResponse<{ message: string }>> {
+		return restClient.delete<{ message: string }>(
+			`/organizations/users/${userId}/training-plan`
+		);
 	}
 };

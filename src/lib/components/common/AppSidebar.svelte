@@ -5,6 +5,7 @@
     import { sidebarCollapsed } from "$lib/stores/sidebar.store";
     import Home from "lucide-svelte/icons/home";
     import Users from "lucide-svelte/icons/users";
+    import Dumbbell from "lucide-svelte/icons/dumbbell";
     import Settings from "lucide-svelte/icons/settings";
     import LogOut from "lucide-svelte/icons/log-out";
     import Menu from "lucide-svelte/icons/menu";
@@ -75,6 +76,18 @@
                 <Users class="w-5 h-5" />
             </span>
             <span class="nav-label">Usuários</span>
+        </button>
+        <button
+            type="button"
+            class="nav-item"
+            class:active={currentPath.startsWith("/training-plans")}
+            onclick={() => navigateTo("/training-plans")}
+            title="Planos de treino"
+        >
+            <span class="nav-icon">
+                <Dumbbell class="w-5 h-5" />
+            </span>
+            <span class="nav-label">Planos de treino</span>
         </button>
     </nav>
 
@@ -252,3 +265,4 @@
         color: rgba(239, 68, 68, 1);
     }
 </style>
+

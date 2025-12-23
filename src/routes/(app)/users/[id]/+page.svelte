@@ -9,27 +9,47 @@
         Ruler,
         Weight,
         Trash2,
-        Shield,
         Dumbbell,
     } from "lucide-svelte";
     import type { PageData } from "./$types";
     import ExerciseConfigEditor from "$lib/components/organization/ExerciseConfigEditor.svelte";
     import ManageExercisesModal from "$lib/components/organization/ManageExercisesModal.svelte";
     import { organizationsApi } from "$lib/api/organizations.api";
+    import type {
+        TrainingPlan,
+        TrainingPlanAssignment,
+    } from "$lib/types/training-plan";
     import UserCheck from "lucide-svelte/icons/user-check";
     import CircleOff from "lucide-svelte/icons/circle-off";
 
-    export let data: PageData;
+    let { data }: { data: PageData } = $props();
 
-    $: user = data.user;
-    $: exercises = data.exercises ?? [];
-    $: templates = data.templates;
+    let user = $state(data.user);
+    let exercises = $state(data.exercises ?? []);
+    let templates = $state(data.templates ?? []);
+    let trainingPlans = $state<TrainingPlan[]>(data.trainingPlans ?? []);
+    let assignedTrainingPlan = $state<TrainingPlanAssignment | null>(
+        data.assignedTrainingPlan ?? null,
+    );
+
+    $effect(() => {
+        user = data.user;
+        exercises = data.exercises ?? [];
+        templates = data.templates ?? [];
+        trainingPlans = data.trainingPlans ?? [];
+        assignedTrainingPlan = data.assignedTrainingPlan ?? null;
+    });
 
     // State
     let selectedExerciseId: number | null = null;
     let fullConfig: any = null;
     let isLoadingConfig = false;
     let showAssignModal = false;
+    let selectedPlanId = $state<number | null>(
+        data.assignedTrainingPlan?.plan_id ?? null,
+    );
+    let planAssignError = $state("");
+    let isAssigningPlan = $state(false);
 
     // Helper to calculate age
     function getAge(birthDate: string | null): string {
@@ -152,6 +172,47 @@
             alert("Erro de conexão");
         }
     }
+    async function handleAssignPlan() {
+        if (!selectedPlanId || isAssigningPlan) {
+            planAssignError = "Selecione um plano de treino.";
+            return;
+        }
+
+        planAssignError = "";
+        isAssigningPlan = true;
+
+        const res = await organizationsApi.assignTrainingPlanToUser(
+            user.user_id,
+            selectedPlanId,
+        );
+
+        if (res.success) {
+            assignedTrainingPlan = res.data;
+            selectedPlanId = res.data.plan_id;
+        } else {
+            planAssignError =
+                res.error?.message || "Erro ao atribuir plano.";
+        }
+
+        isAssigningPlan = false;
+    }
+
+    async function handleRemovePlan() {
+        if (!assignedTrainingPlan) return;
+        if (!confirm("Deseja remover o plano deste usuario?")) return;
+
+        const res = await organizationsApi.removeTrainingPlanFromUser(
+            user.user_id,
+        );
+
+        if (res.success) {
+            assignedTrainingPlan = null;
+            selectedPlanId = null;
+        } else {
+            planAssignError =
+                res.error?.message || "Erro ao remover plano.";
+        }
+    }
 
     function handleExercisesUpdated() {
         // Reload page data to get fresh exercises list
@@ -164,7 +225,7 @@
         <!-- Back & Header -->
         <div class="mb-8">
             <button
-                on:click={() => goto("/users")}
+                onclick={() => goto("/users")}
                 class="flex items-center text-white/50 mb-4 transition-colors"
             >
                 <ArrowLeft size={20} class="mr-2" />
@@ -222,7 +283,7 @@
 
                 <div class="flex gap-3">
                     <button
-                        on:click={handleToggleStatus}
+                        onclick={handleToggleStatus}
                         class="user-action-btn px-4 py-2 flex items-center gap-2 text-sm font-medium"
                         style={`border-radius: var(--radius-md); ${
                             user.is_active
@@ -240,7 +301,7 @@
                         {/if}
                     </button>
                     <button
-                        on:click={handleRemoveUser}
+                        onclick={handleRemoveUser}
                         class="user-action-btn px-4 py-2 text-red-400 hover:text-red-300 flex items-center gap-2 text-sm font-medium"
                         style="border-radius: var(--radius-md);"
                     >
@@ -299,6 +360,68 @@
 
             <!-- Main Content: Exercises -->
             <div class="lg:col-span-2 space-y-4">
+                <div class="user-card p-5 plan-assignment-card">
+                    <div class="flex items-center justify-between gap-3 mb-4">
+                        <h3 class="text-lg font-semibold text-white flex items-center gap-2">
+                            <Dumbbell size={18} /> Plano de treino
+                        </h3>
+                        {#if assignedTrainingPlan}
+                            <span class="assignment-chip">Ativo</span>
+                        {/if}
+                    </div>
+
+                    {#if assignedTrainingPlan}
+                        <p class="text-white/60 text-sm mb-2">
+                            Plano atual: {assignedTrainingPlan.plan?.name || "Plano"}
+                        </p>
+                    {:else}
+                        <p class="text-white/60 text-sm mb-2">
+                            Nenhum plano ativo para este usuario.
+                        </p>
+                    {/if}
+
+                    <div class="assignment-controls">
+                        <label class="plan-select">
+                            <span>Plano</span>
+                            <select
+                                onchange={(e) =>
+                                    (selectedPlanId =
+                                        Number((e.target as HTMLSelectElement).value) ||
+                                        null)}
+                            >
+                                <option value="">Selecione</option>
+                                {#each trainingPlans.filter((p) => p.is_active) as plan}
+                                    <option value={plan.id} selected={plan.id === selectedPlanId}>
+                                        {plan.name}
+                                    </option>
+                                {/each}
+                            </select>
+                        </label>
+                        <div class="flex gap-3">
+                            <button
+                                class="user-action-btn px-4 py-2 text-sm font-medium flex items-center gap-2 text-primary-500"
+                                style="border-radius: var(--radius-md);"
+                                onclick={handleAssignPlan}
+                                disabled={isAssigningPlan}
+                            >
+                                {isAssigningPlan ? "Atribuindo..." : "Atribuir"}
+                            </button>
+                            {#if assignedTrainingPlan}
+                                <button
+                                    class="user-action-btn px-4 py-2 text-sm font-medium flex items-center gap-2 text-red-400"
+                                    style="border-radius: var(--radius-md);"
+                                    onclick={handleRemovePlan}
+                                >
+                                    Remover
+                                </button>
+                            {/if}
+                        </div>
+                    </div>
+
+                    {#if planAssignError}
+                        <p class="plan-error">{planAssignError}</p>
+                    {/if}
+                </div>
                 <div class="flex justify-between items-center">
                     <h3
                         class="text-xl font-bold text-white flex items-center gap-3"
@@ -306,7 +429,7 @@
                         Planos de Exercício
                     </h3>
                     <button
-                        on:click={() => (showAssignModal = true)}
+                        onclick={() => (showAssignModal = true)}
                         class="user-action-btn px-4 py-2 text-sm font-medium flex items-center gap-2 text-primary-500"
                         style="border-radius: var(--radius-md);"
                     >
@@ -326,7 +449,7 @@
                                 Nenhum exercício atribuído para este usuário.
                             </p>
                             <button
-                                on:click={() => (showAssignModal = true)}
+                                onclick={() => (showAssignModal = true)}
                                 class="mt-4 text-primary-500 font-medium text-sm"
                             >
                                 Clique para adicionar o primeiro exercício
@@ -340,7 +463,7 @@
                             >
                                 <div
                                     class="p-4 flex items-center justify-between cursor-pointer"
-                                    on:click={() =>
+                                    onclick={() =>
                                         handleSelectExercise(exercise)}
                                 >
                                     <div class="flex items-center gap-4">
@@ -376,10 +499,12 @@
                                                 : "Configurar"}
                                         </span>
                                         <button
-                                            on:click|stopPropagation={() =>
+                                            onclick={(event) => {
+                                                event.stopPropagation();
                                                 handleRemoveExercise(
                                                     exercise.id,
-                                                )}
+                                                );
+                                            }}
                                             class="w-8 h-8 flex items-center justify-center hover:bg-red-500/10 text-white/40 hover:text-red-400 transition-colors"
                                             style="border-radius: var(--radius-md);"
                                             title="Remover exercício"
@@ -512,4 +637,51 @@
     .user-action-btn:hover {
         background: transparent;
     }
+
+    .plan-assignment-card {
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .assignment-chip {
+        padding: 0.2rem 0.6rem;
+        border-radius: 999px;
+        background: rgba(34, 197, 94, 0.15);
+        color: rgb(34, 197, 94);
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    .assignment-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: flex-end;
+        justify-content: space-between;
+    }
+
+    .plan-select {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.8rem;
+        min-width: 220px;
+        flex: 1;
+    }
+
+    .plan-select select {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: var(--radius-standard);
+        padding: 0.5rem 0.75rem;
+        color: #fff;
+    }
+
+    .plan-error {
+        color: rgb(239, 68, 68);
+        font-size: 0.8rem;
+        margin-top: 0.5rem;
+    }
 </style>
+
