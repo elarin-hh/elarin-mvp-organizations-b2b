@@ -1,10 +1,11 @@
 <script lang="ts">
-	import { organizationsApi } from '$lib/api/organizations.api';
-	import type { OrganizationUser } from '$lib/types/organization';
-	import Clock from 'lucide-svelte/icons/clock';
-	import Check from 'lucide-svelte/icons/check';
-	import X from 'lucide-svelte/icons/x';
-	import UserPlus from 'lucide-svelte/icons/user-plus';
+	import { organizationsApi } from "$lib/api/organizations.api";
+	import type { OrganizationUser } from "$lib/types/organization";
+	import Clock from "lucide-svelte/icons/clock";
+	import Check from "lucide-svelte/icons/check";
+	import X from "lucide-svelte/icons/x";
+	import UserPlus from "lucide-svelte/icons/user-plus";
+	import { toast } from "$lib/stores/toast.store";
 
 	interface Props {
 		users: OrganizationUser[];
@@ -27,14 +28,17 @@
 		if (!selectedUser) return;
 
 		isLoading = true;
-		const response = await organizationsApi.approveUser(selectedUser.user_id);
+		const response = await organizationsApi.approveUser(
+			selectedUser.user_id,
+		);
 
 		if (response.success) {
 			showApproveModal = false;
 			selectedUser = null;
 			await onUpdate?.();
+			toast.success("Usuário aprovado com sucesso");
 		} else {
-			alert(response.error || 'Erro ao aprovar usuário');
+			toast.error(response.error || "Erro ao aprovar usuário");
 		}
 
 		isLoading = false;
@@ -54,14 +58,17 @@
 		if (!selectedUser) return;
 
 		isLoading = true;
-		const response = await organizationsApi.rejectUser(selectedUser.user_id);
+		const response = await organizationsApi.rejectUser(
+			selectedUser.user_id,
+		);
 
 		if (response.success) {
 			showRejectModal = false;
 			selectedUser = null;
 			await onUpdate?.();
+			toast.success("Usuário rejeitado");
 		} else {
-			alert(response.error || 'Erro ao rejeitar usuário');
+			toast.error(response.error || "Erro ao rejeitar usuário");
 		}
 
 		isLoading = false;
@@ -78,35 +85,51 @@
 		<div class="flex items-center gap-3">
 			<Clock class="w-6 h-6 text-primary-500" stroke-width={2} />
 			<div>
-				<h2 class="text-xl font-bold text-white">Usuários Pendentes de Aprovação</h2>
-				<p class="text-sm text-white/50 mt-0.5">Usuários aguardando aprovação para acessar a organização</p>
+				<h2 class="text-xl font-bold text-white">
+					Usuários Pendentes de Aprovação
+				</h2>
+				<p class="text-sm text-white/50 mt-0.5">
+					Usuários aguardando aprovação para acessar a organização
+				</p>
 			</div>
 		</div>
 	</div>
 
 	{#if users.length === 0}
 		<div class="px-6 py-16 text-center">
-			<div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/5 mb-4">
+			<div
+				class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/5 mb-4"
+			>
 				<Check class="w-8 h-8 text-primary-500" stroke-width={2} />
 			</div>
 			<p class="text-white/70 text-lg font-medium mb-1">Tudo em dia!</p>
-			<p class="text-white/50 text-sm">Nenhum usuário pendente de aprovação</p>
+			<p class="text-white/50 text-sm">
+				Nenhum usuário pendente de aprovação
+			</p>
 		</div>
 	{:else}
 		<div class="overflow-x-auto">
 			<table class="w-full">
 				<thead class="bg-white/5">
 					<tr>
-						<th class="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
+						<th
+							class="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider"
+						>
 							Usuário
 						</th>
-						<th class="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
+						<th
+							class="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider"
+						>
 							Email
 						</th>
-						<th class="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
+						<th
+							class="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider"
+						>
 							Data de Solicitação
 						</th>
-						<th class="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
+						<th
+							class="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider"
+						>
 							Ações
 						</th>
 					</tr>
@@ -123,26 +146,42 @@
 											class="h-10 w-10 rounded-full"
 										/>
 									{:else}
-										<div class="h-10 w-10 rounded-full bg-primary-500 flex items-center justify-center">
-											<span class="text-white font-medium">
-												{user.users.full_name.charAt(0).toUpperCase()}
+										<div
+											class="h-10 w-10 rounded-full bg-primary-500 flex items-center justify-center"
+										>
+											<span
+												class="text-white font-medium"
+											>
+												{user.users.full_name
+													.charAt(0)
+													.toUpperCase()}
 											</span>
 										</div>
 									{/if}
 									<div class="ml-4">
-										<div class="text-sm font-medium text-white">
+										<div
+											class="text-sm font-medium text-white"
+										>
 											{user.users.full_name}
 										</div>
 									</div>
 								</div>
 							</td>
-							<td class="px-6 py-4 whitespace-nowrap text-sm text-white/70">
+							<td
+								class="px-6 py-4 whitespace-nowrap text-sm text-white/70"
+							>
 								{user.users.email}
 							</td>
-							<td class="px-6 py-4 whitespace-nowrap text-sm text-white/70">
-								{new Date(user.created_at).toLocaleDateString('pt-BR')}
+							<td
+								class="px-6 py-4 whitespace-nowrap text-sm text-white/70"
+							>
+								{new Date(user.created_at).toLocaleDateString(
+									"pt-BR",
+								)}
 							</td>
-							<td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+							<td
+								class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2"
+							>
 								<button
 									onclick={() => confirmApprove(user)}
 									disabled={isLoading}
@@ -170,12 +209,18 @@
 
 <!-- Approve Confirmation Modal -->
 {#if showApproveModal && selectedUser}
-	<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+	<div
+		class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+	>
 		<div class="glass-card max-w-md w-full mx-4 p-6">
-			<h3 class="text-lg font-bold text-white mb-4">Confirmar Aprovação</h3>
+			<h3 class="text-lg font-bold text-white mb-4">
+				Confirmar Aprovação
+			</h3>
 			<p class="text-white/70 mb-6">
-				Tem certeza que deseja aprovar o usuário <strong class="text-white">{selectedUser.users.full_name}</strong>?
-				<br><br>
+				Tem certeza que deseja aprovar o usuário <strong
+					class="text-white">{selectedUser.users.full_name}</strong
+				>?
+				<br /><br />
 				Após a aprovação, o usuário terá acesso à organização.
 			</p>
 			<div class="flex justify-end space-x-3">
@@ -191,7 +236,7 @@
 					disabled={isLoading}
 					class="glass-button-secondary px-4 py-2 text-primary-500 hover:text-primary-500 disabled:opacity-50"
 				>
-					{isLoading ? 'Aprovando...' : 'Aprovar'}
+					{isLoading ? "Aprovando..." : "Aprovar"}
 				</button>
 			</div>
 		</div>
@@ -200,12 +245,18 @@
 
 <!-- Reject Confirmation Modal -->
 {#if showRejectModal && selectedUser}
-	<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+	<div
+		class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+	>
 		<div class="glass-card max-w-md w-full mx-4 p-6">
-			<h3 class="text-lg font-bold text-white mb-4">Confirmar Rejeição</h3>
+			<h3 class="text-lg font-bold text-white mb-4">
+				Confirmar Rejeição
+			</h3>
 			<p class="text-white/70 mb-6">
-				Tem certeza que deseja rejeitar o usuário <strong class="text-white">{selectedUser.users.full_name}</strong>?
-				<br><br>
+				Tem certeza que deseja rejeitar o usuário <strong
+					class="text-white">{selectedUser.users.full_name}</strong
+				>?
+				<br /><br />
 				O vínculo será removido permanentemente.
 			</p>
 			<div class="flex justify-end space-x-3">
@@ -221,7 +272,7 @@
 					disabled={isLoading}
 					class="glass-button-secondary px-4 py-2 text-red-400 hover:text-red-300 disabled:opacity-50"
 				>
-					{isLoading ? 'Rejeitando...' : 'Rejeitar'}
+					{isLoading ? "Rejeitando..." : "Rejeitar"}
 				</button>
 			</div>
 		</div>

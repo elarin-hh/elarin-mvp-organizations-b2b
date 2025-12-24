@@ -5,3 +5,5 @@ export { default as Loading } from './Loading.svelte';
 export { default as ScrollArea } from './ScrollArea.svelte';
 export { default as AppSidebar } from './AppSidebar.svelte';
 export { default as AppHeader } from './AppHeader.svelte';
+export { default as ConfirmDialog } from './ConfirmDialog.svelte';
+export { default as ToastContainer } from './ToastContainer.svelte';

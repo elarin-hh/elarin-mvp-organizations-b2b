@@ -13,6 +13,7 @@
 	import Trash2 from "lucide-svelte/icons/trash-2";
 	import CircleOff from "lucide-svelte/icons/circle-off";
 	import ConfirmDialog from "$lib/components/common/ConfirmDialog.svelte";
+	import { toast } from "$lib/stores/toast.store";
 
 	let { data }: { data: PageData } = $props();
 
@@ -87,6 +88,7 @@
 	async function handleSavePlan() {
 		if (!editName.trim()) {
 			updateError = "Nome do plano obrigatorio.";
+			toast.error(updateError);
 			return;
 		}
 		updateError = "";
@@ -99,8 +101,10 @@
 
 		if (response.success) {
 			plan = { ...plan, ...response.data };
+			toast.success("Plano atualizado com sucesso");
 		} else {
 			updateError = response.error?.message || "Erro ao atualizar plano.";
+			toast.error(updateError);
 		}
 
 		isSavingPlan = false;
@@ -140,10 +144,12 @@
 				);
 				if (response.success) {
 					closeDialog();
+					toast.success("Plano removido com sucesso");
 					goto("/training-plans");
 				} else {
 					updateError =
 						response.error?.message || "Erro ao remover plano.";
+					toast.error(updateError);
 				}
 			},
 		});
@@ -177,6 +183,7 @@
 			newRestSeconds = null;
 		} else {
 			formError = response.error?.message || "Erro ao adicionar item.";
+			toast.error(formError);
 		}
 
 		isAddingItem = false;
@@ -202,8 +209,10 @@
 					existing.id === item.id ? response.data! : existing,
 				),
 			);
+			toast.success("Item atualizado");
 		} else {
 			updateError = response.error?.message || "Erro ao atualizar item.";
+			toast.error(updateError);
 		}
 	}
 
@@ -221,9 +230,11 @@
 				if (response.success) {
 					items = items.filter((entry) => entry.id !== item.id);
 					closeDialog();
+					toast.success("Item removido");
 				} else {
 					updateError =
 						response.error?.message || "Erro ao remover item.";
+					toast.error(updateError);
 				}
 			},
 		});

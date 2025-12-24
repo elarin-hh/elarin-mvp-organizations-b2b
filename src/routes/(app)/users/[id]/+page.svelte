@@ -22,6 +22,7 @@
     import UserCheck from "lucide-svelte/icons/user-check";
     import CircleOff from "lucide-svelte/icons/circle-off";
     import ConfirmDialog from "$lib/components/common/ConfirmDialog.svelte";
+    import { toast } from "$lib/stores/toast.store";
 
     let { data }: { data: PageData } = $props();
 
@@ -109,7 +110,7 @@
             }
         } catch (err) {
             console.error(err);
-            alert("Erro ao carregar configurações");
+            toast.error("Erro ao carregar configurações");
         } finally {
             isLoadingConfig = false;
         }
@@ -153,8 +154,10 @@
                         fullConfig = null;
                     }
                     closeDialog();
+                    closeDialog();
+                    toast.success("Expercício removido com sucesso");
                 } else {
-                    alert("Erro ao remover exercício");
+                    toast.error("Erro ao remover exercício");
                 }
             },
         });
@@ -175,12 +178,16 @@
                     if (res.success) {
                         user.is_active = !user.is_active;
                         goto($page.url, { invalidateAll: true });
+                        goto($page.url, { invalidateAll: true });
                         closeDialog();
+                        toast.success(
+                            `Usuário ${user.is_active ? "ativado" : "desativado"} com sucesso`,
+                        );
                     } else {
-                        alert("Erro ao alterar status");
+                        toast.error("Erro ao alterar status");
                     }
                 } catch (e) {
-                    alert("Erro de conexão");
+                    toast.error("Erro de conexão");
                 }
             },
         });
@@ -198,12 +205,13 @@
                     const res = await organizationsApi.removeUser(user.user_id);
                     if (res.success) {
                         closeDialog();
+                        toast.success("Usuário removido com sucesso");
                         goto("/users");
                     } else {
-                        alert("Erro ao remover usuário");
+                        toast.error("Erro ao remover usuário");
                     }
                 } catch (e) {
-                    alert("Erro de conexão");
+                    toast.error("Erro de conexão");
                 }
             },
         });
@@ -225,8 +233,10 @@
         if (res.success) {
             assignedTrainingPlans = [res.data, ...assignedTrainingPlans];
             selectedPlanId = null;
+            toast.success("Plano atribuído com sucesso");
         } else {
             planAssignError = res.error?.message || "Erro ao atribuir plano.";
+            toast.error(planAssignError);
         }
 
         isAssigningPlan = false;

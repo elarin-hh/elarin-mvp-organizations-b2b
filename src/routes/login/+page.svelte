@@ -5,9 +5,11 @@
 		isLoading as loading,
 		authError,
 	} from "$lib/stores/organization-auth.store";
+	import { toast } from "$lib/stores/toast.store";
 
 	let email = $state("");
 	let password = $state("");
+	let showError = $state(false); // Local state to control inline error visibility if desired, or just use toast
 
 	const isLoading = $derived($loading);
 	const error = $derived($authError);
@@ -19,6 +21,8 @@
 			// Add a flag to indicate we just logged in successfully
 			sessionStorage.setItem("just_logged_in", "true");
 			goto("/dashboard");
+		} else {
+			toast.error(result.error || "Erro ao realizar login");
 		}
 	}
 
@@ -85,7 +89,7 @@
 		</button>
 	</div>
 
-<!-- 	<div class="absolute bottom-8 text-center">
+	<!-- 	<div class="absolute bottom-8 text-center">
 		<p class="text-white/50 text-sm">
 			Política de Privacidade e Termos de Uso
 		</p>

@@ -1,13 +1,15 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { exercisesApi } from '$lib/api/exercises.api';
-	import type { ExerciseTemplate, UserExercise } from '$lib/types/exercise';
-	import type { OrganizationUser } from '$lib/types/organization';
-	import Dumbbell from 'lucide-svelte/icons/dumbbell';
-	import Plus from 'lucide-svelte/icons/plus';
-	import Trash2 from 'lucide-svelte/icons/trash-2';
-	import X from 'lucide-svelte/icons/x';
-	import { Loading } from '$lib/components/common';
+	import { onMount } from "svelte";
+	import { exercisesApi } from "$lib/api/exercises.api";
+	import type { ExerciseTemplate, UserExercise } from "$lib/types/exercise";
+	import type { OrganizationUser } from "$lib/types/organization";
+	import Dumbbell from "lucide-svelte/icons/dumbbell";
+	import Plus from "lucide-svelte/icons/plus";
+	import Trash2 from "lucide-svelte/icons/trash-2";
+	import X from "lucide-svelte/icons/x";
+	import { toast } from "$lib/stores/toast.store";
+	import ConfirmDialog from "$lib/components/common/ConfirmDialog.svelte";
+	import { Loading } from "$lib/components/common";
 
 	interface Props {
 		user: OrganizationUser;
@@ -24,11 +26,41 @@
 	let showAddModal = $state(false);
 	let selectedTemplate = $state<ExerciseTemplate | null>(null);
 
+	// Dialog State
+	let dialogOpen = $state(false);
+	let dialogConfig = $state({
+		title: "",
+		message: "",
+		confirmLabel: "Confirmar",
+		variant: "default" as "default" | "danger" | "warning",
+		onConfirm: () => {},
+	});
+
+	function openDialog(
+		config: Partial<typeof dialogConfig> & { onConfirm: () => void },
+	) {
+		dialogConfig = {
+			title: config.title || "Confirmar ação",
+			message: config.message || "Tem certeza?",
+			confirmLabel: config.confirmLabel || "Confirmar",
+			variant: config.variant || "default",
+			onConfirm: config.onConfirm,
+		};
+		dialogOpen = true;
+	}
+
+	function closeDialog() {
+		dialogOpen = false;
+	}
+
 	// Available templates (not yet assigned)
 	const availableTemplates = $derived(
 		templates.filter(
-			(template) => !userExercises.some((exercise) => exercise.type === template.type)
-		)
+			(template) =>
+				!userExercises.some(
+					(exercise) => exercise.type === template.type,
+				),
+		),
 	);
 
 	async function loadData() {
@@ -41,7 +73,9 @@
 		}
 
 		// Load user exercises
-		const exercisesResponse = await exercisesApi.getUserExercises(user.user_id);
+		const exercisesResponse = await exercisesApi.getUserExercises(
+			user.user_id,
+		);
 		if (exercisesResponse.success && exercisesResponse.data) {
 			userExercises = exercisesResponse.data;
 		}
@@ -53,36 +87,48 @@
 		isProcessing = true;
 
 		const response = await exercisesApi.assignExercise(user.user_id, {
-			template_id: template.id
+			template_id: template.id,
 		});
 
 		if (response.success) {
 			showAddModal = false;
 			selectedTemplate = null;
 			await loadData();
+			toast.success("Exercício atribuído com sucesso");
 		} else {
-			alert(response.error?.message || 'Erro ao atribuir exercício');
+			toast.error(
+				response.error?.message || "Erro ao atribuir exercício",
+			);
 		}
 
 		isProcessing = false;
 	}
 
 	async function handleRemoveExercise(exercise: UserExercise) {
-		if (!confirm(`Tem certeza que deseja remover "${exercise.name}"?`)) {
-			return;
-		}
+		openDialog({
+			title: "Remover exercício",
+			message: `Tem certeza que deseja remover "${exercise.name}"?`,
+			variant: "danger",
+			confirmLabel: "Remover",
+			onConfirm: async () => {
+				isProcessing = true;
+				const response = await exercisesApi.removeExercise(
+					user.user_id,
+					exercise.id,
+				);
 
-		isProcessing = true;
-
-		const response = await exercisesApi.removeExercise(user.user_id, exercise.id);
-
-		if (response.success) {
-			await loadData();
-		} else {
-			alert(response.error?.message || 'Erro ao remover exercício');
-		}
-
-		isProcessing = false;
+				if (response.success) {
+					await loadData();
+					toast.success("Exercício removido");
+				} else {
+					toast.error(
+						response.error?.message || "Erro ao remover exercício",
+					);
+				}
+				isProcessing = false;
+				closeDialog();
+			},
+		});
 	}
 
 	function openAddModal() {
@@ -124,12 +170,21 @@
 			tabindex="-1"
 		>
 			<!-- Header -->
-			<div class="px-6 py-5 border-b border-white/10 flex items-center justify-between">
+			<div
+				class="px-6 py-5 border-b border-white/10 flex items-center justify-between"
+			>
 				<div class="flex items-center gap-3">
-					<Dumbbell class="w-6 h-6 text-primary-500" stroke-width={2} />
+					<Dumbbell
+						class="w-6 h-6 text-primary-500"
+						stroke-width={2}
+					/>
 					<div>
-						<h2 class="text-xl font-bold text-white">Gerenciar Exercícios</h2>
-						<p class="text-sm text-white/70">{user.users.full_name}</p>
+						<h2 class="text-xl font-bold text-white">
+							Gerenciar Exercícios
+						</h2>
+						<p class="text-sm text-white/70">
+							{user.users.full_name}
+						</p>
 					</div>
 				</div>
 				<button
@@ -154,7 +209,8 @@
 							</h3>
 							<button
 								onclick={openAddModal}
-								disabled={isProcessing || availableTemplates.length === 0}
+								disabled={isProcessing ||
+									availableTemplates.length === 0}
 								class="glass-button-secondary px-4 py-2 text-white disabled:opacity-50 inline-flex items-center gap-2"
 							>
 								<Plus size={18} />
@@ -164,8 +220,13 @@
 
 						{#if userExercises.length === 0}
 							<div class="glass-card p-8 text-center">
-								<Dumbbell class="w-12 h-12 text-white/40 mx-auto mb-3" stroke-width={1.5} />
-								<p class="text-white/70">Nenhum exercício atribuído</p>
+								<Dumbbell
+									class="w-12 h-12 text-white/40 mx-auto mb-3"
+									stroke-width={1.5}
+								/>
+								<p class="text-white/70">
+									Nenhum exercício atribuído
+								</p>
 								<p class="text-sm text-white/50 mt-1">
 									Clique em "Adicionar Exercício" para começar
 								</p>
@@ -173,20 +234,30 @@
 						{:else}
 							<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 								{#each userExercises as exercise}
-									<div class="glass-card p-4 flex items-center justify-between">
+									<div
+										class="glass-card p-4 flex items-center justify-between"
+									>
 										<div class="flex items-center gap-3">
 											<div
 												class="w-10 h-10 bg-primary-500/20 flex items-center justify-center"
 												style="border-radius: var(--radius-standard);"
 											>
-												<Dumbbell class="w-5 h-5 text-primary-500" stroke-width={2} />
+												<Dumbbell
+													class="w-5 h-5 text-primary-500"
+													stroke-width={2}
+												/>
 											</div>
 											<div>
-												<h4 class="text-white font-medium">{exercise.name}</h4>
+												<h4
+													class="text-white font-medium"
+												>
+													{exercise.name}
+												</h4>
 											</div>
 										</div>
 										<button
-											onclick={() => handleRemoveExercise(exercise)}
+											onclick={() =>
+												handleRemoveExercise(exercise)}
 											disabled={isProcessing}
 											class="glass-button-secondary p-2 text-red-400 hover:text-red-300 disabled:opacity-50"
 											aria-label="Remover exercício"
@@ -201,9 +272,12 @@
 
 					<!-- Available Templates Info -->
 					{#if availableTemplates.length === 0}
-						<div class="glass-card p-4 bg-primary-500/10 border border-primary-500/20">
+						<div
+							class="glass-card p-4 bg-primary-500/10 border border-primary-500/20"
+						>
 							<p class="text-primary-500 text-sm">
-								Todos os exercícios disponíveis já foram atribuídos a este usuário.
+								Todos os exercícios disponíveis já foram
+								atribuídos a este usuário.
 							</p>
 						</div>
 					{/if}
@@ -227,8 +301,12 @@
 				tabindex="-1"
 			>
 				<!-- Header -->
-				<div class="px-6 py-5 border-b border-white/10 flex items-center justify-between">
-					<h3 class="text-lg font-bold text-white">Selecionar Exercício</h3>
+				<div
+					class="px-6 py-5 border-b border-white/10 flex items-center justify-between"
+				>
+					<h3 class="text-lg font-bold text-white">
+						Selecionar Exercício
+					</h3>
 					<button
 						onclick={closeAddModal}
 						class="glass-button-secondary p-2 text-white/70 hover:text-white"
@@ -242,13 +320,16 @@
 				<div class="flex-1 overflow-y-auto p-6">
 					{#if availableTemplates.length === 0}
 						<div class="text-center py-8">
-							<p class="text-white/70">Nenhum exercício disponível</p>
+							<p class="text-white/70">
+								Nenhum exercício disponível
+							</p>
 						</div>
 					{:else}
 						<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 							{#each availableTemplates as template}
 								<button
-									onclick={() => handleAssignExercise(template)}
+									onclick={() =>
+										handleAssignExercise(template)}
 									disabled={isProcessing}
 									class="glass-card p-4 text-left hover:bg-white/10 transition-colors disabled:opacity-50 flex items-center gap-3"
 								>
@@ -256,17 +337,29 @@
 										class="w-12 h-12 bg-primary-500/20 flex items-center justify-center flex-shrink-0"
 										style="border-radius: var(--radius-standard);"
 									>
-										<Dumbbell class="w-6 h-6 text-primary-500" stroke-width={2} />
+										<Dumbbell
+											class="w-6 h-6 text-primary-500"
+											stroke-width={2}
+										/>
 									</div>
 									<div class="flex-1 min-w-0">
-										<h4 class="text-white font-medium truncate">{template.name}</h4>
+										<h4
+											class="text-white font-medium truncate"
+										>
+											{template.name}
+										</h4>
 										{#if template.description}
-											<p class="text-xs text-white/40 mt-1 line-clamp-2">
+											<p
+												class="text-xs text-white/40 mt-1 line-clamp-2"
+											>
 												{template.description}
 											</p>
 										{/if}
 									</div>
-									<Plus class="w-5 h-5 text-primary-500 flex-shrink-0" stroke-width={2} />
+									<Plus
+										class="w-5 h-5 text-primary-500 flex-shrink-0"
+										stroke-width={2}
+									/>
 								</button>
 							{/each}
 						</div>
@@ -276,3 +369,13 @@
 		</div>
 	{/if}
 {/if}
+
+<ConfirmDialog
+	isOpen={dialogOpen}
+	title={dialogConfig.title}
+	message={dialogConfig.message}
+	confirmLabel={dialogConfig.confirmLabel}
+	variant={dialogConfig.variant}
+	onConfirm={dialogConfig.onConfirm}
+	onCancel={closeDialog}
+/>

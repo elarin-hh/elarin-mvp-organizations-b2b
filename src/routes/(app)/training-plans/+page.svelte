@@ -207,8 +207,14 @@
 <style>
 	.plan-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 		gap: 1.5rem;
+	}
+
+	@media (min-width: 1024px) {
+		.plan-grid {
+			grid-template-columns: repeat(3, 1fr);
+		}
 	}
 
 	.plan-card {
@@ -218,6 +224,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.85rem;
+		height: 100%;
 	}
 
 	.plan-card.inactive {
@@ -236,12 +243,20 @@
 		font-weight: 600;
 		color: #fff;
 		margin: 0;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	.plan-description {
 		font-size: 0.88rem;
 		color: rgba(255, 255, 255, 0.65);
 		margin: 0;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+		min-height: 2.6em; /* Ensure consistent height for 2 lines */
 	}
 
 	.plan-meta {

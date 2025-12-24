@@ -9,6 +9,7 @@
 	import { plansApi } from "$lib/api/plans.api";
 	import PlanCard from "$lib/components/plans/PlanCard.svelte";
 	import type { Plan } from "$lib/types/plan";
+	import { toast } from "$lib/stores/toast.store";
 
 	let currentStep = $state(1);
 	const totalSteps = 2;
@@ -63,21 +64,26 @@
 			!responsibleName
 		) {
 			formError = "Por favor, preencha todos os campos";
+			toast.error(formError);
 			return false;
 		}
 
 		if (password !== confirmPassword) {
 			formError = "As senhas não coincidem";
+			toast.error(formError);
 			return false;
 		}
 
 		if (password.length < 6) {
 			formError = "A senha deve ter no mínimo 6 caracteres";
+			toast.error(formError);
 			return false;
 		}
 
 		return true;
 	}
+
+	// ... (skipping nextStep/prevStep chunks if they don't change logic, but I need to reach handleRegister)
 
 	function nextStep() {
 		formError = "";
@@ -103,6 +109,7 @@
 
 		if (!selectedPlanId) {
 			formError = "Por favor, selecione um plano";
+			toast.error(formError);
 			return;
 		}
 
@@ -119,6 +126,8 @@
 
 		if (result.success) {
 			goto("/dashboard");
+		} else {
+			toast.error(result.error || "Erro ao cadastrar organização");
 		}
 	}
 
@@ -299,7 +308,7 @@
 		</button>
 	</div>
 
-<!-- 	<div class="mt-8 text-center">
+	<!-- 	<div class="mt-8 text-center">
 		<p class="text-white/50 text-sm">
 			Política de Privacidade e Termos de Uso
 		</p>

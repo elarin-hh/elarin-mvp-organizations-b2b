@@ -6,6 +6,8 @@
     import Check from "lucide-svelte/icons/check";
     import Plus from "lucide-svelte/icons/plus";
     import Trash2 from "lucide-svelte/icons/trash-2";
+    import { toast } from "$lib/stores/toast.store";
+    import ConfirmDialog from "$lib/components/common/ConfirmDialog.svelte";
 
     interface Props {
         user: {
@@ -23,6 +25,33 @@
     let isLoading = $state(true);
     let isProcessing = $state(false);
     let searchTerm = $state("");
+
+    // Dialog State
+    let dialogOpen = $state(false);
+    let dialogConfig = $state({
+        title: "",
+        message: "",
+        confirmLabel: "Confirmar",
+        variant: "default" as "default" | "danger" | "warning",
+        onConfirm: () => {},
+    });
+
+    function openDialog(
+        config: Partial<typeof dialogConfig> & { onConfirm: () => void },
+    ) {
+        dialogConfig = {
+            title: config.title || "Confirmar ação",
+            message: config.message || "Tem certeza?",
+            confirmLabel: config.confirmLabel || "Confirmar",
+            variant: config.variant || "default",
+            onConfirm: config.onConfirm,
+        };
+        dialogOpen = true;
+    }
+
+    function closeDialog() {
+        dialogOpen = false;
+    }
 
     // Filtered templates based on search
     let filteredTemplates = $derived(
@@ -71,25 +100,33 @@
 
         if (exerciseId) {
             // Remove exercise
-            if (!confirm(`Remover "${template.name}" deste usuário?`)) return;
-
-            isProcessing = true;
-            try {
-                const response = await organizationsApi.removeExercise(
-                    user.id,
-                    exerciseId,
-                );
-                if (response.success) {
-                    userExercises = userExercises.filter(
-                        (ex) => ex.id !== exerciseId,
-                    );
-                }
-            } catch (error) {
-                console.error("Failed to remove exercise:", error);
-                alert("Erro ao remover exercício");
-            } finally {
-                isProcessing = false;
-            }
+            openDialog({
+                title: "Remover exercício",
+                message: `Remover "${template.name}" deste usuário?`,
+                variant: "danger",
+                confirmLabel: "Remover",
+                onConfirm: async () => {
+                    isProcessing = true;
+                    try {
+                        const response = await organizationsApi.removeExercise(
+                            user.id,
+                            exerciseId,
+                        );
+                        if (response.success) {
+                            userExercises = userExercises.filter(
+                                (ex) => ex.id !== exerciseId,
+                            );
+                            toast.success("Exercício removido");
+                        }
+                    } catch (error) {
+                        console.error("Failed to remove exercise:", error);
+                        toast.error("Erro ao remover exercício");
+                    } finally {
+                        isProcessing = false;
+                        closeDialog();
+                    }
+                },
+            });
         } else {
             // Assign exercise
             isProcessing = true;
@@ -100,13 +137,14 @@
                 );
                 if (response.success && response.data) {
                     userExercises = [...userExercises, response.data];
+                    toast.success("Exercício atribuído");
                 }
             } catch (error: any) {
                 console.error("Failed to assign exercise:", error);
                 const message =
                     error?.response?.data?.message ||
                     "Erro ao atribuir exercício";
-                alert(message);
+                toast.error(message);
             } finally {
                 isProcessing = false;
             }
@@ -216,6 +254,16 @@
     </div>
 </div>
 
+<ConfirmDialog
+    isOpen={dialogOpen}
+    title={dialogConfig.title}
+    message={dialogConfig.message}
+    confirmLabel={dialogConfig.confirmLabel}
+    variant={dialogConfig.variant}
+    onConfirm={dialogConfig.onConfirm}
+    onCancel={closeDialog}
+/>
+
 <style>
     .modal-overlay {
         position: fixed;
@@ -271,7 +319,9 @@
         cursor: pointer;
         padding: 0.5rem;
         border-radius: var(--radius-standard);
-        transition: background-color 0.2s ease, color 0.2s ease;
+        transition:
+            background-color 0.2s ease,
+            color 0.2s ease;
     }
 
     .close-btn:hover {

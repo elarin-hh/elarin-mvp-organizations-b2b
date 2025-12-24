@@ -3,6 +3,7 @@
 	import { organizationsApi } from "$lib/api/organizations.api";
 	import ArrowLeft from "lucide-svelte/icons/arrow-left";
 	import ConfirmDialog from "$lib/components/common/ConfirmDialog.svelte";
+	import { toast } from "$lib/stores/toast.store";
 
 	// Form states
 	let full_name = $state("");
@@ -201,7 +202,9 @@
 		event.preventDefault();
 
 		if (!validateForm()) {
-			formError = "Por favor, corrija os erros no formulário";
+			const errorMsg = "Por favor, corrija os erros no formulário";
+			formError = errorMsg;
+			toast.error(errorMsg);
 			return;
 		}
 
@@ -229,12 +232,16 @@
 
 		if (response.success) {
 			submitSuccess = true;
+			toast.success("Usuário cadastrado com sucesso! Redirecionando...");
 			// Wait a bit to show success message, then redirect
 			setTimeout(() => {
 				goto("/users");
 			}, 2000);
 		} else {
-			formError = response.error?.message || "Erro ao cadastrar usuário";
+			const errorMsg =
+				response.error?.message || "Erro ao cadastrar usuário";
+			formError = errorMsg;
+			toast.error(errorMsg);
 		}
 	}
 

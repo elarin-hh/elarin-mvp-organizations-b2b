@@ -10,6 +10,7 @@
 	import UserCheck from "lucide-svelte/icons/user-check";
 	import { Loading } from "$lib/components/common";
 	import ConfirmDialog from "$lib/components/common/ConfirmDialog.svelte";
+	import { toast } from "$lib/stores/toast.store";
 
 	interface Props {
 		users: OrganizationUser[];
@@ -83,8 +84,9 @@
 				if (response.success) {
 					closeDialog();
 					await onUpdate?.();
+					toast.success("Usuário removido com sucesso");
 				} else {
-					alert(response.error || "Erro ao remover usuário");
+					toast.error(response.error || "Erro ao remover usuário");
 				}
 				isLoading = false;
 			},
@@ -106,8 +108,9 @@
 
 				if (response.success) {
 					await onUpdate?.();
+					toast.success(`Usuário ${action}do com sucesso`);
 				} else {
-					alert(response.error || "Erro ao alterar status");
+					toast.error(response.error || "Erro ao alterar status");
 				}
 				isTogglingStatus = null;
 				closeDialog();
