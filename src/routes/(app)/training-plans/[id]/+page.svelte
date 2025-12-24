@@ -7,10 +7,11 @@
 	import type { ExerciseTemplate } from "$lib/types/exercise";
 	import type {
 		TrainingPlanDetails,
-		TrainingPlanItem
+		TrainingPlanItem,
 	} from "$lib/types/training-plan";
 	import ArrowLeft from "lucide-svelte/icons/arrow-left";
 	import Trash2 from "lucide-svelte/icons/trash-2";
+	import CircleOff from "lucide-svelte/icons/circle-off";
 
 	let { data }: { data: PageData } = $props();
 
@@ -34,7 +35,9 @@
 	let isAddingItem = $state(false);
 
 	function sortItems(list: TrainingPlanItem[]) {
-		return list.slice().sort((a, b) => (a.position || 0) - (b.position || 0));
+		return list
+			.slice()
+			.sort((a, b) => (a.position || 0) - (b.position || 0));
 	}
 
 	function getItemName(item: TrainingPlanItem) {
@@ -49,10 +52,10 @@
 	function updateItemField(
 		itemId: number,
 		field: keyof TrainingPlanItem,
-		value: number | null
+		value: number | null,
 	) {
 		items = items.map((item) =>
-			item.id === itemId ? { ...item, [field]: value } : item
+			item.id === itemId ? { ...item, [field]: value } : item,
 		);
 	}
 
@@ -66,7 +69,7 @@
 
 		const response = await organizationsApi.updateTrainingPlan(plan.id, {
 			name: editName.trim(),
-			description: editDescription.trim() || null
+			description: editDescription.trim() || null,
 		});
 
 		if (response.success) {
@@ -103,7 +106,7 @@
 			target_reps: newTargetReps ?? undefined,
 			target_sets: newTargetSets ?? undefined,
 			target_duration_sec: newTargetDuration ?? undefined,
-			rest_seconds: newRestSeconds ?? undefined
+			rest_seconds: newRestSeconds ?? undefined,
 		});
 
 		if (response.success) {
@@ -124,19 +127,23 @@
 
 	async function handleUpdateItem(item: TrainingPlanItem) {
 		updateError = "";
-		const response = await organizationsApi.updateTrainingPlanItem(plan.id, item.id, {
-			position: item.position,
-			target_reps: item.target_reps ?? undefined,
-			target_sets: item.target_sets ?? undefined,
-			target_duration_sec: item.target_duration_sec ?? undefined,
-			rest_seconds: item.rest_seconds ?? undefined
-		});
+		const response = await organizationsApi.updateTrainingPlanItem(
+			plan.id,
+			item.id,
+			{
+				position: item.position,
+				target_reps: item.target_reps ?? undefined,
+				target_sets: item.target_sets ?? undefined,
+				target_duration_sec: item.target_duration_sec ?? undefined,
+				rest_seconds: item.rest_seconds ?? undefined,
+			},
+		);
 
 		if (response.success) {
 			items = sortItems(
 				items.map((existing) =>
-					existing.id === item.id ? response.data : existing
-				)
+					existing.id === item.id ? response.data : existing,
+				),
 			);
 		} else {
 			updateError = response.error?.message || "Erro ao atualizar item.";
@@ -146,7 +153,10 @@
 	async function handleRemoveItem(item: TrainingPlanItem) {
 		if (!confirm("Deseja remover este item?")) return;
 
-		const response = await organizationsApi.removeTrainingPlanItem(plan.id, item.id);
+		const response = await organizationsApi.removeTrainingPlanItem(
+			plan.id,
+			item.id,
+		);
 		if (response.success) {
 			items = items.filter((entry) => entry.id !== item.id);
 		} else {
@@ -181,14 +191,16 @@
 					>
 						{#snippet children()}Adicionar item{/snippet}
 					</Button>
-					<Button
-						variant="secondary"
-						class="btn-radius-md"
-						onclick={handleDeactivate}
+					<button
+						type="button"
+						class="plan-action-btn text-white/80 hover:text-red-300"
+						style="border-radius: var(--radius-md);"
 						disabled={!plan.is_active}
+						onclick={handleDeactivate}
 					>
-						{#snippet children()}Desativar{/snippet}
-					</Button>
+						<CircleOff size={16} />
+						Desativar
+					</button>
 				</div>
 			</div>
 
@@ -203,7 +215,11 @@
 				</label>
 			</div>
 			<div class="flex items-center gap-3 mt-4">
-				<Button class="btn-radius-md" onclick={handleSavePlan} disabled={isSavingPlan}>
+				<Button
+					class="btn-radius-md"
+					onclick={handleSavePlan}
+					disabled={isSavingPlan}
+				>
 					{#snippet children()}
 						{isSavingPlan ? "Salvando..." : "Salvar"}
 					{/snippet}
@@ -233,7 +249,8 @@
 									#{item.position} - {getItemName(item)}
 								</h3>
 								<p class="text-white/50 text-xs">
-									Template: {item.exercise_template?.type || item.exercise_type}
+									Template: {item.exercise_template?.type ||
+										item.exercise_type}
 								</p>
 							</div>
 							<Button
@@ -256,7 +273,10 @@
 										updateItemField(
 											item.id,
 											"position",
-											Number((e.target as HTMLInputElement).value)
+											Number(
+												(e.target as HTMLInputElement)
+													.value,
+											),
 										)}
 								/>
 							</label>
@@ -270,9 +290,14 @@
 										updateItemField(
 											item.id,
 											"target_reps",
-											(e.target as HTMLInputElement).value === ""
+											(e.target as HTMLInputElement)
+												.value === ""
 												? null
-												: Number((e.target as HTMLInputElement).value)
+												: Number(
+														(
+															e.target as HTMLInputElement
+														).value,
+													),
 										)}
 								/>
 							</label>
@@ -286,9 +311,14 @@
 										updateItemField(
 											item.id,
 											"target_sets",
-											(e.target as HTMLInputElement).value === ""
+											(e.target as HTMLInputElement)
+												.value === ""
 												? null
-												: Number((e.target as HTMLInputElement).value)
+												: Number(
+														(
+															e.target as HTMLInputElement
+														).value,
+													),
 										)}
 								/>
 							</label>
@@ -302,9 +332,14 @@
 										updateItemField(
 											item.id,
 											"target_duration_sec",
-											(e.target as HTMLInputElement).value === ""
+											(e.target as HTMLInputElement)
+												.value === ""
 												? null
-												: Number((e.target as HTMLInputElement).value)
+												: Number(
+														(
+															e.target as HTMLInputElement
+														).value,
+													),
 										)}
 								/>
 							</label>
@@ -318,9 +353,14 @@
 										updateItemField(
 											item.id,
 											"rest_seconds",
-											(e.target as HTMLInputElement).value === ""
+											(e.target as HTMLInputElement)
+												.value === ""
 												? null
-												: Number((e.target as HTMLInputElement).value)
+												: Number(
+														(
+															e.target as HTMLInputElement
+														).value,
+													),
 										)}
 								/>
 							</label>
@@ -329,7 +369,7 @@
 								style="border-radius: var(--radius-md);"
 								onclick={() => handleRemoveItem(item)}
 							>
-								<Trash2 size={16} /> Remover
+								<Trash2 size={16} />
 							</button>
 						</div>
 					</div>
@@ -352,7 +392,9 @@
 			<span>Template</span>
 			<select
 				onchange={(e) =>
-					(newTemplateId = Number((e.target as HTMLSelectElement).value))}
+					(newTemplateId = Number(
+						(e.target as HTMLSelectElement).value,
+					))}
 			>
 				<option value="">Selecione</option>
 				{#each templates as template}
@@ -433,14 +475,18 @@
 			<p class="form-error">{formError}</p>
 		{/if}
 		<div class="flex gap-3 justify-end">
-			<Button
-				variant="secondary"
-				class="btn-radius-md"
+			<button
+				class="plan-action-btn text-white/80 hover:text-white"
+				style="border-radius: var(--radius-md);"
 				onclick={() => (showAddModal = false)}
 			>
-				{#snippet children()}Cancelar{/snippet}
-			</Button>
-			<Button class="btn-radius-md" disabled={isAddingItem} onclick={handleAddItem}>
+				Cancelar
+			</button>
+			<Button
+				class="btn-radius-md"
+				disabled={isAddingItem}
+				onclick={handleAddItem}
+			>
 				{#snippet children()}
 					{isAddingItem ? "Adicionando..." : "Adicionar"}
 				{/snippet}
@@ -494,9 +540,25 @@
 	.form-field input,
 	.form-field select {
 		background: rgba(255, 255, 255, 0.05);
-		border: 1px solid rgba(255, 255, 255, 0.12);
+		border: none;
 		border-radius: var(--radius-standard);
 		padding: 0.45rem 0.65rem;
+		color: #fff;
+	}
+
+	.form-field select {
+		appearance: none;
+		-webkit-appearance: none;
+		-moz-appearance: none;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='white' opacity='0.5' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+		background-repeat: no-repeat;
+		background-position: right 0.85rem center;
+		background-size: 12px 12px;
+		padding-right: 2.2rem;
+	}
+
+	.form-field select option {
+		background-color: var(--color-bg-dark);
 		color: #fff;
 	}
 
@@ -528,5 +590,29 @@
 
 	:global(.btn-radius-md) {
 		border-radius: var(--radius-md) !important;
+	}
+
+	.plan-action-btn {
+		background: transparent;
+		border: none;
+		padding: 0.5rem 0.75rem;
+		font-size: 0.875rem;
+		font-weight: 500;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		cursor: pointer;
+		transition:
+			color var(--transition-base),
+			background-color var(--transition-base);
+	}
+
+	.plan-action-btn:hover {
+		background: transparent;
+	}
+
+	.plan-action-btn:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
 	}
 </style>

@@ -190,8 +190,7 @@
             assignedTrainingPlan = res.data;
             selectedPlanId = res.data.plan_id;
         } else {
-            planAssignError =
-                res.error?.message || "Erro ao atribuir plano.";
+            planAssignError = res.error?.message || "Erro ao atribuir plano.";
         }
 
         isAssigningPlan = false;
@@ -209,8 +208,7 @@
             assignedTrainingPlan = null;
             selectedPlanId = null;
         } else {
-            planAssignError =
-                res.error?.message || "Erro ao remover plano.";
+            planAssignError = res.error?.message || "Erro ao remover plano.";
         }
     }
 
@@ -321,9 +319,7 @@
                         Perfil Biométrico
                     </h3>
                     <div class="space-y-4">
-                        <div
-                            class="flex justify-between items-center py-3"
-                        >
+                        <div class="flex justify-between items-center py-3">
                             <div class="flex items-center gap-3 text-white/50">
                                 <Calendar size={18} />
                                 <span>Idade</span>
@@ -332,9 +328,7 @@
                                 >{getAge(user.users?.birth_date)} anos</span
                             >
                         </div>
-                        <div
-                            class="flex justify-between items-center py-3"
-                        >
+                        <div class="flex justify-between items-center py-3">
                             <div class="flex items-center gap-3 text-white/50">
                                 <Ruler size={18} />
                                 <span>Altura</span>
@@ -343,9 +337,7 @@
                                 >{user.users?.height_cm || "--"} cm</span
                             >
                         </div>
-                        <div
-                            class="flex justify-between items-center py-3"
-                        >
+                        <div class="flex justify-between items-center py-3">
                             <div class="flex items-center gap-3 text-white/50">
                                 <Weight size={18} />
                                 <span>Peso</span>
@@ -362,7 +354,9 @@
             <div class="lg:col-span-2 space-y-4">
                 <div class="user-card p-5 plan-assignment-card">
                     <div class="flex items-center justify-between gap-3 mb-4">
-                        <h3 class="text-lg font-semibold text-white flex items-center gap-2">
+                        <h3
+                            class="text-lg font-semibold text-white flex items-center gap-2"
+                        >
                             <Dumbbell size={18} /> Plano de treino
                         </h3>
                         {#if assignedTrainingPlan}
@@ -372,7 +366,8 @@
 
                     {#if assignedTrainingPlan}
                         <p class="text-white/60 text-sm mb-2">
-                            Plano atual: {assignedTrainingPlan.plan?.name || "Plano"}
+                            Plano atual: {assignedTrainingPlan.plan?.name ||
+                                "Plano"}
                         </p>
                     {:else}
                         <p class="text-white/60 text-sm mb-2">
@@ -386,12 +381,17 @@
                             <select
                                 onchange={(e) =>
                                     (selectedPlanId =
-                                        Number((e.target as HTMLSelectElement).value) ||
-                                        null)}
+                                        Number(
+                                            (e.target as HTMLSelectElement)
+                                                .value,
+                                        ) || null)}
                             >
                                 <option value="">Selecione</option>
                                 {#each trainingPlans.filter((p) => p.is_active) as plan}
-                                    <option value={plan.id} selected={plan.id === selectedPlanId}>
+                                    <option
+                                        value={plan.id}
+                                        selected={plan.id === selectedPlanId}
+                                    >
                                         {plan.name}
                                     </option>
                                 {/each}
@@ -459,7 +459,8 @@
                         {#each exercises as exercise}
                             <div
                                 class="user-card exercise-card overflow-hidden"
-                                class:active={selectedExerciseId === exercise.id}
+                                class:active={selectedExerciseId ===
+                                    exercise.id}
                             >
                                 <div
                                     class="p-4 flex items-center justify-between cursor-pointer"
@@ -467,9 +468,7 @@
                                         handleSelectExercise(exercise)}
                                 >
                                     <div class="flex items-center gap-4">
-                                        <div
-                                            class="exercise-initial"
-                                        >
+                                        <div class="exercise-initial">
                                             {exercise.name.charAt(0)}
                                         </div>
                                         <div>
@@ -630,7 +629,8 @@
         border: none;
         backdrop-filter: none;
         -webkit-backdrop-filter: none;
-        transition: color var(--transition-base),
+        transition:
+            color var(--transition-base),
             background-color var(--transition-base);
     }
 
@@ -679,7 +679,7 @@
         appearance: none;
         -webkit-appearance: none;
         -moz-appearance: none;
-        background-color: var(--color-bg-dark);
+        background-color: rgba(255, 255, 255, 0.05);
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='white' opacity='0.5' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
         background-repeat: no-repeat;
         background-position: right 0.85rem center;

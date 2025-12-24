@@ -8,6 +8,7 @@
 	import Search from "lucide-svelte/icons/search";
 	import CircleOff from "lucide-svelte/icons/circle-off";
 	import UserCheck from "lucide-svelte/icons/user-check";
+	import { Loading } from "$lib/components/common";
 
 	interface Props {
 		users: OrganizationUser[];
@@ -18,6 +19,7 @@
 
 	let searchTerm = $state("");
 	let isLoading = $state(false);
+	let isNavigating = $state(false);
 	let isTogglingStatus = $state<number | null>(null);
 	let showDeleteModal = $state(false);
 	let userToDelete = $state<OrganizationUser | null>(null);
@@ -34,8 +36,10 @@
 		}),
 	);
 
-	function openUserDetails(user: OrganizationUser) {
-		goto(`/users/${user.user_id}`);
+	async function openUserDetails(user: OrganizationUser) {
+		isNavigating = true;
+		await goto(`/users/${user.user_id}`);
+		isNavigating = false;
 	}
 
 	function confirmDelete(user: OrganizationUser) {
@@ -113,7 +117,9 @@
 		</div>
 	</div>
 
-	{#if users.length === 0}
+	{#if isNavigating}
+		<Loading message="Carregando detalhes..." />
+	{:else if users.length === 0}
 		<div class="px-6 py-16 text-center">
 			<div
 				class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/5 mb-4"
@@ -219,7 +225,8 @@
 							</td>
 							<td class="px-4 py-3 whitespace-nowrap">
 								<span
-									class="status-badge {user.status === 'ACTIVE'
+									class="status-badge {user.status ===
+									'ACTIVE'
 										? 'status-badge--active'
 										: 'status-badge--inactive'}"
 								>
@@ -236,6 +243,7 @@
 									onclick={() => openUserDetails(user)}
 									class="glass-button-secondary px-3 py-1.5 text-white inline-flex items-center mr-2"
 									title="Ver detalhes"
+									style="background-color: var(--color-glass-light-weak);"
 								>
 									<Settings size={14} />
 								</button>
@@ -246,6 +254,7 @@
 									title={user.status === "ACTIVE"
 										? "Desativar usuário"
 										: "Ativar usuário"}
+									style="background-color: var(--color-glass-light-weak);"
 								>
 									{#if user.status === "ACTIVE"}
 										<CircleOff size={14} />
@@ -258,6 +267,7 @@
 									disabled={isLoading}
 									class="glass-button-secondary px-3 py-1.5 text-red-400 hover:text-red-300 disabled:opacity-50 inline-flex items-center gap-2"
 									title="Remover usuário"
+									style="background-color: var(--color-glass-light-weak);"
 								>
 									<Trash2 size={14} />
 								</button>
@@ -266,8 +276,8 @@
 					{/each}
 				</tbody>
 			</table>
-	</div>
-{/if}
+		</div>
+	{/if}
 </div>
 
 <!-- Delete Confirmation Modal -->

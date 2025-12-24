@@ -1,25 +1,46 @@
 <script lang="ts">
+	import { onMount } from "svelte";
 	import { goto } from "$app/navigation";
 	import type { PageData } from "./$types";
 	import { organizationsApi } from "$lib/api/organizations.api";
+	import { Loading } from "$lib/components/common";
 	import Button from "$lib/components/common/Button.svelte";
 	import Modal from "$lib/components/common/Modal.svelte";
 	import type { TrainingPlan } from "$lib/types/training-plan";
 
 	let { data }: { data: PageData } = $props();
 
-	let plans = $state<TrainingPlan[]>(data.plans ?? []);
-	let errorMessage = $state(data.errorMessage ?? "");
+	let plans = $state<TrainingPlan[]>([]);
+	let errorMessage = $state("");
 	let showCreateModal = $state(false);
 	let createName = $state("");
 	let createDescription = $state("");
 	let isSubmitting = $state(false);
 	let formError = $state("");
+	let isLoading = $state(true);
+	let isNavigating = $state(false);
 
-	$effect(() => {
-		plans = data.plans ?? [];
-		errorMessage = data.errorMessage ?? "";
+	async function loadData() {
+		isLoading = true;
+		const response = await organizationsApi.getTrainingPlans();
+		if (response.success && response.data) {
+			plans = response.data;
+		} else {
+			errorMessage =
+				response.error?.message || "Erro ao carregar planos.";
+		}
+		isLoading = false;
+	}
+
+	onMount(async () => {
+		await loadData();
 	});
+
+	async function openPlanDetails(planId: number) {
+		isNavigating = true;
+		await goto(`/training-plans/${planId}`);
+		isNavigating = false;
+	}
 
 	async function handleCreatePlan() {
 		if (!createName.trim()) {
@@ -31,7 +52,7 @@
 
 		const response = await organizationsApi.createTrainingPlan({
 			name: createName.trim(),
-			description: createDescription.trim() || null
+			description: createDescription.trim() || null,
 		});
 
 		if (response.success) {
@@ -45,20 +66,6 @@
 
 		isSubmitting = false;
 	}
-
-	async function handleDeactivate(plan: TrainingPlan) {
-		if (!plan.is_active) return;
-		if (!confirm("Deseja desativar este plano?")) return;
-
-		const response = await organizationsApi.deleteTrainingPlan(plan.id);
-		if (response.success) {
-			plans = plans.map((item) =>
-				item.id === plan.id ? { ...item, is_active: false } : item
-			);
-		} else {
-			alert(response.error?.message || "Erro ao desativar plano.");
-		}
-	}
 </script>
 
 <div class="min-h-full">
@@ -70,66 +77,80 @@
 					Crie e gerencie planos para seus usuarios.
 				</p>
 			</div>
-			<Button class="btn-radius-md" onclick={() => (showCreateModal = true)}>
+			<Button
+				class="btn-radius-md"
+				onclick={() => (showCreateModal = true)}
+			>
 				{#snippet children()}Criar plano{/snippet}
 			</Button>
 		</div>
 
-		{#if errorMessage}
-			<div class="error-banner">{errorMessage}</div>
-		{/if}
-
-		{#if plans.length === 0}
-			<div class="empty-card">
-				<p class="text-white/60">Nenhum plano cadastrado.</p>
-			</div>
+		{#if isLoading || isNavigating}
+			<Loading
+				message={isNavigating
+					? "Carregando detalhes..."
+					: "Carregando planos..."}
+			/>
 		{:else}
-			<div class="plan-grid">
-				{#each plans as plan}
-					<div
-						class="plan-card hover:bg-white/5 transition-colors {plan.is_active ? '' : 'inactive'}"
-					>
-						<div class="plan-header">
-							<h3 class="plan-title">{plan.name}</h3>
-							<span class="status-chip {plan.is_active ? 'active' : 'inactive'}">
-								{plan.is_active ? "Ativo" : "Inativo"}
-							</span>
-						</div>
-						<p class="plan-description">
-							{plan.description || "Sem descricao."}
-						</p>
-						<div class="plan-meta">
-							<div>
-								<span class="meta-value">{plan.items_count ?? 0}</span>
-								<span class="meta-label">exercicios</span>
+			{#if errorMessage}
+				<div class="error-banner">{errorMessage}</div>
+			{/if}
+
+			{#if plans.length === 0}
+				<div class="empty-card">
+					<p class="text-white/60">Nenhum plano cadastrado.</p>
+				</div>
+			{:else}
+				<div class="plan-grid">
+					{#each plans as plan}
+						<div
+							class="plan-card hover:bg-white/5 transition-colors {plan.is_active
+								? ''
+								: 'inactive'}"
+						>
+							<div class="plan-header">
+								<h3 class="plan-title">{plan.name}</h3>
+								<span
+									class="status-chip {plan.is_active
+										? 'active'
+										: 'inactive'}"
+								>
+									{plan.is_active ? "Ativo" : "Inativo"}
+								</span>
 							</div>
-							<div>
-								<span class="meta-value">{plan.active_assignments ?? 0}</span>
-								<span class="meta-label">usuarios ativos</span>
+							<p class="plan-description">
+								{plan.description || "Sem descricao."}
+							</p>
+							<div class="plan-meta">
+								<div>
+									<span class="meta-value"
+										>{plan.items_count ?? 0}</span
+									>
+									<span class="meta-label">exercicios</span>
+								</div>
+								<div>
+									<span class="meta-value"
+										>{plan.active_assignments ?? 0}</span
+									>
+									<span class="meta-label"
+										>usuarios ativos</span
+									>
+								</div>
+							</div>
+							<div class="plan-actions">
+								<button
+									type="button"
+									class="plan-action-btn text-primary-500 hover:text-white"
+									style="border-radius: var(--radius-md);"
+									onclick={() => openPlanDetails(plan.id)}
+								>
+									Detalhes
+								</button>
 							</div>
 						</div>
-						<div class="plan-actions">
-							<button
-								type="button"
-								class="plan-action-btn hover:text-white"
-								style="color: var(--color-primary-500); border-radius: var(--radius-md);"
-								onclick={() => goto(`/training-plans/${plan.id}`)}
-							>
-								Detalhes
-							</button>
-							<button
-								type="button"
-								class="plan-action-btn text-white/80 hover:text-red-300"
-								style="border-radius: var(--radius-md);"
-								disabled={!plan.is_active}
-								onclick={() => handleDeactivate(plan)}
-							>
-								Desativar
-							</button>
-						</div>
-					</div>
-				{/each}
-			</div>
+					{/each}
+				</div>
+			{/if}
 		{/if}
 	</main>
 </div>
@@ -163,10 +184,17 @@
 			<p class="form-error">{formError}</p>
 		{/if}
 		<div class="flex gap-3 justify-end">
-			<Button variant="secondary" onclick={() => (showCreateModal = false)}>
+			<Button
+				variant="secondary"
+				onclick={() => (showCreateModal = false)}
+			>
 				{#snippet children()}Cancelar{/snippet}
 			</Button>
-			<Button class="btn-radius-md" disabled={isSubmitting} onclick={handleCreatePlan}>
+			<Button
+				class="btn-radius-md"
+				disabled={isSubmitting}
+				onclick={handleCreatePlan}
+			>
 				{#snippet children()}
 					{isSubmitting ? "Salvando..." : "Criar"}
 				{/snippet}
@@ -283,7 +311,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		cursor: pointer;
-		transition: color var(--transition-base),
+		transition:
+			color var(--transition-base),
 			background-color var(--transition-base);
 	}
 
