@@ -77,6 +77,19 @@
             </span>
             <span class="nav-label">Usuários</span>
         </button>
+
+        <button
+            type="button"
+            class="nav-item"
+            class:active={currentPath.startsWith("/exercises")}
+            onclick={() => navigateTo("/exercises")}
+            title="Exercícios"
+        >
+            <span class="nav-icon">
+                <Dumbbell class="w-5 h-5" />
+            </span>
+            <span class="nav-label">Exercícios</span>
+        </button>
         <button
             type="button"
             class="nav-item"
