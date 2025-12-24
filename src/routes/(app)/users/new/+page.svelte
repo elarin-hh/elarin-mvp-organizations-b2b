@@ -2,6 +2,7 @@
 	import { goto } from "$app/navigation";
 	import { organizationsApi } from "$lib/api/organizations.api";
 	import ArrowLeft from "lucide-svelte/icons/arrow-left";
+	import ConfirmDialog from "$lib/components/common/ConfirmDialog.svelte";
 
 	// Form states
 	let full_name = $state("");
@@ -26,7 +27,22 @@
 
 	// Loading state
 	let isSubmitting = $state(false);
+
 	let submitSuccess = $state(false);
+
+	// Dialog State
+	let dialogOpen = $state(false);
+	let dialogConfig = $state({
+		title: "",
+		message: "",
+		confirmLabel: "Confirmar",
+		variant: "default" as "default" | "danger" | "warning",
+		onConfirm: () => {},
+	});
+
+	function closeDialog() {
+		dialogOpen = false;
+	}
 
 	// Validation functions
 	function validateAge(birthDateStr: string): boolean {
@@ -233,10 +249,18 @@
 			height_cm ||
 			weight_kg;
 
-		if (
-			hasData &&
-			!confirm("Deseja cancelar? Os dados preenchidos serão perdidos.")
-		) {
+		if (hasData) {
+			dialogConfig = {
+				title: "Cancelar cadastro",
+				message:
+					"Deseja cancelar? Os dados preenchidos serão perdidos.",
+				variant: "warning",
+				confirmLabel: "Sim, Cancelar",
+				onConfirm: () => {
+					goto("/users");
+				},
+			};
+			dialogOpen = true;
 			return;
 		}
 
@@ -582,6 +606,16 @@
 			</div>
 		</form>
 	</main>
+
+	<ConfirmDialog
+		isOpen={dialogOpen}
+		title={dialogConfig.title}
+		message={dialogConfig.message}
+		confirmLabel={dialogConfig.confirmLabel}
+		variant={dialogConfig.variant}
+		onConfirm={dialogConfig.onConfirm}
+		onCancel={closeDialog}
+	/>
 </div>
 
 <style>

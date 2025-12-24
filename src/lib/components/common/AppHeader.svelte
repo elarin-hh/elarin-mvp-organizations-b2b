@@ -78,10 +78,7 @@
     }
 
     .header-glass.scrolled {
-        background: var(--glass-bg);
-        backdrop-filter: var(--glass-backdrop);
-        -webkit-backdrop-filter: var(--glass-backdrop);
-        box-shadow: var(--glass-shadow);
+        background: var(--color-bg-dark-secondary);
     }
 
     .header-content {

@@ -21,6 +21,7 @@
     } from "$lib/types/training-plan";
     import UserCheck from "lucide-svelte/icons/user-check";
     import CircleOff from "lucide-svelte/icons/circle-off";
+    import ConfirmDialog from "$lib/components/common/ConfirmDialog.svelte";
 
     let { data }: { data: PageData } = $props();
 
@@ -48,6 +49,33 @@
     let selectedPlanId = $state<number | null>(null);
     let planAssignError = $state("");
     let isAssigningPlan = $state(false);
+
+    // Dialog State
+    let dialogOpen = $state(false);
+    let dialogConfig = $state({
+        title: "",
+        message: "",
+        confirmLabel: "Confirmar",
+        variant: "default" as "default" | "danger" | "warning",
+        onConfirm: () => {},
+    });
+
+    function openDialog(
+        config: Partial<typeof dialogConfig> & { onConfirm: () => void },
+    ) {
+        dialogConfig = {
+            title: config.title || "Confirmar ação",
+            message: config.message || "Tem certeza?",
+            confirmLabel: config.confirmLabel || "Confirmar",
+            variant: config.variant || "default",
+            onConfirm: config.onConfirm,
+        };
+        dialogOpen = true;
+    }
+
+    function closeDialog() {
+        dialogOpen = false;
+    }
 
     // Helper to calculate age
     function getAge(birthDate: string | null): string {
@@ -107,68 +135,78 @@
     }
 
     async function handleRemoveExercise(exerciseId: number) {
-        if (
-            !confirm(
+        openDialog({
+            title: "Remover exercício",
+            message:
                 "Tem certeza que deseja remover este exercício do usuário?",
-            )
-        )
-            return;
-
-        const res = await organizationsApi.removeExercise(
-            user.users?.id,
-            exerciseId,
-        );
-        if (res.success) {
-            exercises = exercises.filter((e) => e.id !== exerciseId);
-            if (selectedExerciseId === exerciseId) {
-                selectedExerciseId = null;
-                fullConfig = null;
-            }
-        } else {
-            alert("Erro ao remover exercício");
-        }
+            variant: "danger",
+            confirmLabel: "Remover",
+            onConfirm: async () => {
+                const res = await organizationsApi.removeExercise(
+                    user.users?.id,
+                    exerciseId,
+                );
+                if (res.success) {
+                    exercises = exercises.filter((e) => e.id !== exerciseId);
+                    if (selectedExerciseId === exerciseId) {
+                        selectedExerciseId = null;
+                        fullConfig = null;
+                    }
+                    closeDialog();
+                } else {
+                    alert("Erro ao remover exercício");
+                }
+            },
+        });
     }
 
     async function handleToggleStatus() {
-        if (
-            !confirm(
-                `Tem certeza que deseja ${user.is_active ? "desativar" : "ativar"} este usuário?`,
-            )
-        )
-            return;
-
-        try {
-            const res = await organizationsApi.toggleUserStatus(user.user_id);
-            if (res.success) {
-                user.is_active = !user.is_active;
-                // Ideally reload or update local state
-                goto($page.url, { invalidateAll: true });
-            } else {
-                alert("Erro ao alterar status");
-            }
-        } catch (e) {
-            alert("Erro de conexão");
-        }
+        const action = user.is_active ? "desativar" : "ativar";
+        openDialog({
+            title: `${action.charAt(0).toUpperCase() + action.slice(1)} usuário`,
+            message: `Tem certeza que deseja ${action} este usuário?`,
+            variant: user.is_active ? "warning" : "default",
+            confirmLabel: user.is_active ? "Desativar" : "Ativar",
+            onConfirm: async () => {
+                try {
+                    const res = await organizationsApi.toggleUserStatus(
+                        user.user_id,
+                    );
+                    if (res.success) {
+                        user.is_active = !user.is_active;
+                        goto($page.url, { invalidateAll: true });
+                        closeDialog();
+                    } else {
+                        alert("Erro ao alterar status");
+                    }
+                } catch (e) {
+                    alert("Erro de conexão");
+                }
+            },
+        });
     }
 
     async function handleRemoveUser() {
-        if (
-            !confirm(
-                "Tem certeza que deseja remover este usuário permanentemente?",
-            )
-        )
-            return;
-
-        try {
-            const res = await organizationsApi.removeUser(user.user_id);
-            if (res.success) {
-                goto("/users");
-            } else {
-                alert("Erro ao remover usuário");
-            }
-        } catch (e) {
-            alert("Erro de conexão");
-        }
+        openDialog({
+            title: "Remover usuário",
+            message:
+                "Tem certeza que deseja remover este usuário permanentemente? Esta ação não pode ser desfeita.",
+            variant: "danger",
+            confirmLabel: "Remover Permanentemente",
+            onConfirm: async () => {
+                try {
+                    const res = await organizationsApi.removeUser(user.user_id);
+                    if (res.success) {
+                        closeDialog();
+                        goto("/users");
+                    } else {
+                        alert("Erro ao remover usuário");
+                    }
+                } catch (e) {
+                    alert("Erro de conexão");
+                }
+            },
+        });
     }
     async function handleAssignPlan() {
         if (!selectedPlanId || isAssigningPlan) {
@@ -195,20 +233,28 @@
     }
 
     async function handleRemovePlan(planId: number) {
-        if (!confirm("Deseja remover o plano deste usuario?")) return;
+        openDialog({
+            title: "Remover plano",
+            message: "Deseja remover o plano deste usuário?",
+            variant: "danger",
+            confirmLabel: "Remover",
+            onConfirm: async () => {
+                const res = await organizationsApi.removeTrainingPlanFromUser(
+                    user.user_id,
+                    planId,
+                );
 
-        const res = await organizationsApi.removeTrainingPlanFromUser(
-            user.user_id,
-            planId,
-        );
-
-        if (res.success) {
-            assignedTrainingPlans = assignedTrainingPlans.filter(
-                (p) => p.plan_id !== planId,
-            );
-        } else {
-            planAssignError = res.error?.message || "Erro ao remover plano.";
-        }
+                if (res.success) {
+                    assignedTrainingPlans = assignedTrainingPlans.filter(
+                        (p) => p.plan_id !== planId,
+                    );
+                    closeDialog();
+                } else {
+                    planAssignError =
+                        res.error?.message || "Erro ao remover plano.";
+                }
+            },
+        });
     }
 
     function handleExercisesUpdated() {
@@ -369,7 +415,7 @@
                         <div class="space-y-3 mb-6">
                             {#each assignedTrainingPlans as assignment}
                                 <div
-                                    class="flex items-center justify-between bg-white/5 p-3 rounded-md border border-white/5 hover:bg-white/10 transition-colors"
+                                    class="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/5 hover:bg-white/10 transition-colors"
                                 >
                                     <div class="flex flex-col">
                                         <span class="text-white font-medium"
@@ -602,6 +648,16 @@
             onUpdate={handleExercisesUpdated}
         />
     {/if}
+
+    <ConfirmDialog
+        isOpen={dialogOpen}
+        title={dialogConfig.title}
+        message={dialogConfig.message}
+        confirmLabel={dialogConfig.confirmLabel}
+        variant={dialogConfig.variant}
+        onConfirm={dialogConfig.onConfirm}
+        onCancel={closeDialog}
+    />
 </div>
 
 <style>

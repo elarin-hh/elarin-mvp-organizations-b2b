@@ -9,6 +9,7 @@
 	import CircleOff from "lucide-svelte/icons/circle-off";
 	import UserCheck from "lucide-svelte/icons/user-check";
 	import { Loading } from "$lib/components/common";
+	import ConfirmDialog from "$lib/components/common/ConfirmDialog.svelte";
 
 	interface Props {
 		users: OrganizationUser[];
@@ -21,8 +22,33 @@
 	let isLoading = $state(false);
 	let isNavigating = $state(false);
 	let isTogglingStatus = $state<number | null>(null);
-	let showDeleteModal = $state(false);
-	let userToDelete = $state<OrganizationUser | null>(null);
+
+	// Dialog State
+	let dialogOpen = $state(false);
+	let dialogConfig = $state({
+		title: "",
+		message: "",
+		confirmLabel: "Confirmar",
+		variant: "default" as "default" | "danger" | "warning",
+		onConfirm: () => {},
+	});
+
+	function closeDialog() {
+		dialogOpen = false;
+	}
+
+	function openDialog(
+		config: Partial<typeof dialogConfig> & { onConfirm: () => void },
+	) {
+		dialogConfig = {
+			title: config.title || "Confirmar ação",
+			message: config.message || "Tem certeza?",
+			confirmLabel: config.confirmLabel || "Confirmar",
+			variant: config.variant || "default",
+			onConfirm: config.onConfirm,
+		};
+		dialogOpen = true;
+	}
 
 	// Filter users based on search term
 	const filteredUsers = $derived(
@@ -43,52 +69,50 @@
 	}
 
 	function confirmDelete(user: OrganizationUser) {
-		userToDelete = user;
-		showDeleteModal = true;
-	}
+		openDialog({
+			title: "Confirmar Remoção",
+			message: `Tem certeza que deseja remover o usuário ${user.users.full_name} da organização?`,
+			variant: "danger",
+			confirmLabel: "Remover",
+			onConfirm: async () => {
+				isLoading = true;
+				const response = await organizationsApi.removeUser(
+					user.user_id,
+				);
 
-	async function handleDelete() {
-		if (!userToDelete) return;
-
-		isLoading = true;
-		const response = await organizationsApi.removeUser(
-			userToDelete.user_id,
-		);
-
-		if (response.success) {
-			showDeleteModal = false;
-			userToDelete = null;
-			await onUpdate?.();
-		} else {
-			alert(response.error || "Erro ao remover usuário");
-		}
-
-		isLoading = false;
-	}
-
-	function cancelDelete() {
-		showDeleteModal = false;
-		userToDelete = null;
+				if (response.success) {
+					closeDialog();
+					await onUpdate?.();
+				} else {
+					alert(response.error || "Erro ao remover usuário");
+				}
+				isLoading = false;
+			},
+		});
 	}
 
 	async function handleToggleStatus(user: OrganizationUser) {
-		if (
-			!confirm(
-				`Tem certeza que deseja ${user.status === "ACTIVE" ? "desativar" : "ativar"} este usuário?`,
-			)
-		)
-			return;
+		const action = user.status === "ACTIVE" ? "desativar" : "ativar";
+		openDialog({
+			title: `${action.charAt(0).toUpperCase() + action.slice(1)} usuário`,
+			message: `Tem certeza que deseja ${action} este usuário?`,
+			variant: user.status === "ACTIVE" ? "warning" : "default",
+			confirmLabel: user.status === "ACTIVE" ? "Desativar" : "Ativar",
+			onConfirm: async () => {
+				isTogglingStatus = user.user_id;
+				const response = await organizationsApi.toggleUserStatus(
+					user.user_id,
+				);
 
-		isTogglingStatus = user.user_id;
-		const response = await organizationsApi.toggleUserStatus(user.user_id);
-
-		if (response.success) {
-			await onUpdate?.();
-		} else {
-			alert(response.error || "Erro ao alterar status");
-		}
-
-		isTogglingStatus = null;
+				if (response.success) {
+					await onUpdate?.();
+				} else {
+					alert(response.error || "Erro ao alterar status");
+				}
+				isTogglingStatus = null;
+				closeDialog();
+			},
+		});
 	}
 </script>
 
@@ -281,36 +305,15 @@
 </div>
 
 <!-- Delete Confirmation Modal -->
-{#if showDeleteModal && userToDelete}
-	<div
-		class="fixed inset-0 bg-black/70 flex items-center justify-center z-[60]"
-	>
-		<div class="glass-card max-w-md w-full mx-4 p-6">
-			<h3 class="text-lg font-bold text-white mb-4">Confirmar Remoção</h3>
-			<p class="text-white/70 mb-6">
-				Tem certeza que deseja remover o usuário <strong
-					class="text-white">{userToDelete.users.full_name}</strong
-				> da organização?
-			</p>
-			<div class="flex justify-end space-x-3">
-				<button
-					onclick={cancelDelete}
-					disabled={isLoading}
-					class="glass-button-secondary px-4 py-2 text-white disabled:opacity-50"
-				>
-					Cancelar
-				</button>
-				<button
-					onclick={handleDelete}
-					disabled={isLoading}
-					class="glass-button-secondary px-4 py-2 text-red-400 hover:text-red-300 disabled:opacity-50"
-				>
-					{isLoading ? "Removendo..." : "Remover"}
-				</button>
-			</div>
-		</div>
-	</div>
-{/if}
+<ConfirmDialog
+	isOpen={dialogOpen}
+	title={dialogConfig.title}
+	message={dialogConfig.message}
+	confirmLabel={dialogConfig.confirmLabel}
+	variant={dialogConfig.variant}
+	onConfirm={dialogConfig.onConfirm}
+	onCancel={closeDialog}
+/>
 
 <style>
 	.status-badge {

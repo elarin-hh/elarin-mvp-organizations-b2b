@@ -12,6 +12,7 @@
 	import ArrowLeft from "lucide-svelte/icons/arrow-left";
 	import Trash2 from "lucide-svelte/icons/trash-2";
 	import CircleOff from "lucide-svelte/icons/circle-off";
+	import ConfirmDialog from "$lib/components/common/ConfirmDialog.svelte";
 
 	let { data }: { data: PageData } = $props();
 
@@ -33,6 +34,33 @@
 	let newTargetDuration = $state<number | null>(null);
 	let newRestSeconds = $state<number | null>(null);
 	let isAddingItem = $state(false);
+
+	// Dialog State
+	let dialogOpen = $state(false);
+	let dialogConfig = $state({
+		title: "",
+		message: "",
+		confirmLabel: "Confirmar",
+		variant: "default" as "default" | "danger" | "warning",
+		onConfirm: () => {},
+	});
+
+	function openDialog(
+		config: Partial<typeof dialogConfig> & { onConfirm: () => void },
+	) {
+		dialogConfig = {
+			title: config.title || "Confirmar ação",
+			message: config.message || "Tem certeza?",
+			confirmLabel: config.confirmLabel || "Confirmar",
+			variant: config.variant || "default",
+			onConfirm: config.onConfirm,
+		};
+		dialogOpen = true;
+	}
+
+	function closeDialog() {
+		dialogOpen = false;
+	}
 
 	function sortItems(list: TrainingPlanItem[]) {
 		return list
@@ -79,25 +107,46 @@
 	}
 
 	async function handleDeactivate() {
-		if (!confirm("Deseja desativar este plano?")) return;
-
-		const response = await organizationsApi.deactivateTrainingPlan(plan.id);
-		if (response.success) {
-			plan = { ...plan, is_active: false };
-		} else {
-			updateError = response.error?.message || "Erro ao desativar plano.";
-		}
+		openDialog({
+			title: "Desativar plano",
+			message: "Deseja desativar este plano?",
+			variant: "warning",
+			confirmLabel: "Desativar",
+			onConfirm: async () => {
+				const response = await organizationsApi.deactivateTrainingPlan(
+					plan.id,
+				);
+				if (response.success) {
+					plan = { ...plan, is_active: false };
+					closeDialog();
+				} else {
+					updateError =
+						response.error?.message || "Erro ao desativar plano.";
+				}
+			},
+		});
 	}
 
 	async function handleRemovePlan() {
-		if (!confirm("Deseja remover este plano permanentemente?")) return;
-
-		const response = await organizationsApi.removeTrainingPlan(plan.id);
-		if (response.success) {
-			goto("/training-plans");
-		} else {
-			updateError = response.error?.message || "Erro ao remover plano.";
-		}
+		openDialog({
+			title: "Remover plano",
+			message:
+				"Deseja remover este plano permanentemente? Esta ação não pode ser desfeita.",
+			variant: "danger",
+			confirmLabel: "Remover Permanentemente",
+			onConfirm: async () => {
+				const response = await organizationsApi.removeTrainingPlan(
+					plan.id,
+				);
+				if (response.success) {
+					closeDialog();
+					goto("/training-plans");
+				} else {
+					updateError =
+						response.error?.message || "Erro ao remover plano.";
+				}
+			},
+		});
 	}
 
 	async function handleAddItem() {
@@ -159,17 +208,25 @@
 	}
 
 	async function handleRemoveItem(item: TrainingPlanItem) {
-		if (!confirm("Deseja remover este item?")) return;
-
-		const response = await organizationsApi.removeTrainingPlanItem(
-			plan.id,
-			item.id,
-		);
-		if (response.success) {
-			items = items.filter((entry) => entry.id !== item.id);
-		} else {
-			updateError = response.error?.message || "Erro ao remover item.";
-		}
+		openDialog({
+			title: "Remover item",
+			message: "Deseja remover este item do plano?",
+			variant: "danger",
+			confirmLabel: "Remover",
+			onConfirm: async () => {
+				const response = await organizationsApi.removeTrainingPlanItem(
+					plan.id,
+					item.id,
+				);
+				if (response.success) {
+					items = items.filter((entry) => entry.id !== item.id);
+					closeDialog();
+				} else {
+					updateError =
+						response.error?.message || "Erro ao remover item.";
+				}
+			},
+		});
 	}
 </script>
 
@@ -511,6 +568,16 @@
 		</div>
 	</div>
 </Modal>
+
+<ConfirmDialog
+	isOpen={dialogOpen}
+	title={dialogConfig.title}
+	message={dialogConfig.message}
+	confirmLabel={dialogConfig.confirmLabel}
+	variant={dialogConfig.variant}
+	onConfirm={dialogConfig.onConfirm}
+	onCancel={closeDialog}
+/>
 
 <style>
 	.plan-card {
