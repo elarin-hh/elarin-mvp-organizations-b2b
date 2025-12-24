@@ -140,7 +140,7 @@
 							<div class="plan-actions">
 								<button
 									type="button"
-									class="plan-action-btn text-primary-500 hover:text-white"
+									class="btn-ghost text-primary-500"
 									style="border-radius: var(--radius-md);"
 									onclick={() => openPlanDetails(plan.id)}
 								>
@@ -184,12 +184,13 @@
 			<p class="form-error">{formError}</p>
 		{/if}
 		<div class="flex gap-3 justify-end">
-			<Button
-				variant="secondary"
+			<button
+				class="btn-ghost text-white/80"
+				style="border-radius: var(--radius-md);"
 				onclick={() => (showCreateModal = false)}
 			>
-				{#snippet children()}Cancelar{/snippet}
-			</Button>
+				Cancelar
+			</button>
 			<Button
 				class="btn-radius-md"
 				disabled={isSubmitting}
@@ -247,6 +248,33 @@
 		display: grid;
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 1.25rem;
+		margin-bottom: 0.5rem;
+	}
+
+	.form-field {
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+		color: rgba(255, 255, 255, 0.7);
+		font-size: 0.8rem;
+	}
+
+	.form-field input,
+	.form-field textarea {
+		background: rgba(255, 255, 255, 0.05) !important;
+		border: 0 !important;
+		outline: none !important;
+		box-shadow: none !important;
+		border-radius: var(--radius-standard);
+		padding: 0.45rem 0.65rem;
+		color: #fff;
+		font-family: inherit;
+		resize: vertical;
+	}
+
+	.form-error {
+		color: rgb(239, 68, 68);
+		font-size: 0.8rem;
 	}
 
 	.meta-value {
@@ -299,30 +327,6 @@
 		display: flex;
 		flex-wrap: wrap;
 		gap: 0.75rem;
-	}
-
-	.plan-action-btn {
-		background: transparent;
-		border: none;
-		padding: 0.5rem 0.75rem;
-		font-size: 0.875rem;
-		font-weight: 500;
-		display: inline-flex;
-		align-items: center;
-		gap: 0.5rem;
-		cursor: pointer;
-		transition:
-			color var(--transition-base),
-			background-color var(--transition-base);
-	}
-
-	.plan-action-btn:hover {
-		background: transparent;
-	}
-
-	.plan-action-btn:disabled {
-		opacity: 0.5;
-		cursor: not-allowed;
 	}
 
 	.empty-card {

@@ -193,7 +193,7 @@
 					</Button>
 					<button
 						type="button"
-						class="plan-action-btn text-white/80 hover:text-red-300"
+						class="btn-ghost text-white/80"
 						style="border-radius: var(--radius-md);"
 						disabled={!plan.is_active}
 						onclick={handleDeactivate}
@@ -365,8 +365,8 @@
 								/>
 							</label>
 							<button
-								class="remove-btn text-sm plan-action-btn text-red-400 hover:text-red-300"
-								style="border-radius: var(--radius-md);"
+								class="btn-ghost text-sm text-red-400"
+								style="border-radius: var(--radius-md); justify-self: end;"
 								onclick={() => handleRemoveItem(item)}
 							>
 								<Trash2 size={16} />
@@ -476,7 +476,7 @@
 		{/if}
 		<div class="flex gap-3 justify-end">
 			<button
-				class="plan-action-btn text-white/80 hover:text-white"
+				class="btn-ghost text-white/80"
 				style="border-radius: var(--radius-md);"
 				onclick={() => (showAddModal = false)}
 			>
@@ -572,47 +572,5 @@
 		border-radius: var(--radius-standard);
 		padding: 2rem;
 		text-align: center;
-	}
-
-	.remove-btn {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		justify-self: end;
-		text-align: center;
-		gap: 0.35rem;
-		padding: 0.45rem 0.7rem;
-		border-radius: var(--radius-md);
-		border: none;
-		cursor: pointer;
-		height: fit-content;
-	}
-
-	:global(.btn-radius-md) {
-		border-radius: var(--radius-md) !important;
-	}
-
-	.plan-action-btn {
-		background: transparent;
-		border: none;
-		padding: 0.5rem 0.75rem;
-		font-size: 0.875rem;
-		font-weight: 500;
-		display: inline-flex;
-		align-items: center;
-		gap: 0.5rem;
-		cursor: pointer;
-		transition:
-			color var(--transition-base),
-			background-color var(--transition-base);
-	}
-
-	.plan-action-btn:hover {
-		background: transparent;
-	}
-
-	.plan-action-btn:disabled {
-		opacity: 0.5;
-		cursor: not-allowed;
 	}
 </style>

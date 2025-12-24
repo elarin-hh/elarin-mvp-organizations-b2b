@@ -41,10 +41,10 @@
     });
 
     // State
-    let selectedExerciseId: number | null = null;
-    let fullConfig: any = null;
-    let isLoadingConfig = false;
-    let showAssignModal = false;
+    let selectedExerciseId = $state<number | null>(null);
+    let fullConfig = $state<any>(null);
+    let isLoadingConfig = $state(false);
+    let showAssignModal = $state(false);
     let selectedPlanId = $state<number | null>(
         data.assignedTrainingPlan?.plan_id ?? null,
     );
@@ -282,7 +282,7 @@
                 <div class="flex gap-3">
                     <button
                         onclick={handleToggleStatus}
-                        class="user-action-btn px-4 py-2 flex items-center gap-2 text-sm font-medium"
+                        class="btn-ghost flex items-center gap-2 text-sm font-medium"
                         style={`border-radius: var(--radius-md); ${
                             user.is_active
                                 ? "color: rgba(255, 255, 255, 0.8);"
@@ -300,7 +300,7 @@
                     </button>
                     <button
                         onclick={handleRemoveUser}
-                        class="user-action-btn px-4 py-2 text-red-400 hover:text-red-300 flex items-center gap-2 text-sm font-medium"
+                        class="btn-ghost text-red-400 flex items-center gap-2 text-sm font-medium"
                         style="border-radius: var(--radius-md);"
                     >
                         <Trash2 size={16} /> Remover
@@ -399,7 +399,7 @@
                         </label>
                         <div class="flex gap-3">
                             <button
-                                class="user-action-btn px-4 py-2 text-sm font-medium flex items-center gap-2 text-primary-500"
+                                class="btn-ghost text-sm font-medium flex items-center gap-2 text-primary-500"
                                 style="border-radius: var(--radius-md);"
                                 onclick={handleAssignPlan}
                                 disabled={isAssigningPlan}
@@ -408,7 +408,7 @@
                             </button>
                             {#if assignedTrainingPlan}
                                 <button
-                                    class="user-action-btn px-4 py-2 text-sm font-medium flex items-center gap-2 text-red-400"
+                                    class="btn-ghost text-sm font-medium flex items-center gap-2 text-red-400"
                                     style="border-radius: var(--radius-md);"
                                     onclick={handleRemovePlan}
                                 >
@@ -430,7 +430,7 @@
                     </h3>
                     <button
                         onclick={() => (showAssignModal = true)}
-                        class="user-action-btn px-4 py-2 text-sm font-medium flex items-center gap-2 text-primary-500"
+                        class="btn-ghost text-sm font-medium flex items-center gap-2 text-primary-500"
                         style="border-radius: var(--radius-md);"
                     >
                         + Adicionar Exercício
@@ -622,20 +622,6 @@
 
     .config-panel {
         background: var(--color-bg-dark-secondary);
-    }
-
-    .user-action-btn {
-        background: transparent;
-        border: none;
-        backdrop-filter: none;
-        -webkit-backdrop-filter: none;
-        transition:
-            color var(--transition-base),
-            background-color var(--transition-base);
-    }
-
-    .user-action-btn:hover {
-        background: transparent;
     }
 
     .plan-assignment-card {

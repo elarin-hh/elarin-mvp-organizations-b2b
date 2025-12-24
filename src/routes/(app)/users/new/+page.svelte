@@ -218,8 +218,7 @@
 				goto("/users");
 			}, 2000);
 		} else {
-			formError =
-				response.error?.message || "Erro ao cadastrar usuário";
+			formError = response.error?.message || "Erro ao cadastrar usuário";
 		}
 	}
 
@@ -312,8 +311,7 @@
 								for="full_name"
 								class="block text-sm text-white/70 mb-2"
 							>
-								Nome Completo <span class="text-red-400"
-									>*</span
+								Nome Completo <span class="text-red-400">*</span
 								>
 							</label>
 							<input
@@ -458,7 +456,8 @@
 								style="border-radius: var(--radius-standard);"
 								disabled={isSubmitting}
 							>
-								<option value="pt-BR">Português (Brasil)</option>
+								<option value="pt-BR">Português (Brasil)</option
+								>
 								<option value="en-US">English (US)</option>
 								<option value="es-ES">Español</option>
 							</select>
@@ -568,7 +567,7 @@
 					<button
 						type="submit"
 						disabled={isSubmitting || submitSuccess}
-						class="flex-1 px-6 py-3 bg-primary-500 text-white font-medium hover:bg-primary-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+						class="flex-1 px-6 py-3 bg-primary-500 text-white font-medium hover:bg-primary-600 active:bg-primary-700 transition-colors focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
 						style="border-radius: var(--radius-standard);"
 					>
 						{#if isSubmitting}

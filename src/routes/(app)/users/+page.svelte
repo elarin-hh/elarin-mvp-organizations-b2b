@@ -37,7 +37,10 @@
 		if (usersResponse.success && usersResponse.data) {
 			// Filter ACTIVE, INACTIVE and PENDING users
 			users = usersResponse.data.filter(
-				(u) => u.status === "ACTIVE" || u.status === "INACTIVE" || u.status === "PENDING",
+				(u) =>
+					u.status === "ACTIVE" ||
+					u.status === "INACTIVE" ||
+					u.status === "PENDING",
 			);
 		}
 
@@ -110,10 +113,12 @@
 
 			<!-- Header with Add Button -->
 			<div class="flex items-center justify-between mb-6">
-				<h2 class="text-2xl font-bold text-white">Gerenciar Usuários</h2>
+				<h2 class="text-2xl font-bold text-white">
+					Gerenciar Usuários
+				</h2>
 				<button
 					onclick={() => goto("/users/new")}
-					class="px-4 py-2 bg-primary-500 text-white font-medium hover:bg-primary-600 transition-all flex items-center gap-2"
+					class="px-4 py-2 bg-primary-500 text-white font-medium hover:bg-primary-600 active:bg-primary-700 transition-colors flex items-center gap-2 focus:outline-none"
 					style="border-radius: var(--radius-md);"
 				>
 					<UserPlus size={18} />
