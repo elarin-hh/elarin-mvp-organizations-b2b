@@ -15,7 +15,7 @@ export const load: PageLoad = async ({ params }) => {
             organizationsApi.getUserExercises(userId),
             organizationsApi.getExerciseTemplates(),
             organizationsApi.getTrainingPlans(),
-            organizationsApi.getUserTrainingPlan(userId)
+            organizationsApi.getUserTrainingPlans(userId)
         ]);
 
         if (!userResponse.success || !userResponse.data) {
@@ -27,7 +27,7 @@ export const load: PageLoad = async ({ params }) => {
             exercises: exercisesResponse.success ? exercisesResponse.data : [],
             templates: templatesResponse.success ? templatesResponse.data : [],
             trainingPlans: plansResponse.success ? plansResponse.data : [],
-            assignedTrainingPlan: assignmentResponse.success ? assignmentResponse.data : null
+            assignedTrainingPlans: assignmentResponse.success ? assignmentResponse.data || [] : []
         };
     } catch (e) {
         console.error('Error loading user details:', e);

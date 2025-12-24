@@ -28,8 +28,8 @@
     let exercises = $state(data.exercises ?? []);
     let templates = $state(data.templates ?? []);
     let trainingPlans = $state<TrainingPlan[]>(data.trainingPlans ?? []);
-    let assignedTrainingPlan = $state<TrainingPlanAssignment | null>(
-        data.assignedTrainingPlan ?? null,
+    let assignedTrainingPlans = $state<TrainingPlanAssignment[]>(
+        data.assignedTrainingPlans ?? [],
     );
 
     $effect(() => {
@@ -37,7 +37,7 @@
         exercises = data.exercises ?? [];
         templates = data.templates ?? [];
         trainingPlans = data.trainingPlans ?? [];
-        assignedTrainingPlan = data.assignedTrainingPlan ?? null;
+        assignedTrainingPlans = data.assignedTrainingPlans ?? [];
     });
 
     // State
@@ -45,9 +45,7 @@
     let fullConfig = $state<any>(null);
     let isLoadingConfig = $state(false);
     let showAssignModal = $state(false);
-    let selectedPlanId = $state<number | null>(
-        data.assignedTrainingPlan?.plan_id ?? null,
-    );
+    let selectedPlanId = $state<number | null>(null);
     let planAssignError = $state("");
     let isAssigningPlan = $state(false);
 
@@ -187,8 +185,8 @@
         );
 
         if (res.success) {
-            assignedTrainingPlan = res.data;
-            selectedPlanId = res.data.plan_id;
+            assignedTrainingPlans = [res.data, ...assignedTrainingPlans];
+            selectedPlanId = null;
         } else {
             planAssignError = res.error?.message || "Erro ao atribuir plano.";
         }
@@ -196,17 +194,18 @@
         isAssigningPlan = false;
     }
 
-    async function handleRemovePlan() {
-        if (!assignedTrainingPlan) return;
+    async function handleRemovePlan(planId: number) {
         if (!confirm("Deseja remover o plano deste usuario?")) return;
 
         const res = await organizationsApi.removeTrainingPlanFromUser(
             user.user_id,
+            planId,
         );
 
         if (res.success) {
-            assignedTrainingPlan = null;
-            selectedPlanId = null;
+            assignedTrainingPlans = assignedTrainingPlans.filter(
+                (p) => p.plan_id !== planId,
+            );
         } else {
             planAssignError = res.error?.message || "Erro ao remover plano.";
         }
@@ -357,69 +356,108 @@
                         <h3
                             class="text-lg font-semibold text-white flex items-center gap-2"
                         >
-                            <Dumbbell size={18} /> Plano de treino
+                            <Dumbbell size={18} /> Planos de treino
                         </h3>
-                        {#if assignedTrainingPlan}
-                            <span class="assignment-chip">Ativo</span>
+                        {#if assignedTrainingPlans.length > 0}
+                            <span class="assignment-chip"
+                                >{assignedTrainingPlans.length} Ativos</span
+                            >
                         {/if}
                     </div>
 
-                    {#if assignedTrainingPlan}
-                        <p class="text-white/60 text-sm mb-2">
-                            Plano atual: {assignedTrainingPlan.plan?.name ||
-                                "Plano"}
-                        </p>
+                    {#if assignedTrainingPlans.length > 0}
+                        <div class="space-y-3 mb-6">
+                            {#each assignedTrainingPlans as assignment}
+                                <div
+                                    class="flex items-center justify-between bg-white/5 p-3 rounded-md border border-white/5 hover:bg-white/10 transition-colors"
+                                >
+                                    <div class="flex flex-col">
+                                        <span class="text-white font-medium"
+                                            >{assignment.plan?.name ||
+                                                "Plano sem nome"}</span
+                                        >
+                                        <div
+                                            class="flex items-center gap-2 text-xs text-white/50"
+                                        >
+                                            <span
+                                                >Atribuído em: {new Date(
+                                                    assignment.assigned_at,
+                                                ).toLocaleDateString()}</span
+                                            >
+                                        </div>
+                                    </div>
+                                    <button
+                                        class="btn-ghost text-red-400 p-2 hover:bg-white/10"
+                                        style="border-radius: var(--radius-md);"
+                                        onclick={() =>
+                                            handleRemovePlan(
+                                                assignment.plan_id,
+                                            )}
+                                        title="Remover plano"
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
+                                </div>
+                            {/each}
+                        </div>
                     {:else}
-                        <p class="text-white/60 text-sm mb-2">
-                            Nenhum plano ativo para este usuario.
-                        </p>
+                        <div
+                            class="text-center py-6 text-white/40 bg-white/5 rounded-md mb-4 border border-white/5 border-dashed"
+                        >
+                            <Dumbbell
+                                size={24}
+                                class="mx-auto mb-2 opacity-50"
+                            />
+                            <p class="text-sm">Nenhum plano ativo.</p>
+                        </div>
                     {/if}
 
-                    <div class="assignment-controls">
-                        <label class="plan-select">
-                            <span>Plano</span>
-                            <select
-                                onchange={(e) =>
-                                    (selectedPlanId =
-                                        Number(
-                                            (e.target as HTMLSelectElement)
-                                                .value,
-                                        ) || null)}
+                    <div
+                        class="assignment-controls pt-4 border-t border-white/10"
+                    >
+                        <div class="flex flex-col gap-2">
+                            <span class="text-xs font-medium text-white/60"
+                                >Adicionar novo plano</span
                             >
-                                <option value="">Selecione</option>
-                                {#each trainingPlans.filter((p) => p.is_active) as plan}
-                                    <option
-                                        value={plan.id}
-                                        selected={plan.id === selectedPlanId}
+                            <div class="flex gap-2">
+                                <label class="plan-select flex-1">
+                                    <select
+                                        onchange={(e) =>
+                                            (selectedPlanId =
+                                                Number(
+                                                    (
+                                                        e.target as HTMLSelectElement
+                                                    ).value,
+                                                ) || null)}
+                                        value={selectedPlanId || ""}
+                                        class="w-full bg-white/5 border border-white/10 rounded-md px-3 py-2 text-sm text-white focus:outline-none focus:bg-white/10"
                                     >
-                                        {plan.name}
-                                    </option>
-                                {/each}
-                            </select>
-                        </label>
-                        <div class="flex gap-3">
-                            <button
-                                class="btn-ghost text-sm font-medium flex items-center gap-2 text-primary-500"
-                                style="border-radius: var(--radius-md);"
-                                onclick={handleAssignPlan}
-                                disabled={isAssigningPlan}
-                            >
-                                {isAssigningPlan ? "Atribuindo..." : "Atribuir"}
-                            </button>
-                            {#if assignedTrainingPlan}
+                                        <option value=""
+                                            >Selecione um plano...</option
+                                        >
+                                        {#each trainingPlans.filter((p) => p.is_active && !assignedTrainingPlans.find((ap) => ap.plan_id === p.id)) as plan}
+                                            <option value={plan.id}>
+                                                {plan.name}
+                                            </option>
+                                        {/each}
+                                    </select>
+                                </label>
                                 <button
-                                    class="btn-ghost text-sm font-medium flex items-center gap-2 text-red-400"
-                                    style="border-radius: var(--radius-md);"
-                                    onclick={handleRemovePlan}
+                                    class="bg-primary-600 hover:bg-primary-500 text-white rounded-md px-4 py-2 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                    onclick={handleAssignPlan}
+                                    disabled={!selectedPlanId ||
+                                        isAssigningPlan}
                                 >
-                                    Remover
+                                    {isAssigningPlan ? "..." : "Adicionar"}
                                 </button>
-                            {/if}
+                            </div>
                         </div>
                     </div>
 
                     {#if planAssignError}
-                        <p class="plan-error">{planAssignError}</p>
+                        <p class="plan-error mt-2 text-red-400 text-sm">
+                            {planAssignError}
+                        </p>
                     {/if}
                 </div>
                 <div class="flex justify-between items-center">

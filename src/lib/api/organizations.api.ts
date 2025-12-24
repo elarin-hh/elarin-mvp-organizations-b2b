@@ -174,7 +174,11 @@ export const organizationsApi = {
 		return restClient.patch<TrainingPlan>(`/organizations/training-plans/${planId}`, payload);
 	},
 
-	async deleteTrainingPlan(planId: number): Promise<ApiResponse<{ message: string }>> {
+	async deactivateTrainingPlan(planId: number): Promise<ApiResponse<{ message: string }>> {
+		return restClient.patch<{ message: string }>(`/organizations/training-plans/${planId}/deactivate`, {});
+	},
+
+	async removeTrainingPlan(planId: number): Promise<ApiResponse<{ message: string }>> {
 		return restClient.delete<{ message: string }>(`/organizations/training-plans/${planId}`);
 	},
 
@@ -208,22 +212,22 @@ export const organizationsApi = {
 		);
 	},
 
-	async getUserTrainingPlan(userId: number): Promise<ApiResponse<TrainingPlanAssignment | null>> {
-		return restClient.get<TrainingPlanAssignment | null>(
-			`/organizations/users/${userId}/training-plan`
+	async getUserTrainingPlans(userId: number): Promise<ApiResponse<TrainingPlanAssignment[]>> {
+		return restClient.get<TrainingPlanAssignment[]>(
+			`/organizations/users/${userId}/training-plans`
 		);
 	},
 
 	async assignTrainingPlanToUser(userId: number, planId: number): Promise<ApiResponse<TrainingPlanAssignment>> {
 		return restClient.post<TrainingPlanAssignment>(
-			`/organizations/users/${userId}/training-plan`,
+			`/organizations/users/${userId}/training-plans`,
 			{ plan_id: planId }
 		);
 	},
 
-	async removeTrainingPlanFromUser(userId: number): Promise<ApiResponse<{ message: string }>> {
+	async removeTrainingPlanFromUser(userId: number, planId: number): Promise<ApiResponse<{ message: string }>> {
 		return restClient.delete<{ message: string }>(
-			`/organizations/users/${userId}/training-plan`
+			`/organizations/users/${userId}/training-plans/${planId}`
 		);
 	},
 

@@ -42,10 +42,7 @@
 
 	function getItemName(item: TrainingPlanItem) {
 		return (
-			item.exercise_template?.name_pt ||
-			item.exercise_template?.name ||
-			item.exercise_type ||
-			"Exercicio"
+			item.exercise_template?.name || item.exercise_type || "Exercicio"
 		);
 	}
 
@@ -84,11 +81,22 @@
 	async function handleDeactivate() {
 		if (!confirm("Deseja desativar este plano?")) return;
 
-		const response = await organizationsApi.deleteTrainingPlan(plan.id);
+		const response = await organizationsApi.deactivateTrainingPlan(plan.id);
 		if (response.success) {
 			plan = { ...plan, is_active: false };
 		} else {
 			updateError = response.error?.message || "Erro ao desativar plano.";
+		}
+	}
+
+	async function handleRemovePlan() {
+		if (!confirm("Deseja remover este plano permanentemente?")) return;
+
+		const response = await organizationsApi.removeTrainingPlan(plan.id);
+		if (response.success) {
+			goto("/training-plans");
+		} else {
+			updateError = response.error?.message || "Erro ao remover plano.";
 		}
 	}
 
@@ -109,7 +117,7 @@
 			rest_seconds: newRestSeconds ?? undefined,
 		});
 
-		if (response.success) {
+		if (response.success && response.data) {
 			items = sortItems([...items, response.data]);
 			showAddModal = false;
 			newTemplateId = null;
@@ -139,10 +147,10 @@
 			},
 		);
 
-		if (response.success) {
+		if (response.success && response.data) {
 			items = sortItems(
 				items.map((existing) =>
-					existing.id === item.id ? response.data : existing,
+					existing.id === item.id ? response.data! : existing,
 				),
 			);
 		} else {
@@ -200,6 +208,15 @@
 					>
 						<CircleOff size={16} />
 						Desativar
+					</button>
+					<button
+						type="button"
+						class="btn-ghost text-red-400"
+						style="border-radius: var(--radius-md);"
+						onclick={handleRemovePlan}
+					>
+						<Trash2 size={16} />
+						Remover
 					</button>
 				</div>
 			</div>
@@ -399,7 +416,7 @@
 				<option value="">Selecione</option>
 				{#each templates as template}
 					<option value={template.id}>
-						{template.name_pt || template.name} ({template.type})
+						{template.name} ({template.type})
 					</option>
 				{/each}
 			</select>
