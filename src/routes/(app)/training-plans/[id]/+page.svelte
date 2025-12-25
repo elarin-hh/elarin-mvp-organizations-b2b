@@ -256,7 +256,16 @@
 					item.id,
 				);
 				if (response.success) {
-					items = items.filter((entry) => entry.id !== item.id);
+					// Remove item and re-calculate positions locally to match backend behavior
+					const remaining = items.filter(
+						(entry) => entry.id !== item.id,
+					);
+					items = sortItems(
+						remaining.map((t, idx) => ({
+							...t,
+							position: idx + 1,
+						})),
+					);
 					closeDialog();
 					toast.success("Item removido");
 				} else {
