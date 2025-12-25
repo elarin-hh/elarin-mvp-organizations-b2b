@@ -9,7 +9,7 @@
 
 	let email = $state("");
 	let password = $state("");
-	let showError = $state(false); // Local state to control inline error visibility if desired, or just use toast
+	let showError = $state(false);
 
 	const isLoading = $derived($loading);
 	const error = $derived($authError);
@@ -18,7 +18,6 @@
 		const result = await organizationAuthActions.login({ email, password });
 
 		if (result.success) {
-			// Add a flag to indicate we just logged in successfully
 			sessionStorage.setItem("just_logged_in", "true");
 			goto("/dashboard");
 		} else {
@@ -88,12 +87,6 @@
 			Não tem uma conta? Cadastre sua organização
 		</button>
 	</div>
-
-	<!-- 	<div class="absolute bottom-8 text-center">
-		<p class="text-white/50 text-sm">
-			Política de Privacidade e Termos de Uso
-		</p>
-	</div> -->
 </div>
 
 <style>

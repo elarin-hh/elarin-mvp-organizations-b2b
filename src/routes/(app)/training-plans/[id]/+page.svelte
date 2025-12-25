@@ -37,7 +37,6 @@
 	let isAddingItem = $state(false);
 	let updatingItemId = $state<number | null>(null);
 
-	// Dialog State
 	let dialogOpen = $state(false);
 	let dialogConfig = $state({
 		title: "",
@@ -78,7 +77,7 @@
 			| undefined,
 	) {
 		if (!template) return false;
-		// Check for default_config if available (ExerciseTemplate)
+
 		const config = (template as ExerciseTemplate).default_config;
 		if (config && Array.isArray(config.metrics)) {
 			return config.metrics.some((m: any) =>
@@ -86,7 +85,6 @@
 			);
 		}
 
-		// Look up full template if we only have partial info
 		const fullTemplate = templates.find((t) => t.id === template.id);
 		if (fullTemplate?.default_config?.metrics) {
 			const metrics = fullTemplate.default_config.metrics;
@@ -97,7 +95,6 @@
 			}
 		}
 
-		// Default to FALSE as requested: strict check, never show by default
 		return false;
 	}
 
@@ -256,7 +253,6 @@
 					item.id,
 				);
 				if (response.success) {
-					// Remove item and re-calculate positions locally to match backend behavior
 					const remaining = items.filter(
 						(entry) => entry.id !== item.id,
 					);
@@ -311,11 +307,9 @@
 
 		if (oldIndex === -1 || newIndex === -1) return;
 
-		// Move item
 		const [movedItem] = currentItems.splice(oldIndex, 1);
 		currentItems.splice(newIndex, 0, movedItem);
 
-		// Update positions locally immediately for UI responsiveness
 		items = currentItems.map((item, index) => ({
 			...item,
 			position: index + 1,
@@ -324,7 +318,6 @@
 		draggingItem = null;
 		dragOverItem = null;
 
-		// Call API to persist order
 		try {
 			const res = await organizationsApi.reorderTrainingPlanItems(
 				plan.id,

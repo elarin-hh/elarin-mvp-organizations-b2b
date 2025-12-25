@@ -1,5 +1,5 @@
 <script lang="ts">
-  let { message = 'Carregando...' }: { message?: string } = $props();
+  let { message = "Carregando..." }: { message?: string } = $props();
 </script>
 
 <div class="loading-container">
@@ -17,7 +17,6 @@
       <div class="cube" style="animation-delay: 0.1s;"></div>
       <div class="cube" style="animation-delay: 0.2s;"></div>
     </div>
-    <!-- <p class="loading-text">{message}</p> -->
   </div>
 </div>
 
@@ -56,7 +55,8 @@
   }
 
   @keyframes fadeInOut {
-    0%, 100% {
+    0%,
+    100% {
       opacity: 1;
       transform: scale(1);
     }

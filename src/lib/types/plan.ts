@@ -1,7 +1,4 @@
-/**
- * Plan Types
- * Based on backend API plans table
- */
+
 
 export interface PlanFeatures {
 	features: string[];

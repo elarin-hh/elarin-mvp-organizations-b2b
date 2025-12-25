@@ -13,7 +13,6 @@
 
     <AppHeader />
 
-    <!-- Main Content -->
     <div class="main-content">
         {@render children?.()}
     </div>

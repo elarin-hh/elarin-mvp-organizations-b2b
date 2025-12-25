@@ -22,7 +22,6 @@
     let isMetricsExpanded = true;
     let error: string | null = null;
 
-    // Deep merge helper
     function deepMerge(target: any, source: any) {
         if (!source || typeof source !== "object") return target;
         const output = { ...target };
@@ -44,12 +43,11 @@
         return output;
     }
 
-    // Merge defaults with user overrides
     $: mergedConfig = (() => {
         const defaults = template.default_config || {};
-        // Ensure metrics are preserved from default if not in user
+
         const base = deepMerge(defaults, userConfig || {});
-        // Explicitly handle metrics array if missing in result
+
         if (!base.metrics && defaults.metrics) {
             base.metrics = defaults.metrics;
         }
@@ -59,12 +57,8 @@
 
     let editedConfig: any = {};
 
-    // React to mergedConfig changes (e.g. initial load or prop change)
     $: {
         if (mergedConfig) {
-            // Only update if we don't have edits or if the base changed significantly?
-            // Simplest is to just sync. If user is typing, we bind to editedConfig fields.
-            // We need to initialize it.
             if (Object.keys(editedConfig).length === 0) {
                 editedConfig = JSON.parse(JSON.stringify(mergedConfig));
                 console.log(
@@ -75,9 +69,8 @@
         }
     }
 
-    // Filter out internal keys or handled separately
     $: configEntries = Object.entries(editedConfig).filter(
-        ([key]) => key !== "metrics", // heuristicConfig is now just another object, generic traversal handles it!
+        ([key]) => key !== "metrics",
     );
 
     async function handleSubmit() {
@@ -127,7 +120,6 @@
     {/if}
 
     <div class="space-y-8">
-        <!-- Generic Parameters -->
         <section>
             <h4
                 class="text-xs uppercase tracking-wider text-white/50 font-semibold mb-4 pb-2 border-b border-white/5"
@@ -137,7 +129,6 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {#each Object.entries(editedConfig) as [key, value]}
                     {#if key !== "metrics"}
-                        <!-- Check if value is object (simple check) to span full width -->
                         {@const isObject =
                             value !== null &&
                             typeof value === "object" &&
@@ -154,7 +145,6 @@
             </div>
         </section>
 
-        <!-- Metrics/Goals -->
         {#if editedConfig.metrics && editedConfig.metrics.length > 0}
             <section>
                 <button

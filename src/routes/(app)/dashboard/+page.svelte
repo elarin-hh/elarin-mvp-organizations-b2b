@@ -39,11 +39,9 @@
 			tag: "Biomecânica",
 		},
 	];
-
 </script>
 
 <div class="min-h-full">
-	<!-- Main Content -->
 	<main class="w-full min-h-full px-6 pb-8 pt-8">
 		{#if organization}
 			<div class="mb-8">

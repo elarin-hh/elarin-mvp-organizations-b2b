@@ -1,7 +1,4 @@
-/**
- * Exercise Types
- * Based on backend API exercise endpoints
- */
+
 
 export interface ExerciseTemplate {
 	id: number;

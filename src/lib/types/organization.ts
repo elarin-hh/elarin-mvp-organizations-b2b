@@ -1,7 +1,4 @@
-/**
- * Organization Types
- * Based on backend API at: C:\Users\Guilherme\Documents\Elarin-projects\elarin-backend-api
- */
+
 
 export interface Organization {
 	id: number;
@@ -31,7 +28,7 @@ export interface OrganizationUser {
 	organization_id: number;
 	role: string;
 	status: MembershipStatus;
-	is_active: boolean; // Kept for backward compatibility
+	is_active: boolean;
 	created_at: string;
 	users: {
 		id: number;

@@ -26,7 +26,6 @@
     let isProcessing = $state(false);
     let searchTerm = $state("");
 
-    // Dialog State
     let dialogOpen = $state(false);
     let dialogConfig = $state({
         title: "",
@@ -53,7 +52,6 @@
         dialogOpen = false;
     }
 
-    // Filtered templates based on search
     let filteredTemplates = $derived(
         templates.filter((t) =>
             t.name.toLowerCase().includes(searchTerm.toLowerCase()),
@@ -99,7 +97,6 @@
         const exerciseId = getUserExerciseId(template.id);
 
         if (exerciseId) {
-            // Remove exercise
             openDialog({
                 title: "Remover exercício",
                 message: `Remover "${template.name}" deste usuário?`,
@@ -128,7 +125,6 @@
                 },
             });
         } else {
-            // Assign exercise
             isProcessing = true;
             try {
                 const response = await organizationsApi.assignExercise(
@@ -170,7 +166,6 @@
         role="dialog"
         aria-modal="true"
     >
-        <!-- Header -->
         <div class="modal-header">
             <div>
                 <h2>Gerenciar Exercícios</h2>
@@ -181,7 +176,6 @@
             </button>
         </div>
 
-        <!-- Search -->
         <div class="search-container">
             <input
                 type="text"
@@ -191,7 +185,6 @@
             />
         </div>
 
-        <!-- Content -->
         <div class="modal-body">
             {#if isLoading}
                 <div class="loading-container">
@@ -247,7 +240,6 @@
             {/if}
         </div>
 
-        <!-- Footer -->
         <div class="modal-footer">
             <button class="btn-secondary" onclick={handleClose}>Fechar</button>
         </div>

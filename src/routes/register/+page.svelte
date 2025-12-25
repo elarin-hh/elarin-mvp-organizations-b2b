@@ -14,7 +14,6 @@
 	let currentStep = $state(1);
 	const totalSteps = 2;
 
-	// Step 1: Organization Info
 	let name = $state("");
 	let federalTaxId = $state("");
 	let email = $state("");
@@ -24,7 +23,6 @@
 	let address = $state("");
 	let responsibleName = $state("");
 
-	// Step 2: Plan Selection
 	let plans = $state<Plan[]>([]);
 	let selectedPlanId = $state<number | null>(null);
 	let loadingPlans = $state(false);
@@ -43,7 +41,7 @@
 		const response = await plansApi.getAllActivePlans();
 		if (response.success && response.data) {
 			plans = response.data;
-			// Pre-select Free plan if available
+
 			const freePlan = plans.find((p) => p.price_cents === 0);
 			if (freePlan) {
 				selectedPlanId = freePlan.id;
@@ -82,8 +80,6 @@
 
 		return true;
 	}
-
-	// ... (skipping nextStep/prevStep chunks if they don't change logic, but I need to reach handleRegister)
 
 	function nextStep() {
 		formError = "";
@@ -171,7 +167,6 @@
 		{/if}
 
 		{#if currentStep === 1}
-			<!-- Step 1: Organization Information -->
 			<div class="space-y-4">
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 					<input
@@ -258,7 +253,6 @@
 				</button>
 			</div>
 		{:else if currentStep === 2}
-			<!-- Step 2: Plan Selection -->
 			<div class="space-y-4">
 				{#if loadingPlans}
 					<p class="text-white/70 text-center">
@@ -307,12 +301,6 @@
 			Já tem uma conta? Faça login
 		</button>
 	</div>
-
-	<!-- 	<div class="mt-8 text-center">
-		<p class="text-white/50 text-sm">
-			Política de Privacidade e Termos de Uso
-		</p>
-	</div> -->
 </div>
 
 <style>

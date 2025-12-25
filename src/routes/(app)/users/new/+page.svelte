@@ -5,7 +5,6 @@
 	import ConfirmDialog from "$lib/components/common/ConfirmDialog.svelte";
 	import { toast } from "$lib/stores/toast.store";
 
-	// Form states
 	let full_name = $state("");
 	let email = $state("");
 	let birth_date = $state("");
@@ -15,7 +14,6 @@
 	let height_cm = $state<number | undefined>(undefined);
 	let weight_kg = $state<number | undefined>(undefined);
 
-	// Error states
 	let formError = $state("");
 	let fullNameError = $state("");
 	let emailError = $state("");
@@ -25,12 +23,10 @@
 	let heightError = $state("");
 	let weightError = $state("");
 
-	// Loading state
 	let isSubmitting = $state(false);
 
 	let submitSuccess = $state(false);
 
-	// Dialog State
 	let dialogOpen = $state(false);
 	let dialogConfig = $state({
 		title: "",
@@ -44,7 +40,6 @@
 		dialogOpen = false;
 	}
 
-	// Validation functions
 	function validateAge(birthDateStr: string): boolean {
 		if (!birthDateStr) return false;
 
@@ -105,7 +100,6 @@
 		return emailRegex.test(emailStr);
 	}
 
-	// Real-time validation effects
 	$effect(() => {
 		if (height_cm !== undefined && height_cm !== null) {
 			heightError = validateHeight(height_cm);
@@ -118,11 +112,9 @@
 		}
 	});
 
-	// Form validation
 	function validateForm(): boolean {
 		let isValid = true;
 
-		// Reset errors
 		fullNameError = "";
 		emailError = "";
 		birthDateError = "";
@@ -130,7 +122,6 @@
 		confirmPasswordError = "";
 		formError = "";
 
-		// Validate full name
 		if (!full_name.trim()) {
 			fullNameError = "Nome completo é obrigatório";
 			isValid = false;
@@ -139,7 +130,6 @@
 			isValid = false;
 		}
 
-		// Validate email
 		if (!email.trim()) {
 			emailError = "Email é obrigatório";
 			isValid = false;
@@ -148,7 +138,6 @@
 			isValid = false;
 		}
 
-		// Validate birth date
 		if (!birth_date) {
 			birthDateError = "Data de nascimento é obrigatória";
 			isValid = false;
@@ -158,7 +147,6 @@
 			isValid = false;
 		}
 
-		// Validate password
 		if (!password) {
 			passwordError = "Senha é obrigatória";
 			isValid = false;
@@ -167,7 +155,6 @@
 			isValid = false;
 		}
 
-		// Validate confirm password
 		if (!confirmPassword) {
 			confirmPasswordError = "Confirme a senha";
 			isValid = false;
@@ -176,7 +163,6 @@
 			isValid = false;
 		}
 
-		// Validate optional fields
 		if (!height_cm) {
 			heightError = "Altura é obrigatória";
 			isValid = false;
@@ -202,7 +188,6 @@
 		return isValid;
 	}
 
-	// Form submission
 	async function handleSubmit(event: Event) {
 		event.preventDefault();
 
@@ -231,7 +216,7 @@
 		if (response.success) {
 			submitSuccess = true;
 			toast.success("Usuário cadastrado com sucesso! Redirecionando...");
-			// Wait a bit to show success message, then redirect
+
 			setTimeout(() => {
 				goto("/users");
 			}, 2000);
@@ -244,7 +229,6 @@
 	}
 
 	function handleCancel() {
-		// Check if form has data
 		const hasData =
 			full_name ||
 			email ||
@@ -275,7 +259,6 @@
 
 <div class="min-h-full pb-8">
 	<main class="w-full min-h-full px-6 pt-8">
-		<!-- Header -->
 		<div class="mb-8">
 			<button
 				onclick={() => goto("/users")}
@@ -293,7 +276,6 @@
 			</p>
 		</div>
 
-		<!-- Success Message -->
 		{#if submitSuccess}
 			<div
 				class="bg-green-500/10 text-green-200 px-6 py-4 mb-6"
@@ -309,7 +291,6 @@
 			</div>
 		{/if}
 
-		<!-- Error Message -->
 		{#if formError && !submitSuccess}
 			<div
 				class="bg-red-500/10 text-red-200 px-6 py-4 mb-6"
@@ -319,13 +300,11 @@
 			</div>
 		{/if}
 
-		<!-- Form -->
 		<form onsubmit={handleSubmit} class="w-full">
 			<div
 				class="user-card p-6 space-y-6"
 				style="border-radius: var(--radius-standard);"
 			>
-				<!-- Personal Information -->
 				<div>
 					<h3
 						class="text-sm font-semibold uppercase text-white/70 tracking-wide mb-4"
@@ -334,7 +313,6 @@
 					</h3>
 
 					<div class="space-y-4">
-						<!-- Full Name -->
 						<div>
 							<label
 								for="full_name"
@@ -360,7 +338,6 @@
 							{/if}
 						</div>
 
-						<!-- Email -->
 						<div>
 							<label
 								for="email"
@@ -385,7 +362,6 @@
 							{/if}
 						</div>
 
-						<!-- Birth Date -->
 						<div>
 							<label
 								for="birth_date"
@@ -415,9 +391,7 @@
 							</p>
 						</div>
 
-						<!-- Password fields -->
 						<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-							<!-- Password -->
 							<div>
 								<label
 									for="password"
@@ -442,7 +416,6 @@
 								{/if}
 							</div>
 
-							<!-- Confirm Password -->
 							<div>
 								<label
 									for="confirmPassword"
@@ -472,7 +445,6 @@
 					</div>
 				</div>
 
-				<!-- Biometric Data (Required) -->
 				<div class="pt-6 border-t border-white/10">
 					<h3
 						class="text-sm font-semibold uppercase text-white/70 tracking-wide mb-4"
@@ -481,7 +453,6 @@
 					</h3>
 
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-						<!-- Height -->
 						<div>
 							<label
 								for="height_cm"
@@ -510,7 +481,6 @@
 							{/if}
 						</div>
 
-						<!-- Weight -->
 						<div>
 							<label
 								for="weight_kg"
@@ -541,7 +511,6 @@
 					</div>
 				</div>
 
-				<!-- Marketing Consent -->
 				<div class="pt-6 border-t border-white/10">
 					<label class="flex items-start gap-3 cursor-pointer">
 						<input
@@ -556,7 +525,6 @@
 					</label>
 				</div>
 
-				<!-- Action Buttons -->
 				<div class="flex gap-4 pt-6">
 					<button
 						type="button"

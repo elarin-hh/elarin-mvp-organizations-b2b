@@ -42,7 +42,6 @@
         assignedTrainingPlans = data.assignedTrainingPlans ?? [];
     });
 
-    // State
     let selectedExerciseId = $state<number | null>(null);
     let fullConfig = $state<any>(null);
     let isLoadingConfig = $state(false);
@@ -51,7 +50,6 @@
     let planAssignError = $state("");
     let isAssigningPlan = $state(false);
 
-    // Dialog State
     let dialogOpen = $state(false);
     let dialogConfig = $state({
         title: "",
@@ -78,7 +76,6 @@
         dialogOpen = false;
     }
 
-    // Helper to calculate age
     function getAge(birthDate: string | null): string {
         if (!birthDate) return "--";
         const today = new Date();
@@ -145,12 +142,11 @@
                 newConfig,
             );
             if (res.success) {
-                // Refresh local data if needed or just show success (handled in component)
             } else {
                 throw new Error(res.error?.message || "Failed");
             }
         } catch (err) {
-            throw err; // Propagate to component handle
+            throw err;
         }
     }
 
@@ -173,7 +169,7 @@
                         fullConfig = null;
                     }
                     closeDialog();
-                    closeDialog(); // Double close dialog is weird but keeping strict replacement scope
+                    closeDialog();
                     toast.success("Expercício removido com sucesso");
                 } else {
                     toast.error("Erro ao remover exercício");
@@ -250,7 +246,7 @@
         );
 
         if (res.success) {
-            assignedTrainingPlans = [res.data, ...assignedTrainingPlans];
+            assignedTrainingPlans = [res.data!, ...assignedTrainingPlans];
             selectedPlanId = null;
             toast.success("Plano atribuído com sucesso");
         } else {
@@ -287,14 +283,12 @@
     }
 
     function handleExercisesUpdated() {
-        // Reload page data to get fresh exercises list
         goto($page.url, { invalidateAll: true });
     }
 </script>
 
 <div class="min-h-full pb-8">
     <main class="w-full min-h-full px-6 pt-8">
-        <!-- Back & Header -->
         <div class="mb-8">
             <button
                 onclick={() => goto("/users")}
@@ -384,7 +378,6 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Sidebar: Profile Stats -->
             <div class="lg:col-span-1 space-y-4">
                 <div class="user-card p-5">
                     <h3
@@ -424,7 +417,6 @@
                 </div>
             </div>
 
-            <!-- Main Content: Exercises -->
             <div class="lg:col-span-2 space-y-4">
                 <div class="user-card p-5 plan-assignment-card">
                     <div class="flex items-center justify-between gap-3 mb-4">
@@ -456,7 +448,8 @@
                                         >
                                             <span
                                                 >Atribuído em: {new Date(
-                                                    assignment.assigned_at,
+                                                    assignment.assigned_at ||
+                                                        Date.now(),
                                                 ).toLocaleDateString()}</span
                                             >
                                         </div>
@@ -667,14 +660,11 @@
         </div>
     </main>
 
-    <!-- Reuse existing logic for modal -->
     {#if showAssignModal}
         <ManageExercisesModal
             user={user.users}
-            {exercises}
-            {templates}
             onClose={() => (showAssignModal = false)}
-            onUpdate={handleExercisesUpdated}
+            onSuccess={handleExercisesUpdated}
         />
     {/if}
 

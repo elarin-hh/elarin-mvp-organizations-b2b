@@ -24,23 +24,17 @@ export interface UpdateUserExerciseConfigPayload {
     config: Record<string, any>;
 }
 
-/**
- * Get all exercise templates
- */
+
 export async function getExerciseTemplates() {
     return restClient.get<ExerciseTemplate[]>('/organizations/exercise-templates');
 }
 
-/**
- * Get single exercise template
- */
+
 export async function getExerciseTemplate(templateId: number) {
     return restClient.get<ExerciseTemplate>(`/organizations/exercise-templates/${templateId}`);
 }
 
-/**
- * Update template default configuration
- */
+
 export async function updateTemplateDefaultConfig(
     templateId: number,
     payload: UpdateTemplateConfigPayload
@@ -51,9 +45,7 @@ export async function updateTemplateDefaultConfig(
     );
 }
 
-/**
- * Update user-specific exercise configuration
- */
+
 export async function updateUserExerciseConfig(
     userId: number,
     exerciseId: number,

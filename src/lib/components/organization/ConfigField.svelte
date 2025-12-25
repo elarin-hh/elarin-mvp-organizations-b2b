@@ -10,14 +10,13 @@
 
     let isExpanded = true;
 
-    // determine type from default value if present, otherwise current value
     $: type = getType(defaultValue !== undefined ? defaultValue : value);
 
     function getType(
         val: any,
     ): "number" | "boolean" | "string" | "object" | "unknown" {
         if (val === null || val === undefined) return "unknown";
-        if (Array.isArray(val)) return "unknown"; // Arrays handled specially or ignored for now in generic config
+        if (Array.isArray(val)) return "unknown";
         return typeof val as any;
     }
 
