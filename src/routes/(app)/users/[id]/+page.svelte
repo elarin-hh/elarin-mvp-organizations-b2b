@@ -92,6 +92,10 @@
     }
 
     async function handleSelectExercise(exercise: any) {
+        console.log(
+            "[handleSelectExercise] Starting for exercise:",
+            exercise.id,
+        );
         if (selectedExerciseId === exercise.id) {
             selectedExerciseId = null;
             fullConfig = null;
@@ -100,19 +104,34 @@
 
         selectedExerciseId = exercise.id;
         isLoadingConfig = true;
+        console.log("[handleSelectExercise] isLoadingConfig set to true");
         try {
             const res = await organizationsApi.getExerciseConfig(
-                user.users?.id,
+                user.user_id,
                 exercise.id,
             );
+            console.log("[handleSelectExercise] API response:", res);
             if (res.success) {
                 fullConfig = res.data;
+                console.log(
+                    "[handleSelectExercise] fullConfig set:",
+                    fullConfig,
+                );
+            } else {
+                console.error(
+                    "[handleSelectExercise] API returned failure:",
+                    res,
+                );
             }
         } catch (err) {
-            console.error(err);
+            console.error("[handleSelectExercise] Error:", err);
             toast.error("Erro ao carregar configurações");
         } finally {
             isLoadingConfig = false;
+            console.log(
+                "[handleSelectExercise] isLoadingConfig set to false, fullConfig:",
+                fullConfig,
+            );
         }
     }
 
@@ -121,14 +140,14 @@
 
         try {
             const res = await organizationsApi.updateExerciseConfig(
-                user.users?.id,
+                user.user_id,
                 selectedExerciseId,
                 newConfig,
             );
             if (res.success) {
                 // Refresh local data if needed or just show success (handled in component)
             } else {
-                throw new Error(res.error || "Failed");
+                throw new Error(res.error?.message || "Failed");
             }
         } catch (err) {
             throw err; // Propagate to component handle
@@ -144,7 +163,7 @@
             confirmLabel: "Remover",
             onConfirm: async () => {
                 const res = await organizationsApi.removeExercise(
-                    user.users?.id,
+                    user.user_id,
                     exerciseId,
                 );
                 if (res.success) {
@@ -154,7 +173,7 @@
                         fullConfig = null;
                     }
                     closeDialog();
-                    closeDialog();
+                    closeDialog(); // Double close dialog is weird but keeping strict replacement scope
                     toast.success("Expercício removido com sucesso");
                 } else {
                     toast.error("Erro ao remover exercício");
