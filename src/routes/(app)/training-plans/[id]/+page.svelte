@@ -35,6 +35,7 @@
 	let newTargetDuration = $state<number | null>(null);
 	let newRestSeconds = $state<number | null>(null);
 	let isAddingItem = $state(false);
+	let updatingItemId = $state<number | null>(null);
 
 	// Dialog State
 	let dialogOpen = $state(false);
@@ -191,6 +192,7 @@
 
 	async function handleUpdateItem(item: TrainingPlanItem) {
 		updateError = "";
+		updatingItemId = item.id;
 		const response = await organizationsApi.updateTrainingPlanItem(
 			plan.id,
 			item.id,
@@ -214,6 +216,7 @@
 			updateError = response.error?.message || "Erro ao atualizar item.";
 			toast.error(updateError);
 		}
+		updatingItemId = null;
 	}
 
 	async function handleRemoveItem(item: TrainingPlanItem) {
@@ -342,8 +345,13 @@
 								variant="primary"
 								class="btn-radius-md"
 								onclick={() => handleUpdateItem(item)}
+								disabled={updatingItemId === item.id}
 							>
-								{#snippet children()}Salvar{/snippet}
+								{#snippet children()}
+									{updatingItemId === item.id
+										? "Salvando..."
+										: "Salvar"}
+								{/snippet}
 							</Button>
 						</div>
 
