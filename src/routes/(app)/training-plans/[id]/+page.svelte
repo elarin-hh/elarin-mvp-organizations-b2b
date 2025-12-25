@@ -31,9 +31,7 @@
 	let newTemplateId = $state<number | null>(null);
 	let newPosition = $state<number | null>(null);
 	let newTargetReps = $state<number | null>(null);
-	let newTargetSets = $state<number | null>(null);
 	let newTargetDuration = $state<number | null>(null);
-	let newRestSeconds = $state<number | null>(null);
 	let isAddingItem = $state(false);
 	let updatingItemId = $state<number | null>(null);
 
@@ -168,9 +166,7 @@
 			template_id: newTemplateId,
 			position: newPosition ?? undefined,
 			target_reps: newTargetReps ?? undefined,
-			target_sets: newTargetSets ?? undefined,
 			target_duration_sec: newTargetDuration ?? undefined,
-			rest_seconds: newRestSeconds ?? undefined,
 		});
 
 		if (response.success && response.data) {
@@ -179,9 +175,7 @@
 			newTemplateId = null;
 			newPosition = null;
 			newTargetReps = null;
-			newTargetSets = null;
 			newTargetDuration = null;
-			newRestSeconds = null;
 		} else {
 			formError = response.error?.message || "Erro ao adicionar item.";
 			toast.error(formError);
@@ -199,9 +193,7 @@
 			{
 				position: item.position,
 				target_reps: item.target_reps ?? undefined,
-				target_sets: item.target_sets ?? undefined,
 				target_duration_sec: item.target_duration_sec ?? undefined,
-				rest_seconds: item.rest_seconds ?? undefined,
 			},
 		);
 
@@ -395,27 +387,6 @@
 								/>
 							</label>
 							<label class="form-field">
-								<span>Series</span>
-								<input
-									type="number"
-									min="0"
-									value={item.target_sets ?? ""}
-									oninput={(e) =>
-										updateItemField(
-											item.id,
-											"target_sets",
-											(e.target as HTMLInputElement)
-												.value === ""
-												? null
-												: Number(
-														(
-															e.target as HTMLInputElement
-														).value,
-													),
-										)}
-								/>
-							</label>
-							<label class="form-field">
 								<span>Duracao (s)</span>
 								<input
 									type="number"
@@ -436,27 +407,7 @@
 										)}
 								/>
 							</label>
-							<label class="form-field">
-								<span>Descanso (s)</span>
-								<input
-									type="number"
-									min="0"
-									value={item.rest_seconds ?? ""}
-									oninput={(e) =>
-										updateItemField(
-											item.id,
-											"rest_seconds",
-											(e.target as HTMLInputElement)
-												.value === ""
-												? null
-												: Number(
-														(
-															e.target as HTMLInputElement
-														).value,
-													),
-										)}
-								/>
-							</label>
+
 							<button
 								class="btn-ghost text-sm text-red-400"
 								style="border-radius: var(--radius-md); justify-self: end;"
@@ -525,19 +476,6 @@
 				/>
 			</label>
 			<label class="form-field">
-				<span>Series</span>
-				<input
-					type="number"
-					min="0"
-					value={newTargetSets ?? ""}
-					oninput={(e) =>
-						(newTargetSets =
-							(e.target as HTMLInputElement).value === ""
-								? null
-								: Number((e.target as HTMLInputElement).value))}
-				/>
-			</label>
-			<label class="form-field">
 				<span>Duracao (s)</span>
 				<input
 					type="number"
@@ -545,19 +483,6 @@
 					value={newTargetDuration ?? ""}
 					oninput={(e) =>
 						(newTargetDuration =
-							(e.target as HTMLInputElement).value === ""
-								? null
-								: Number((e.target as HTMLInputElement).value))}
-				/>
-			</label>
-			<label class="form-field">
-				<span>Descanso (s)</span>
-				<input
-					type="number"
-					min="0"
-					value={newRestSeconds ?? ""}
-					oninput={(e) =>
-						(newRestSeconds =
 							(e.target as HTMLInputElement).value === ""
 								? null
 								: Number((e.target as HTMLInputElement).value))}

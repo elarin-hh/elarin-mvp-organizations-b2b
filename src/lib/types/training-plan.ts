@@ -23,9 +23,7 @@ export interface TrainingPlanItem {
 	template_id: number;
 	exercise_type?: string | null;
 	target_reps?: number | null;
-	target_sets?: number | null;
 	target_duration_sec?: number | null;
-	rest_seconds?: number | null;
 	exercise_template?: TrainingPlanTemplateInfo | null;
 }
 
