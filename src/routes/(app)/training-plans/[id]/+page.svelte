@@ -12,6 +12,7 @@
 	import ArrowLeft from "lucide-svelte/icons/arrow-left";
 	import Trash2 from "lucide-svelte/icons/trash-2";
 	import CircleOff from "lucide-svelte/icons/circle-off";
+	import GripVertical from "lucide-svelte/icons/grip-vertical";
 	import ConfirmDialog from "$lib/components/common/ConfirmDialog.svelte";
 	import { toast } from "$lib/stores/toast.store";
 
@@ -234,6 +235,70 @@
 			},
 		});
 	}
+	let draggingItem = $state<TrainingPlanItem | null>(null);
+	let dragOverItem = $state<TrainingPlanItem | null>(null);
+
+	function handleDragStart(event: DragEvent, item: TrainingPlanItem) {
+		draggingItem = item;
+		if (event.dataTransfer) {
+			event.dataTransfer.effectAllowed = "move";
+			event.dataTransfer.setData("text/plain", String(item.id));
+			event.dataTransfer.dropEffect = "move";
+		}
+	}
+
+	function handleDragOver(event: DragEvent, item: TrainingPlanItem) {
+		event.preventDefault();
+		if (draggingItem === item) return;
+		dragOverItem = item;
+	}
+
+	function handleDragEnd() {
+		draggingItem = null;
+		dragOverItem = null;
+	}
+
+	async function handleDrop(event: DragEvent, targetItem: TrainingPlanItem) {
+		event.preventDefault();
+		if (!draggingItem || draggingItem.id === targetItem.id) return;
+
+		const currentItems = [...items];
+		const oldIndex = currentItems.findIndex(
+			(i) => i.id === draggingItem!.id,
+		);
+		const newIndex = currentItems.findIndex((i) => i.id === targetItem.id);
+
+		if (oldIndex === -1 || newIndex === -1) return;
+
+		// Move item
+		const [movedItem] = currentItems.splice(oldIndex, 1);
+		currentItems.splice(newIndex, 0, movedItem);
+
+		// Update positions locally immediately for UI responsiveness
+		items = currentItems.map((item, index) => ({
+			...item,
+			position: index + 1,
+		}));
+
+		draggingItem = null;
+		dragOverItem = null;
+
+		// Call API to persist order
+		try {
+			const res = await organizationsApi.reorderTrainingPlanItems(
+				plan.id,
+				items.map((i) => i.id),
+			);
+			if (res.success) {
+				toast.success("Ordem atualizada");
+			} else {
+				toast.error("Erro ao salvar ordem");
+			}
+		} catch (error) {
+			console.error("Error reordering items:", error);
+			toast.error("Erro ao salvar ordem");
+		}
+	}
 </script>
 
 <div class="min-h-full pb-8">
@@ -321,17 +386,37 @@
 			</div>
 		{:else}
 			<div class="space-y-4">
-				{#each items as item}
-					<div class="plan-item-card">
+				{#each items as item (item.id)}
+					<div
+						class="plan-item-card"
+						role="listitem"
+						draggable={true}
+						ondragstart={(e) => handleDragStart(e, item)}
+						ondragover={(e) => handleDragOver(e, item)}
+						ondrop={(e) => handleDrop(e, item)}
+						ondragend={handleDragEnd}
+						class:opacity-50={draggingItem === item}
+						class:border-2={dragOverItem === item}
+						style={dragOverItem === item
+							? "border-color: var(--color-primary);"
+							: ""}
+					>
 						<div class="item-header">
-							<div>
-								<h3 class="text-white font-semibold">
-									#{item.position} - {getItemName(item)}
-								</h3>
-								<p class="text-white/50 text-xs">
-									Template: {item.exercise_template?.type ||
-										item.exercise_type}
-								</p>
+							<div class="flex items-center gap-3">
+								<div
+									class="cursor-move text-white/30 hover:text-white/80 transition-colors"
+								>
+									<GripVertical size={20} />
+								</div>
+								<div>
+									<h3 class="text-white font-semibold">
+										#{item.position} - {getItemName(item)}
+									</h3>
+									<p class="text-white/50 text-xs">
+										Template: {item.exercise_template
+											?.type || item.exercise_type}
+									</p>
+								</div>
 							</div>
 							<Button
 								variant="primary"

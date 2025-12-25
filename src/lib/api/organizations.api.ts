@@ -208,6 +208,16 @@ export const organizationsApi = {
 		);
 	},
 
+	async reorderTrainingPlanItems(
+		planId: number,
+		itemIds: number[]
+	): Promise<ApiResponse<TrainingPlanDetails>> {
+		return restClient.patch<TrainingPlanDetails>(
+			`/organizations/training-plans/${planId}/items/reorder`,
+			{ item_ids: itemIds }
+		);
+	},
+
 	async getUserTrainingPlans(userId: number): Promise<ApiResponse<TrainingPlanAssignment[]>> {
 		return restClient.get<TrainingPlanAssignment[]>(
 			`/organizations/users/${userId}/training-plans`
