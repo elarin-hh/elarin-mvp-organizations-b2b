@@ -174,7 +174,9 @@
                         class="grid grid-cols-1 md:grid-cols-3 gap-4 border-l border-white/5 pl-4"
                         transition:slide|local
                     >
-                        {#each editedConfig.metrics as metric}
+                        {#each editedConfig.metrics as metric, idx}
+                            {@const defaultMetric =
+                                template.default_config?.metrics?.[idx]}
                             <div
                                 class="p-4 flex items-center justify-between transition-colors hover:bg-white/5"
                                 style="background: var(--color-bg-dark-secondary); border-radius: var(--radius-standard);"
@@ -185,9 +187,16 @@
                                         <input
                                             type="number"
                                             bind:value={metric.target}
-                                            class="input-standard md:text-right"
+                                            class="input-standard"
                                             placeholder="0"
                                         />
+                                        {#if defaultMetric?.target !== undefined}
+                                            <div
+                                                class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-white/30 pointer-events-none"
+                                            >
+                                                Padrão: {defaultMetric.target}
+                                            </div>
+                                        {/if}
                                     </div>
                                 </label>
                             </div>

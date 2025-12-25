@@ -248,7 +248,6 @@ export const organizationsApi = {
 		password: string;
 		full_name: string;
 		birth_date: string;
-		locale?: string;
 		marketing_consent?: boolean;
 		height_cm?: number;
 		weight_kg?: number;

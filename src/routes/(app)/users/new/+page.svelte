@@ -11,7 +11,6 @@
 	let birth_date = $state("");
 	let password = $state("");
 	let confirmPassword = $state("");
-	let locale = $state("pt-BR");
 	let marketing_consent = $state(false);
 	let height_cm = $state<number | undefined>(undefined);
 	let weight_kg = $state<number | undefined>(undefined);
@@ -178,7 +177,10 @@
 		}
 
 		// Validate optional fields
-		if (height_cm !== undefined && height_cm !== null) {
+		if (!height_cm) {
+			heightError = "Altura é obrigatória";
+			isValid = false;
+		} else if (height_cm !== undefined && height_cm !== null) {
 			const heightValidation = validateHeight(height_cm);
 			if (heightValidation) {
 				heightError = heightValidation;
@@ -186,7 +188,10 @@
 			}
 		}
 
-		if (weight_kg !== undefined && weight_kg !== null) {
+		if (!weight_kg) {
+			weightError = "Peso é obrigatório";
+			isValid = false;
+		} else if (weight_kg !== undefined && weight_kg !== null) {
 			const weightValidation = validateWeight(weight_kg);
 			if (weightValidation) {
 				weightError = weightValidation;
@@ -216,16 +221,9 @@
 			password,
 			full_name: full_name.trim(),
 			birth_date,
-			locale: locale || "pt-BR",
 			marketing_consent: marketing_consent || false,
-			height_cm:
-				height_cm !== undefined && height_cm !== null
-					? height_cm
-					: undefined,
-			weight_kg:
-				weight_kg !== undefined && weight_kg !== null
-					? weight_kg
-					: undefined,
+			height_cm: height_cm!,
+			weight_kg: weight_kg!,
 		});
 
 		isSubmitting = false;
@@ -471,37 +469,15 @@
 								{/if}
 							</div>
 						</div>
-
-						<!-- Locale -->
-						<div>
-							<label
-								for="locale"
-								class="block text-sm text-white/70 mb-2"
-							>
-								Idioma Preferido
-							</label>
-							<select
-								id="locale"
-								bind:value={locale}
-								class="w-full px-6 py-3 bg-white/5 text-white focus:outline-none focus:bg-white/10 transition-colors"
-								style="border-radius: var(--radius-standard);"
-								disabled={isSubmitting}
-							>
-								<option value="pt-BR">Português (Brasil)</option
-								>
-								<option value="en-US">English (US)</option>
-								<option value="es-ES">Español</option>
-							</select>
-						</div>
 					</div>
 				</div>
 
-				<!-- Biometric Data (Optional) -->
+				<!-- Biometric Data (Required) -->
 				<div class="pt-6 border-t border-white/10">
 					<h3
 						class="text-sm font-semibold uppercase text-white/70 tracking-wide mb-4"
 					>
-						Dados Biométricos (Opcional)
+						Dados Biométricos
 					</h3>
 
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -511,12 +487,13 @@
 								for="height_cm"
 								class="block text-sm text-white/70 mb-2"
 							>
-								Altura (cm)
+								Altura (cm) <span class="text-red-400">*</span>
 							</label>
 							<input
 								id="height_cm"
 								type="number"
 								bind:value={height_cm}
+								required
 								min="50"
 								max="300"
 								step="1"
@@ -539,12 +516,13 @@
 								for="weight_kg"
 								class="block text-sm text-white/70 mb-2"
 							>
-								Peso (kg)
+								Peso (kg) <span class="text-red-400">*</span>
 							</label>
 							<input
 								id="weight_kg"
 								type="number"
 								bind:value={weight_kg}
+								required
 								min="20"
 								max="500"
 								step="0.1"
@@ -561,11 +539,6 @@
 							{/if}
 						</div>
 					</div>
-
-					<p class="text-white/50 text-xs mt-3">
-						Estes dados são opcionais e podem ser preenchidos
-						posteriormente
-					</p>
 				</div>
 
 				<!-- Marketing Consent -->
