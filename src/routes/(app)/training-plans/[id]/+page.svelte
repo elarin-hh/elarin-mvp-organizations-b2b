@@ -8,6 +8,7 @@
 	import type {
 		TrainingPlanDetails,
 		TrainingPlanItem,
+		TrainingPlanTemplateInfo,
 	} from "$lib/types/training-plan";
 	import ArrowLeft from "lucide-svelte/icons/arrow-left";
 	import Trash2 from "lucide-svelte/icons/trash-2";
@@ -67,6 +68,37 @@
 		return list
 			.slice()
 			.sort((a, b) => (a.position || 0) - (b.position || 0));
+	}
+
+	function hasRepsMetric(
+		template:
+			| ExerciseTemplate
+			| TrainingPlanTemplateInfo
+			| null
+			| undefined,
+	) {
+		if (!template) return false;
+		// Check for default_config if available (ExerciseTemplate)
+		const config = (template as ExerciseTemplate).default_config;
+		if (config && Array.isArray(config.metrics)) {
+			return config.metrics.some((m: any) =>
+				typeof m === "string" ? m === "reps" : m.type === "reps",
+			);
+		}
+
+		// Look up full template if we only have partial info
+		const fullTemplate = templates.find((t) => t.id === template.id);
+		if (fullTemplate?.default_config?.metrics) {
+			const metrics = fullTemplate.default_config.metrics;
+			if (Array.isArray(metrics)) {
+				return metrics.some((m: any) =>
+					typeof m === "string" ? m === "reps" : m.type === "reps",
+				);
+			}
+		}
+
+		// Default to FALSE as requested: strict check, never show by default
+		return false;
 	}
 
 	function getItemName(item: TrainingPlanItem) {
@@ -433,46 +465,29 @@
 						</div>
 
 						<div class="item-grid">
+							{#if hasRepsMetric(item.exercise_template)}
+								<label class="form-field">
+									<span>Reps</span>
+									<input
+										type="number"
+										min="0"
+										value={item.target_reps ?? ""}
+										oninput={(e) =>
+											updateItemField(
+												item.id,
+												"target_reps",
+												e.currentTarget.value === ""
+													? null
+													: Number(
+															e.currentTarget
+																.value,
+														),
+											)}
+									/>
+								</label>
+							{/if}
 							<label class="form-field">
-								<span>Posicao</span>
-								<input
-									type="number"
-									min="1"
-									value={item.position}
-									oninput={(e) =>
-										updateItemField(
-											item.id,
-											"position",
-											Number(
-												(e.target as HTMLInputElement)
-													.value,
-											),
-										)}
-								/>
-							</label>
-							<label class="form-field">
-								<span>Reps</span>
-								<input
-									type="number"
-									min="0"
-									value={item.target_reps ?? ""}
-									oninput={(e) =>
-										updateItemField(
-											item.id,
-											"target_reps",
-											(e.target as HTMLInputElement)
-												.value === ""
-												? null
-												: Number(
-														(
-															e.target as HTMLInputElement
-														).value,
-													),
-										)}
-								/>
-							</label>
-							<label class="form-field">
-								<span>Duracao (s)</span>
+								<span>Duração (s)</span>
 								<input
 									type="number"
 									min="0"
@@ -533,35 +548,28 @@
 				{/each}
 			</select>
 		</label>
-		<label class="form-field">
-			<span>Posicao (opcional)</span>
-			<input
-				type="number"
-				min="1"
-				value={newPosition ?? ""}
-				oninput={(e) =>
-					(newPosition =
-						(e.target as HTMLInputElement).value === ""
-							? null
-							: Number((e.target as HTMLInputElement).value))}
-			/>
-		</label>
+
 		<div class="grid grid-cols-2 gap-3">
+			{#if hasRepsMetric(templates.find((t) => t.id === newTemplateId))}
+				<label class="form-field">
+					<span>Reps</span>
+					<input
+						type="number"
+						min="0"
+						value={newTargetReps ?? ""}
+						oninput={(e) =>
+							(newTargetReps =
+								(e.target as HTMLInputElement).value === ""
+									? null
+									: Number(
+											(e.target as HTMLInputElement)
+												.value,
+										))}
+					/>
+				</label>
+			{/if}
 			<label class="form-field">
-				<span>Reps</span>
-				<input
-					type="number"
-					min="0"
-					value={newTargetReps ?? ""}
-					oninput={(e) =>
-						(newTargetReps =
-							(e.target as HTMLInputElement).value === ""
-								? null
-								: Number((e.target as HTMLInputElement).value))}
-				/>
-			</label>
-			<label class="form-field">
-				<span>Duracao (s)</span>
+				<span>Duração (s)</span>
 				<input
 					type="number"
 					min="0"
