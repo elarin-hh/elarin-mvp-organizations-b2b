@@ -359,28 +359,6 @@
 		margin-bottom: 1rem;
 	}
 
-	.form-field {
-		display: flex;
-		flex-direction: column;
-		gap: 0.4rem;
-		color: rgba(255, 255, 255, 0.7);
-		font-size: 0.85rem;
-	}
-
-	.form-field input,
-	.form-field textarea {
-		background: rgba(255, 255, 255, 0.05);
-		border: 1px solid rgba(255, 255, 255, 0.12);
-		border-radius: var(--radius-standard);
-		padding: 0.5rem 0.75rem;
-		color: #fff;
-	}
-
-	.form-error {
-		color: rgb(239, 68, 68);
-		font-size: 0.8rem;
-	}
-
 	:global(.btn-radius-md) {
 		border-radius: var(--radius-md) !important;
 	}

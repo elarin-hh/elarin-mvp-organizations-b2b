@@ -100,7 +100,7 @@
 
 	function getItemName(item: TrainingPlanItem) {
 		return (
-			item.exercise_template?.name || item.exercise_type || "Exercicio"
+			item.exercise_template?.name || item.exercise_type || "Exercício"
 		);
 	}
 
@@ -116,7 +116,7 @@
 
 	async function handleSavePlan() {
 		if (!editName.trim()) {
-			updateError = "Nome do plano obrigatorio.";
+			updateError = "Nome do plano obrigatório.";
 			toast.error(updateError);
 			return;
 		}
@@ -389,7 +389,7 @@
 					<input type="text" bind:value={editName} />
 				</label>
 				<label class="form-field">
-					<span>Descricao</span>
+					<span>Descrição</span>
 					<input type="text" bind:value={editDescription} />
 				</label>
 			</div>

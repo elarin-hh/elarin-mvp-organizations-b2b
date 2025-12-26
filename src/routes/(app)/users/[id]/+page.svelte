@@ -436,7 +436,7 @@
                         <div class="space-y-3 mb-6">
                             {#each assignedTrainingPlans as assignment}
                                 <div
-                                    class="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/5 hover:bg-white/10 transition-colors"
+                                    class="flex items-center justify-between bg-white/5 p-3 rounded-xl hover:bg-white/10 transition-colors"
                                 >
                                     <div class="flex flex-col">
                                         <span class="text-white font-medium"
