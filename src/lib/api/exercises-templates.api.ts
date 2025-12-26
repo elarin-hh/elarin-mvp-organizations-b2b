@@ -10,14 +10,14 @@ export interface ExerciseTemplate {
     description?: string;
     image_url?: string;
     is_active: boolean;
-    fixed_config?: Record<string, any>;
-    default_config?: Record<string, any>;
+    config?: Record<string, any>;
+    editable_fields?: string[];
     created_at: string;
     updated_at: string;
 }
 
 export interface UpdateTemplateConfigPayload {
-    default_config: Record<string, any>;
+    config: Record<string, any>;
 }
 
 export interface UpdateUserExerciseConfigPayload {
@@ -35,12 +35,12 @@ export async function getExerciseTemplate(templateId: number) {
 }
 
 
-export async function updateTemplateDefaultConfig(
+export async function updateTemplateConfig(
     templateId: number,
     payload: UpdateTemplateConfigPayload
 ) {
     return restClient.patch<ExerciseTemplate>(
-        `/organizations/exercise-templates/${templateId}/default-config`,
+        `/organizations/exercise-templates/${templateId}/config`,
         payload
     );
 }

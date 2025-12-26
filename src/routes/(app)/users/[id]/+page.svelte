@@ -638,15 +638,12 @@
                                             </div>
                                         {:else if fullConfig}
                                             <ExerciseConfigEditor
-                                                template={{
-                                                    ...exercise,
-                                                    default_config:
-                                                        fullConfig.default_config,
-                                                    fixed_config:
-                                                        fullConfig.fixed_config,
-                                                    name: fullConfig.exercise_name,
-                                                }}
-                                                userConfig={fullConfig.user_config}
+                                                exerciseName={fullConfig.exercise_name}
+                                                config={fullConfig.config}
+                                                editableFields={fullConfig.editable_fields ||
+                                                    []}
+                                                userConfig={fullConfig.user_config ||
+                                                    {}}
                                                 onSave={handleSaveConfig}
                                             />
                                         {/if}

@@ -78,16 +78,16 @@
 	) {
 		if (!template) return false;
 
-		const config = (template as ExerciseTemplate).default_config;
-		if (config && Array.isArray(config.metrics)) {
-			return config.metrics.some((m: any) =>
+		const templateConfig = (template as ExerciseTemplate).config;
+		if (templateConfig && Array.isArray(templateConfig.metrics)) {
+			return templateConfig.metrics.some((m: any) =>
 				typeof m === "string" ? m === "reps" : m.type === "reps",
 			);
 		}
 
 		const fullTemplate = templates.find((t) => t.id === template.id);
-		if (fullTemplate?.default_config?.metrics) {
-			const metrics = fullTemplate.default_config.metrics;
+		if (fullTemplate?.config?.metrics) {
+			const metrics = fullTemplate.config.metrics;
 			if (Array.isArray(metrics)) {
 				return metrics.some((m: any) =>
 					typeof m === "string" ? m === "reps" : m.type === "reps",
