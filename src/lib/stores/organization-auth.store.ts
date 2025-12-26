@@ -93,6 +93,10 @@ export const organizationAuthActions = {
 		return { success: true };
 	},
 
+	forceLogout() {
+		organizationAuthStore.set(initialState);
+	},
+
 	async checkSession() {
 		organizationAuthStore.update((state) => ({ ...state, loading: true }));
 

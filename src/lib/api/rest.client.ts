@@ -9,6 +9,23 @@ class RestClient {
 		this.baseUrl = baseUrl;
 	}
 
+	private unauthorizedHandler: ((context: { endpoint: string; status: number; message?: string }) => void) | null =
+		null;
+
+	setUnauthorizedHandler(
+		handler: ((context: { endpoint: string; status: number; message?: string }) => void) | null
+	) {
+		this.unauthorizedHandler = handler;
+	}
+
+	private isAuthEndpoint(endpoint: string): boolean {
+		return (
+			endpoint.startsWith('/organizations/auth/login') ||
+			endpoint.startsWith('/organizations/auth/register') ||
+			endpoint.startsWith('/organizations/auth/logout')
+		);
+	}
+
 	private async fetchWithErrorHandling<T>(
 		endpoint: string,
 		options?: RequestInit
@@ -30,13 +47,27 @@ class RestClient {
 				credentials: 'include'
 			});
 
-			const data = await response.json();
+			let data: any = null;
+			try {
+				data = await response.json();
+			} catch {
+				data = null;
+			}
 
 			if (!response.ok) {
+				const message = data?.message || data?.error || `HTTP error ${response.status}`;
+				if (
+					response.status === 401 &&
+					!this.isAuthEndpoint(endpoint) &&
+					this.unauthorizedHandler
+				) {
+					this.unauthorizedHandler({ endpoint, status: response.status, message });
+				}
+
 				return {
 					success: false,
 					error: {
-						message: data.message || data.error || `HTTP error ${response.status}`,
+						message,
 						code: data.statusCode?.toString() || response.status.toString()
 					}
 				};
@@ -81,3 +112,7 @@ class RestClient {
 }
 
 export const restClient = new RestClient();
+
+export const setUnauthorizedHandler = (
+	handler: ((context: { endpoint: string; status: number; message?: string }) => void) | null
+) => restClient.setUnauthorizedHandler(handler);

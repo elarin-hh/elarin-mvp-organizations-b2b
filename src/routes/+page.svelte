@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { organizationAuthActions } from '$lib/stores/organization-auth.store';
+	import { Loading } from '$lib/components/common';
 
 	onMount(async () => {
 		const sessionCheck = await organizationAuthActions.checkSession();
@@ -14,6 +15,4 @@
 	});
 </script>
 
-<div class="min-h-screen bg-black flex items-center justify-center">
-	<div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
-</div>
+<Loading message="Carregando..." />
