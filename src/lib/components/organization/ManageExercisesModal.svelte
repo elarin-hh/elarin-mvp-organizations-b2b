@@ -74,7 +74,7 @@
                 userExercises = exercisesRes.data;
             }
         } catch (error) {
-            console.error("Failed to load exercises:", error);
+            console.error("Falha ao carregar exercícios:", error);
         } finally {
             isLoading = false;
         }
@@ -116,7 +116,7 @@
                             toast.success("Exercício removido");
                         }
                     } catch (error) {
-                        console.error("Failed to remove exercise:", error);
+                        console.error("Falha ao remover exercício:", error);
                         toast.error("Erro ao remover exercício");
                     } finally {
                         isProcessing = false;
@@ -136,7 +136,7 @@
                     toast.success("Exercício atribuído");
                 }
             } catch (error: any) {
-                console.error("Failed to assign exercise:", error);
+                console.error("Falha ao atribuir exercício:", error);
                 const message =
                     error?.response?.data?.message ||
                     "Erro ao atribuir exercício";

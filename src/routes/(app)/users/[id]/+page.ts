@@ -30,7 +30,7 @@ export const load: PageLoad = async ({ params }) => {
             assignedTrainingPlans: assignmentResponse.success ? assignmentResponse.data || [] : []
         };
     } catch (e) {
-        console.error('Error loading user details:', e);
+        console.error('Erro ao carregar detalhes do usuário:', e);
         throw error(500, 'Erro ao carregar detalhes do usuário');
     }
 };

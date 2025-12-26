@@ -121,7 +121,7 @@
                 );
             }
         } catch (err) {
-            console.error("[handleSelectExercise] Error:", err);
+            console.error("[handleSelectExercise] Erro:", err);
             toast.error("Erro ao carregar configurações");
         } finally {
             isLoadingConfig = false;
@@ -143,7 +143,7 @@
             );
             if (res.success) {
             } else {
-                throw new Error(res.error?.message || "Failed");
+                throw new Error(res.error?.message || "Falha");
             }
         } catch (err) {
             throw err;

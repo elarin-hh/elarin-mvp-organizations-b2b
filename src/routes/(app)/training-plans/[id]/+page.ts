@@ -5,7 +5,7 @@ import { error } from '@sveltejs/kit';
 export const load: PageLoad = async ({ params }) => {
 	const planId = Number(params.id);
 	if (Number.isNaN(planId)) {
-		throw error(400, 'ID de plano invalido');
+		throw error(400, 'ID de plano inválido');
 	}
 
 	const [planResponse, templatesResponse] = await Promise.all([
@@ -21,7 +21,7 @@ export const load: PageLoad = async ({ params }) => {
 	}
 
 	if (!planResponse.data) {
-		throw error(404, 'Plano nao encontrado');
+		throw error(404, 'Plano não encontrado');
 	}
 
 	return {

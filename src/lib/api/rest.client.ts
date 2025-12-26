@@ -55,7 +55,7 @@ class RestClient {
 			}
 
 			if (!response.ok) {
-				const message = data?.message || data?.error || `HTTP error ${response.status}`;
+				const message = data?.message || data?.error || `Erro HTTP ${response.status}`;
 				if (
 					response.status === 401 &&
 					!this.isAuthEndpoint(endpoint) &&
@@ -81,7 +81,7 @@ class RestClient {
 			return {
 				success: false,
 				error: {
-					message: error instanceof Error ? error.message : 'Unknown error',
+					message: error instanceof Error ? error.message : 'Erro desconhecido',
 					code: 'NETWORK_ERROR'
 				}
 			};

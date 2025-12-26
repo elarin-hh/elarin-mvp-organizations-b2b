@@ -329,7 +329,7 @@
 				toast.error("Erro ao salvar ordem");
 			}
 		} catch (error) {
-			console.error("Error reordering items:", error);
+			console.error("Erro ao reordenar itens:", error);
 			toast.error("Erro ao salvar ordem");
 		}
 	}
