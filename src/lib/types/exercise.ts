@@ -6,6 +6,7 @@ export interface ExerciseTemplate {
 	name: string;
 	description?: string;
 	image_url?: string;
+	video_url?: string;
 	is_active: boolean;
 	config?: Record<string, any>;
 	editable_fields?: string[];
