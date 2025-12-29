@@ -134,7 +134,7 @@
 
 <div class="min-h-screen flex flex-col items-center justify-center px-4 py-8">
 	<div class="mb-8 text-center">
-		<img src="/logo-elarin.png" alt="Elarin" class="h-20 mx-auto mb-6" />
+		<img src="/logo-elarin-white.png" alt="Elarin" class="h-20 mx-auto mb-6" />
 		<h1 class="text-3xl font-bold text-white mb-2">
 			Cadastrar Organização
 		</h1>

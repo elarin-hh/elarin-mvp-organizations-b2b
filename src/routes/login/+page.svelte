@@ -32,7 +32,7 @@
 
 <div class="min-h-screen flex flex-col items-center justify-center px-4">
 	<div class="mb-16 text-center">
-		<img src="/logo-elarin.png" alt="Elarin" class="h-20 mx-auto mb-4" />
+		<img src="/logo-elarin-white.png" alt="Elarin" class="h-20 mx-auto mb-4" />
 	</div>
 
 	<form

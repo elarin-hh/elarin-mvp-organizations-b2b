@@ -43,7 +43,7 @@
     <div class="header-container px-4">
         <div class="header-glass py-2" class:scrolled={isScrolled}>
             <div class="header-content px-4 flex items-center justify-between">
-                <img src="/logo-elarin.png" alt="Elarin" class="h-12" />
+                <img src="/logo-elarin-white.png" alt="Elarin" class="h-12" />
 
                 {#if organization}
                     {@const headerName =
