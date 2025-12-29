@@ -8,7 +8,9 @@
     import Dumbbell from "lucide-svelte/icons/dumbbell";
     import Settings from "lucide-svelte/icons/settings";
     import LogOut from "lucide-svelte/icons/log-out";
+
     import Menu from "lucide-svelte/icons/menu";
+    import List from "lucide-svelte/icons/list";
 
     const currentPath = $derived($page.url.pathname);
 
@@ -98,7 +100,7 @@
             title="Planos de treino"
         >
             <span class="nav-icon">
-                <Dumbbell class="w-5 h-5" />
+                <List class="w-5 h-5" />
             </span>
             <span class="nav-label">Planos de treino</span>
         </button>
@@ -157,7 +159,6 @@
         padding-left: 1.25rem;
     }
 
-
     .icon-btn {
         width: 40px;
         height: 40px;
@@ -213,7 +214,9 @@
         cursor: pointer;
         font-size: 0.875rem;
         font-weight: 400;
-        transition: background-color 0.15s ease, color 0.15s ease;
+        transition:
+            background-color 0.15s ease,
+            color 0.15s ease;
         text-align: left;
         white-space: nowrap;
         overflow: hidden;
@@ -233,7 +236,9 @@
         height: 40px;
         flex: 0 0 40px;
         border-radius: var(--radius-md);
-        transition: background-color 0.15s ease, color 0.15s ease;
+        transition:
+            background-color 0.15s ease,
+            color 0.15s ease;
     }
 
     .nav-label {
@@ -261,11 +266,7 @@
     }
 
     .nav-item.active {
-        background: color-mix(
-            in srgb,
-            #fff 5%,
-            transparent
-        );
+        background: color-mix(in srgb, #fff 5%, transparent);
         color: var(--color-primary-500);
     }
 
@@ -278,4 +279,3 @@
         color: rgba(239, 68, 68, 1);
     }
 </style>
-
