@@ -7,7 +7,7 @@ export interface PlanFeatures {
 export interface Plan {
 	id: number;
 	name: string;
-	registrations_limit: number;
+	active_users_limit: number;
 	features: PlanFeatures;
 	price_cents: number;
 	is_active: boolean;

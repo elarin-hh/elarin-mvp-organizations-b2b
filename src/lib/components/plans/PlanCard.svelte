@@ -75,7 +75,7 @@
 
 	<div class="mb-4">
 		<p class="text-white/70 text-sm mb-2">
-			Até {plan.registrations_limit} usuários
+			Até {plan.active_users_limit} usuários ativos
 		</p>
 	</div>
 

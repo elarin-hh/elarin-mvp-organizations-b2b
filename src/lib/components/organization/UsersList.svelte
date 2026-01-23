@@ -86,7 +86,9 @@
 					await onUpdate?.();
 					toast.success("Usuário removido com sucesso");
 				} else {
-					toast.error(response.error || "Erro ao remover usuário");
+					toast.error(
+						response.error?.message || "Erro ao remover usuário",
+					);
 				}
 				isLoading = false;
 			},
@@ -110,7 +112,9 @@
 					await onUpdate?.();
 					toast.success(`Usuário ${action}do com sucesso`);
 				} else {
-					toast.error(response.error || "Erro ao alterar status");
+					toast.error(
+						response.error?.message || "Erro ao alterar status",
+					);
 				}
 				isTogglingStatus = null;
 				closeDialog();

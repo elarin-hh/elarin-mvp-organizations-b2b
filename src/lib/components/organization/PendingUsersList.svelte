@@ -38,7 +38,9 @@
 			await onUpdate?.();
 			toast.success("Usuário aprovado com sucesso");
 		} else {
-			toast.error(response.error || "Erro ao aprovar usuário");
+			toast.error(
+				response.error?.message || "Erro ao aprovar usuário",
+			);
 		}
 
 		isLoading = false;
@@ -68,7 +70,9 @@
 			await onUpdate?.();
 			toast.success("Usuário rejeitado");
 		} else {
-			toast.error(response.error || "Erro ao rejeitar usuário");
+			toast.error(
+				response.error?.message || "Erro ao rejeitar usuário",
+			);
 		}
 
 		isLoading = false;
