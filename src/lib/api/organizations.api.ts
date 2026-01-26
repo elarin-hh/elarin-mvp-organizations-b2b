@@ -138,6 +138,7 @@ export const organizationsApi = {
 		template_id: number;
 		position?: number;
 		target_reps?: number;
+		target_sets?: number;
 		target_duration_sec?: number;
 	}): Promise<ApiResponse<TrainingPlanItem>> {
 		return restClient.post<TrainingPlanItem>(`/organizations/training-plans/${planId}/items`, payload);
@@ -146,6 +147,7 @@ export const organizationsApi = {
 	async updateTrainingPlanItem(planId: number, itemId: number, payload: {
 		position?: number;
 		target_reps?: number;
+		target_sets?: number;
 		target_duration_sec?: number;
 	}): Promise<ApiResponse<TrainingPlanItem>> {
 		return restClient.patch<TrainingPlanItem>(

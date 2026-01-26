@@ -33,6 +33,7 @@
 	let newTemplateId = $state<number | null>(null);
 	let newPosition = $state<number | null>(null);
 	let newTargetReps = $state<number | null>(null);
+	let newTargetSets = $state<number | null>(null);
 	let newTargetDuration = $state<number | null>(null);
 	let isAddingItem = $state(false);
 	let updatingItemId = $state<number | null>(null);
@@ -196,6 +197,7 @@
 			template_id: newTemplateId,
 			position: newPosition ?? undefined,
 			target_reps: newTargetReps ?? undefined,
+			target_sets: newTargetSets ?? undefined,
 			target_duration_sec: newTargetDuration ?? undefined,
 		});
 
@@ -205,6 +207,7 @@
 			newTemplateId = null;
 			newPosition = null;
 			newTargetReps = null;
+			newTargetSets = null;
 			newTargetDuration = null;
 		} else {
 			formError = response.error?.message || "Erro ao adicionar item.";
@@ -223,6 +226,7 @@
 			{
 				position: item.position,
 				target_reps: item.target_reps ?? undefined,
+				target_sets: item.target_sets ?? undefined,
 				target_duration_sec: item.target_duration_sec ?? undefined,
 			},
 		);
@@ -467,6 +471,25 @@
 						</div>
 
 						<div class="item-grid">
+							<label class="form-field">
+								<span>Sets</span>
+								<input
+									type="number"
+									min="1"
+									value={item.target_sets ?? ""}
+									oninput={(e) =>
+										updateItemField(
+											item.id,
+											"target_sets",
+											e.currentTarget.value === ""
+												? null
+												: Number(
+														e.currentTarget
+															.value,
+													),
+										)}
+								/>
+							</label>
 							{#if hasRepsMetric(item.exercise_template)}
 								<label class="form-field">
 									<span>Reps</span>
@@ -552,6 +575,22 @@
 		</label>
 
 		<div class="grid grid-cols-2 gap-3">
+			<label class="form-field">
+				<span>Sets</span>
+				<input
+					type="number"
+					min="1"
+					value={newTargetSets ?? ""}
+					oninput={(e) =>
+						(newTargetSets =
+							(e.target as HTMLInputElement).value === ""
+								? null
+								: Number(
+										(e.target as HTMLInputElement)
+											.value,
+									))}
+				/>
+			</label>
 			{#if hasRepsMetric(templates.find((t) => t.id === newTemplateId))}
 				<label class="form-field">
 					<span>Reps</span>
